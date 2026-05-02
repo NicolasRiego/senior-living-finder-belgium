@@ -28,6 +28,10 @@ import PartnerDashboard from "./pages/partner/Dashboard";
 import ResidenceEditor from "./pages/partner/ResidenceEditor";
 import ResidencePreview from "./pages/partner/ResidencePreview";
 import AdminValidation from "./pages/admin/AdminValidation";
+import AdminResidences from "./pages/admin/AdminResidences";
+import AdminVersions from "./pages/admin/AdminVersions";
+import AdminAuditLog from "./pages/admin/AdminAuditLog";
+import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
 const MAINTENANCE = import.meta.env.VITE_MAINTENANCE_MODE === "true";
