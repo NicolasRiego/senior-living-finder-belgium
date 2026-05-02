@@ -179,16 +179,20 @@ export type Database = {
       }
       leads: {
         Row: {
+          anonymized_at: string | null
           autonomy_level: string | null
           budget_max: number | null
           budget_min: number | null
+          budget_range: string | null
           consent_rgpd: boolean
           contact_email: string
           contact_name: string
           contact_phone: string | null
           created_at: string
+          for_whom: string | null
           id: string
           message: string | null
+          region_target: string | null
           residence_id: string
           score: number
           status: Database["public"]["Enums"]["lead_status"]
@@ -197,16 +201,20 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          anonymized_at?: string | null
           autonomy_level?: string | null
           budget_max?: number | null
           budget_min?: number | null
+          budget_range?: string | null
           consent_rgpd?: boolean
           contact_email: string
           contact_name: string
           contact_phone?: string | null
           created_at?: string
+          for_whom?: string | null
           id?: string
           message?: string | null
+          region_target?: string | null
           residence_id: string
           score?: number
           status?: Database["public"]["Enums"]["lead_status"]
@@ -215,16 +223,20 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          anonymized_at?: string | null
           autonomy_level?: string | null
           budget_max?: number | null
           budget_min?: number | null
+          budget_range?: string | null
           consent_rgpd?: boolean
           contact_email?: string
           contact_name?: string
           contact_phone?: string | null
           created_at?: string
+          for_whom?: string | null
           id?: string
           message?: string | null
+          region_target?: string | null
           residence_id?: string
           score?: number
           status?: Database["public"]["Enums"]["lead_status"]
@@ -1126,6 +1138,7 @@ export type Database = {
     }
     Functions: {
       accept_org_invitation: { Args: { _code: string }; Returns: string }
+      anonymize_my_account: { Args: never; Returns: undefined }
       approve_residence: { Args: { _residence_id: string }; Returns: undefined }
       archive_residence: {
         Args: { _reason?: string; _residence_id: string }
@@ -1144,6 +1157,7 @@ export type Database = {
         }
         Returns: string
       }
+      export_my_data: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1156,7 +1170,9 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      log_lead_view: { Args: { _lead_id: string }; Returns: undefined }
       promote_email_to_admin: { Args: { _email: string }; Returns: undefined }
+      purge_old_leads: { Args: { _months?: number }; Returns: number }
       reject_residence: {
         Args: { _reason: string; _residence_id: string }
         Returns: undefined
@@ -1178,12 +1194,37 @@ export type Database = {
         Returns: undefined
       }
       storage_residence_id: { Args: { _name: string }; Returns: string }
+      submit_lead: {
+        Args: {
+          _autonomy_level: string
+          _budget_max: number
+          _budget_min: number
+          _budget_range: string
+          _consent: boolean
+          _contact_email: string
+          _contact_name: string
+          _contact_phone: string
+          _for_whom: string
+          _message: string
+          _region_target: string
+          _residence_id: string
+          _timing: string
+        }
+        Returns: string
+      }
       submit_residence: { Args: { _residence_id: string }; Returns: undefined }
       unarchive_residence: {
         Args: { _residence_id: string }
         Returns: undefined
       }
       unit_type_residence: { Args: { _unit_type_id: string }; Returns: string }
+      update_lead_status: {
+        Args: {
+          _lead_id: string
+          _status: Database["public"]["Enums"]["lead_status"]
+        }
+        Returns: undefined
+      }
       user_org_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
