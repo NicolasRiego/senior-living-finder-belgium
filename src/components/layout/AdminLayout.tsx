@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ListChecks, History, ScrollText, LogOut } from "lucide-react";
+import { ShieldCheck, ListChecks, ScrollText, LogOut, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -37,8 +37,16 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               </NavLink>
             ))}
           </nav>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-sm text-muted-foreground">{user?.email}</span>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/">
+                <Home className="h-4 w-4 mr-2" /> Site public
+              </Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/mon-espace">Mon espace</Link>
+            </Button>
+            <span className="hidden lg:inline text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" /> Déconnexion
             </Button>
