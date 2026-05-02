@@ -1,15 +1,24 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, MapPin, Users, Star, Check, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { getResidenceBySlug } from "@/modules/residences/data";
+import { trackResidenceEvent } from "@/modules/analytics/track";
 
 export default function ResidenceDetailPage() {
   const { t } = useI18n();
   const { slug = "" } = useParams();
   const r = getResidenceBySlug(slug);
   const { has, toggle } = useCompare();
+
+  useEffect(() => {
+    // Tracking: ne s'enregistre que pour les vraies résidences (UUID DB).
+    if (r && /^[0-9a-f-]{36}$/i.test(r.id)) {
+      trackResidenceEvent(r.id, "view");
+    }
+  }, [r?.id]);
 
   if (!r) {
     return (
