@@ -235,9 +235,9 @@ export default function ResidenceDetailPage() {
               <h3 className="font-display text-xl font-semibold">{t("detail.requestInfo")}</h3>
               <p className="mt-2 text-base text-muted-foreground">Notre conseiller vous répond sous 24h.</p>
               <div className="mt-6 space-y-3">
-                <CTAButton residenceId={r.id} type="visit" label={t("detail.requestVisit")} icon={<CalendarDays />} variant="hero" />
-                <CTAButton residenceId={r.id} type="brochure" label="Recevoir la brochure" icon={<FileText />} variant="outline" />
-                <CTAButton residenceId={r.id} type="callback" label="Être rappelé" icon={<Phone />} variant="outline" />
+                <CTASlot residenceId={r.id} intent="visit" label={t("detail.requestVisit")} icon={<CalendarDays />} variant="hero" />
+                <CTASlot residenceId={r.id} intent="brochure" label="Recevoir la brochure" icon={<FileText />} variant="outline" />
+                <CTASlot residenceId={r.id} intent="callback" label="Être rappelé" icon={<Phone />} variant="outline" />
               </div>
             </aside>
           </div>
@@ -247,12 +247,35 @@ export default function ResidenceDetailPage() {
       {/* Persistent mobile CTA bar */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:hidden">
         <div className="container flex gap-2">
-          <CTAButton residenceId={r.id} type="visit" label="Visite" icon={<CalendarDays />} variant="hero" className="flex-1" />
-          <CTAButton residenceId={r.id} type="brochure" label="Brochure" icon={<FileText />} variant="outline" className="flex-1" />
-          <CTAButton residenceId={r.id} type="callback" label="Rappel" icon={<Phone />} variant="outline" className="flex-1" />
+          <CTASlot residenceId={r.id} intent="visit" label="Visite" icon={<CalendarDays />} variant="hero" className="flex-1" />
+          <CTASlot residenceId={r.id} intent="brochure" label="Brochure" icon={<FileText />} variant="outline" className="flex-1" />
+          <CTASlot residenceId={r.id} intent="callback" label="Rappel" icon={<Phone />} variant="outline" className="flex-1" />
         </div>
       </div>
     </article>
+  );
+}
+
+function CTASlot({
+  residenceId, intent, label, icon, variant = "default", className,
+}: {
+  residenceId: string;
+  intent: LeadIntent;
+  label: string;
+  icon: React.ReactNode;
+  variant?: "hero" | "outline" | "default";
+  className?: string;
+}) {
+  return (
+    <LeadFormDialog
+      residenceId={residenceId}
+      intent={intent}
+      trigger={
+        <Button variant={variant} size="lg" className={"w-full " + (className ?? "")}>
+          {icon}{label}
+        </Button>
+      }
+    />
   );
 }
 
