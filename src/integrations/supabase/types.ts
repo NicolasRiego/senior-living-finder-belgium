@@ -889,6 +889,7 @@ export type Database = {
         | "medical"
         | "activity"
         | "other"
+        | "cover"
       publication_status:
         | "draft"
         | "pending"
@@ -1049,6 +1050,7 @@ export const Constants = {
         "medical",
         "activity",
         "other",
+        "cover",
       ],
       publication_status: [
         "draft",
