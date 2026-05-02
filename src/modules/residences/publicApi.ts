@@ -87,6 +87,7 @@ export async function searchResidences(filters: SearchFilters) {
 
 export async function getCoverUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path; // demo / external URLs
   const { data } = await supabase.storage.from("residence-photos").createSignedUrl(path, 3600);
   return data?.signedUrl ?? null;
 }
