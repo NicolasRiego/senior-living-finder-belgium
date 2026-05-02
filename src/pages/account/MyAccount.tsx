@@ -5,13 +5,13 @@ import { useAuth } from "@/modules/auth/AuthProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Mail, Building2 } from "lucide-react";
+import { Heart, Mail, Building2, ShieldCheck } from "lucide-react";
 
 type FavRow = { residence_id: string; residences: { nom_fr: string; ville: string | null; slug: string } | null };
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
 
 export default function MyAccountPage() {
-  const { user } = useAuth();
+  const { user, isAdmin, isPartner } = useAuth();
   const [favorites, setFavorites] = useState<FavRow[]>([]);
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,9 +39,27 @@ export default function MyAccountPage() {
 
   return (
     <div className="container py-10 space-y-8">
-      <header>
-        <h1 className="font-display text-4xl">Mon espace</h1>
-        <p className="text-lg text-muted-foreground">Bonjour {user?.email}</p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl">Mon espace</h1>
+          <p className="text-lg text-muted-foreground">Bonjour {user?.email}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {isAdmin && (
+            <Button asChild>
+              <Link to="/admin/validation">
+                <ShieldCheck className="h-4 w-4 mr-2" /> Espace admin
+              </Link>
+            </Button>
+          )}
+          {isPartner && (
+            <Button asChild variant="outline">
+              <Link to="/partenaire">
+                <Building2 className="h-4 w-4 mr-2" /> Espace partenaire
+              </Link>
+            </Button>
+          )}
+        </div>
       </header>
 
       <section>
