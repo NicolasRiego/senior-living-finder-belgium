@@ -18,6 +18,8 @@ import ComparePage from "./pages/Compare";
 import AdvicePage from "./pages/Advice";
 import ContactPage from "./pages/Contact";
 import LoginPage from "./pages/auth/Login";
+import SignupPage from "./pages/auth/Signup";
+import MyAccountPage from "./pages/account/MyAccount";
 import NotFound from "./pages/NotFound";
 import MaintenancePage from "./pages/Maintenance";
 
