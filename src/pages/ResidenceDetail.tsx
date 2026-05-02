@@ -11,7 +11,7 @@ import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog"
 
 
 export default function ResidenceDetailPage() {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const { slug = "" } = useParams();
 
   const { data, isLoading } = useQuery({
@@ -40,6 +40,9 @@ export default function ResidenceDetailPage() {
 
   const { residence: r, units, pricing, services, activities, photos } = data;
   const cover = photos.find((p) => p.cover) ?? photos[0];
+  const name = tr(r.nom_fr, r.nom_nl);
+  const tagline = tr(r.tagline_fr, r.tagline_nl);
+  const description = tr(r.description_fr, r.description_nl);
   const minPrice = pricing
     .map((p: any) => p.estimated_monthly_min ?? p.rent_min)
     .filter((v: any) => v != null)
@@ -50,7 +53,7 @@ export default function ResidenceDetailPage() {
       {/* Hero */}
       <div className="relative h-[420px] w-full overflow-hidden md:h-[520px] bg-muted">
         {cover ? (
-          <img src={cover.url} alt={cover.alt || r.nom_fr} className="h-full w-full object-cover" />
+          <img src={cover.url} alt={cover.alt || name} className="h-full w-full object-cover" />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
       </div>
@@ -66,9 +69,9 @@ export default function ResidenceDetailPage() {
               <span className="rounded-full bg-primary-soft px-3 py-1 text-sm font-medium text-primary">
                 {t(`residenceTypes.${r.type_etablissement}`)}
               </span>
-              <h1 className="mt-3 font-display text-3xl font-semibold md:text-4xl">{r.nom_fr}</h1>
-              {r.tagline_fr && (
-                <p className="mt-2 text-lg text-muted-foreground">{r.tagline_fr}</p>
+              <h1 className="mt-3 font-display text-3xl font-semibold md:text-4xl">{name}</h1>
+              {tagline && (
+                <p className="mt-2 text-lg text-muted-foreground">{tagline}</p>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-4 text-base text-muted-foreground">
                 {(r.ville || r.region) && (
@@ -100,9 +103,9 @@ export default function ResidenceDetailPage() {
           <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_320px]">
             <div className="space-y-12">
               {/* Résumé */}
-              {r.description_fr && (
+              {description && (
                 <Section id="resume" title="Résumé">
-                  <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-line">{r.description_fr}</p>
+                  <p className="text-lg leading-relaxed text-muted-foreground whitespace-pre-line">{description}</p>
                 </Section>
               )}
 
@@ -179,7 +182,7 @@ export default function ResidenceDetailPage() {
                         <span className={"flex h-8 w-8 items-center justify-center rounded-full " + (s.included ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
                           <Check className="h-4 w-4" />
                         </span>
-                        <span className="flex-1">{s.services_catalog?.label_fr ?? "Service"}</span>
+                        <span className="flex-1">{tr(s.services_catalog?.label_fr, s.services_catalog?.label_nl) || "Service"}</span>
                         {s.optional && <span className="text-xs text-muted-foreground">Optionnel</span>}
                         {s.price && <span className="text-sm font-medium">{s.price} €</span>}
                       </li>
@@ -194,7 +197,7 @@ export default function ResidenceDetailPage() {
                   <div className="flex flex-wrap gap-2">
                     {activities.map((a: any) => (
                       <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm text-primary">
-                        {a.activities_catalog?.label_fr ?? "Activité"}
+                        {tr(a.activities_catalog?.label_fr, a.activities_catalog?.label_nl) || "Activité"}
                         {a.frequency && <span className="text-xs opacity-70">· {a.frequency}</span>}
                       </span>
                     ))}
