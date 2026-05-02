@@ -20,11 +20,13 @@ import ContactPage from "./pages/Contact";
 import LoginPage from "./pages/auth/Login";
 import SignupPage from "./pages/auth/Signup";
 import MyAccountPage from "./pages/account/MyAccount";
+import MyDataPage from "./pages/account/MyData";
 import NotFound from "./pages/NotFound";
 import MaintenancePage from "./pages/Maintenance";
 
 import PartnerOnboarding from "./pages/partner/Onboarding";
 import PartnerDashboard from "./pages/partner/Dashboard";
+import PartnerLeads from "./pages/partner/Leads";
 import ResidenceEditor from "./pages/partner/ResidenceEditor";
 import ResidencePreview from "./pages/partner/ResidencePreview";
 import AdminValidation from "./pages/admin/AdminValidation";
@@ -62,6 +64,7 @@ const App = () => (
                     <Route path="/connexion" element={<LoginPage />} />
                     <Route path="/inscription" element={<SignupPage />} />
                     <Route path="/mon-espace" element={<RequireAuth><MyAccountPage /></RequireAuth>} />
+                    <Route path="/mon-espace/donnees" element={<RequireAuth><MyDataPage /></RequireAuth>} />
                   </Route>
 
                   {/* Partner onboarding (auth, no layout) */}
@@ -90,6 +93,14 @@ const App = () => (
                   <Route
                     path="/partenaire/residences/:id/preview"
                     element={<RequireAuth><ResidencePreview /></RequireAuth>}
+                  />
+                  <Route
+                    path="/partenaire/leads"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><PartnerLeads /></PartnerLayout>
+                      </RequireAuth>
+                    }
                   />
 
                   {/* Admin */}

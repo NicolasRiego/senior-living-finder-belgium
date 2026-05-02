@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, BadgeCheck, Accessibility, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { getResidenceFullBySlug } from "@/modules/residences/publicApi";
 import { trackResidenceEvent } from "@/modules/analytics/track";
-import { supabase } from "@/integrations/supabase/client";
+import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
 
-type CTAType = "brochure" | "visit" | "callback";
 
 export default function ResidenceDetailPage() {
   const { t } = useI18n();
@@ -241,9 +235,9 @@ export default function ResidenceDetailPage() {
               <h3 className="font-display text-xl font-semibold">{t("detail.requestInfo")}</h3>
               <p className="mt-2 text-base text-muted-foreground">Notre conseiller vous répond sous 24h.</p>
               <div className="mt-6 space-y-3">
-                <CTAButton residenceId={r.id} type="visit" label={t("detail.requestVisit")} icon={<CalendarDays />} variant="hero" />
-                <CTAButton residenceId={r.id} type="brochure" label="Recevoir la brochure" icon={<FileText />} variant="outline" />
-                <CTAButton residenceId={r.id} type="callback" label="Être rappelé" icon={<Phone />} variant="outline" />
+                <CTASlot residenceId={r.id} intent="visit" label={t("detail.requestVisit")} icon={<CalendarDays />} variant="hero" />
+                <CTASlot residenceId={r.id} intent="brochure" label="Recevoir la brochure" icon={<FileText />} variant="outline" />
+                <CTASlot residenceId={r.id} intent="callback" label="Être rappelé" icon={<Phone />} variant="outline" />
               </div>
             </aside>
           </div>
@@ -253,12 +247,35 @@ export default function ResidenceDetailPage() {
       {/* Persistent mobile CTA bar */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:hidden">
         <div className="container flex gap-2">
-          <CTAButton residenceId={r.id} type="visit" label="Visite" icon={<CalendarDays />} variant="hero" className="flex-1" />
-          <CTAButton residenceId={r.id} type="brochure" label="Brochure" icon={<FileText />} variant="outline" className="flex-1" />
-          <CTAButton residenceId={r.id} type="callback" label="Rappel" icon={<Phone />} variant="outline" className="flex-1" />
+          <CTASlot residenceId={r.id} intent="visit" label="Visite" icon={<CalendarDays />} variant="hero" className="flex-1" />
+          <CTASlot residenceId={r.id} intent="brochure" label="Brochure" icon={<FileText />} variant="outline" className="flex-1" />
+          <CTASlot residenceId={r.id} intent="callback" label="Rappel" icon={<Phone />} variant="outline" className="flex-1" />
         </div>
       </div>
     </article>
+  );
+}
+
+function CTASlot({
+  residenceId, intent, label, icon, variant = "default", className,
+}: {
+  residenceId: string;
+  intent: LeadIntent;
+  label: string;
+  icon: React.ReactNode;
+  variant?: "hero" | "outline" | "default";
+  className?: string;
+}) {
+  return (
+    <LeadFormDialog
+      residenceId={residenceId}
+      intent={intent}
+      trigger={
+        <Button variant={variant} size="lg" className={"w-full " + (className ?? "")}>
+          {icon}{label}
+        </Button>
+      }
+    />
   );
 }
 
@@ -290,105 +307,3 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-function CTAButton({
-  residenceId,
-  type,
-  label,
-  icon,
-  variant = "default",
-  className,
-}: {
-  residenceId: string;
-  type: CTAType;
-  label: string;
-  icon: React.ReactNode;
-  variant?: "hero" | "outline" | "default";
-  className?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", consent: false });
-
-  const titles: Record<CTAType, string> = {
-    brochure: "Recevoir la brochure",
-    visit: "Demander une visite",
-    callback: "Être rappelé",
-  };
-
-  const submit = async () => {
-    if (!form.consent) {
-      toast({ title: "Veuillez accepter le RGPD", variant: "destructive" });
-      return;
-    }
-    if (!form.name || !form.email) {
-      toast({ title: "Nom et e-mail requis", variant: "destructive" });
-      return;
-    }
-    setLoading(true);
-    const { error } = await supabase.from("leads").insert({
-      residence_id: residenceId,
-      contact_name: form.name,
-      contact_email: form.email,
-      contact_phone: form.phone || null,
-      message: form.message
-        ? `[${titles[type]}] ${form.message}`
-        : `[${titles[type]}]`,
-      consent_rgpd: true,
-    });
-    setLoading(false);
-    if (error) {
-      toast({ title: "Erreur lors de l'envoi", description: error.message, variant: "destructive" });
-      return;
-    }
-    trackResidenceEvent(residenceId, `lead_${type}`);
-    toast({ title: "Demande envoyée", description: "Nous vous recontactons rapidement." });
-    setOpen(false);
-    setForm({ name: "", email: "", phone: "", message: "", consent: false });
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant={variant} size="lg" className={"w-full " + (className ?? "")}>{icon}{label}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{titles[type]}</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <div>
-            <Label>Nom</Label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          </div>
-          <div>
-            <Label>E-mail</Label>
-            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-          </div>
-          <div>
-            <Label>Téléphone</Label>
-            <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-          </div>
-          {type !== "callback" && (
-            <div>
-              <Label>Message</Label>
-              <Textarea rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
-            </div>
-          )}
-          <label className="flex items-start gap-2 text-sm text-muted-foreground">
-            <input
-              type="checkbox"
-              checked={form.consent}
-              onChange={(e) => setForm({ ...form, consent: e.target.checked })}
-              className="mt-1"
-            />
-            J'accepte que mes données soient utilisées pour traiter ma demande (RGPD).
-          </label>
-          <Button className="w-full" onClick={submit} disabled={loading}>
-            {loading ? "Envoi…" : "Envoyer"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}

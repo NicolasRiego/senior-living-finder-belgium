@@ -1,12 +1,13 @@
 import { ReactNode } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { Building2, LayoutDashboard, Users, LogOut, Eye } from "lucide-react";
+import { Building2, LayoutDashboard, Users, LogOut, Eye, Inbox } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/modules/auth/AuthProvider";
 
 const navItems = [
   { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, end: true },
   { to: "/partenaire/residences", label: "Mes résidences", icon: Building2, end: false },
+  { to: "/partenaire/leads", label: "Leads", icon: Inbox, end: false },
   { to: "/partenaire/equipe", label: "Équipe", icon: Users, end: false },
 ];
 
