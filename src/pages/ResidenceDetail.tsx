@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, BadgeCheck, Accessibility, CalendarDays, FileText } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, BadgeCheck, Accessibility, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { useCompare } from "@/modules/compare/CompareProvider";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -89,14 +90,17 @@ export default function ResidenceDetailPage() {
               </div>
             </div>
 
-            {minPrice != null && (
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">{t("common.from")}</div>
-                <div className="font-display text-3xl font-semibold text-primary">
-                  {Number(minPrice).toLocaleString("fr-BE")}€<span className="text-base font-normal text-muted-foreground">{t("common.perMonth")}</span>
+            <div className="text-right space-y-3">
+              {minPrice != null && (
+                <div>
+                  <div className="text-sm text-muted-foreground">{t("common.from")}</div>
+                  <div className="font-display text-3xl font-semibold text-primary">
+                    {Number(minPrice).toLocaleString("fr-BE")}€<span className="text-base font-normal text-muted-foreground">{t("common.perMonth")}</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+              <CompareToggle id={r.id} />
+            </div>
           </div>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_320px]">
@@ -257,6 +261,25 @@ export default function ResidenceDetailPage() {
     </article>
   );
 }
+
+function CompareToggle({ id }: { id: string }) {
+  const { has, toggle, isFull } = useCompare();
+  const inCompare = has(id);
+  return (
+    <Button
+      type="button"
+      variant={inCompare ? "soft" : "outline"}
+      size="sm"
+      disabled={!inCompare && isFull}
+      onClick={() => toggle(id)}
+      aria-pressed={inCompare}
+    >
+      {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
+      {inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+    </Button>
+  );
+}
+
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check } from "lucide-react";
+import { useCompare } from "@/modules/compare/CompareProvider";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -317,6 +318,8 @@ export default function ResidencesPage() {
 function PublicResidenceCard({ row }: { row: SearchRow }) {
   const { t } = useI18n();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const { has, toggle, isFull } = useCompare();
+  const inCompare = has(row.id);
 
   useEffect(() => {
     let active = true;
@@ -393,8 +396,22 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
               <span className="text-sm text-muted-foreground">Tarifs sur demande</span>
             )}
           </div>
-          <Button asChild size="sm">
+        </div>
+
+        <div className="mt-4 flex gap-2">
+          <Button asChild size="sm" className="flex-1">
             <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={inCompare ? "soft" : "outline"}
+            disabled={!inCompare && isFull}
+            onClick={() => toggle(row.id)}
+            aria-pressed={inCompare}
+            title={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+          >
+            {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
           </Button>
         </div>
       </div>
