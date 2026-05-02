@@ -262,6 +262,41 @@ export default function ResidenceDetailPage() {
   );
 }
 
+function CompareToggle({ id }: { id: string }) {
+  const { has, toggle, isFull } = useCompare();
+  const inCompare = has(id);
+  return (
+    <Button
+      type="button"
+      variant={inCompare ? "soft" : "outline"}
+      size="sm"
+      disabled={!inCompare && isFull}
+      onClick={() => toggle(id)}
+      aria-pressed={inCompare}
+    >
+      {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
+      {inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+    </Button>
+  );
+}
+
+function _End() { return null; }
+          </div>
+        </div>
+      </div>
+
+      {/* Persistent mobile CTA bar */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:hidden">
+        <div className="container flex gap-2">
+          <CTAButton residenceId={r.id} type="visit" label="Visite" icon={<CalendarDays />} variant="hero" className="flex-1" />
+          <CTAButton residenceId={r.id} type="brochure" label="Brochure" icon={<FileText />} variant="outline" className="flex-1" />
+          <CTAButton residenceId={r.id} type="callback" label="Rappel" icon={<Phone />} variant="outline" className="flex-1" />
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id}>
