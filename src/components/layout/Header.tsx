@@ -104,13 +104,27 @@ export function Header() {
                 {l.label}
               </NavLink>
             ))}
-            <div className="mt-2 flex items-center justify-between gap-3 px-2">
+            <div className="mt-2 flex flex-col gap-2 px-2">
               <LocaleSwitcher />
-              <Button asChild variant="outline" className="flex-1">
-                <Link to="/connexion" onClick={() => setOpen(false)}>
-                  {t("nav.login")}
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link to={myLink} onClick={() => setOpen(false)}>{myLabel}</Link>
+                  </Button>
+                  <Button variant="ghost" onClick={() => { signOut(); setOpen(false); }}>
+                    Se déconnecter
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link to="/connexion" onClick={() => setOpen(false)}>{t("nav.login")}</Link>
+                  </Button>
+                  <Button asChild className="flex-1">
+                    <Link to="/inscription" onClick={() => setOpen(false)}>Créer un compte</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>
