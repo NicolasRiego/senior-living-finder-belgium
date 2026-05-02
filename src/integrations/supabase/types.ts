@@ -1005,6 +1005,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      promote_email_to_admin: { Args: { _email: string }; Returns: undefined }
       reject_residence: {
         Args: { _reason: string; _residence_id: string }
         Returns: undefined
