@@ -1,14 +1,18 @@
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, Heart } from "lucide-react";
+import { Menu, X, Heart, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/modules/auth/AuthProvider";
 
 export function Header() {
   const { t } = useI18n();
+  const { user, isPartner, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const myLink = isPartner ? "/partenaire" : "/mon-espace";
+  const myLabel = isPartner ? "Espace partenaire" : "Mon espace";
 
   const links = [
     { to: "/", label: t("nav.home"), end: true },
@@ -50,9 +54,25 @@ export function Header() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <LocaleSwitcher />
-          <Button asChild variant="outline" size="default">
-            <Link to="/connexion">{t("nav.login")}</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button asChild variant="outline">
+                <Link to={myLink}><User className="h-4 w-4 mr-2" /> {myLabel}</Link>
+              </Button>
+              <Button variant="ghost" size="icon" onClick={signOut} aria-label="Se déconnecter">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost">
+                <Link to="/connexion">{t("nav.login")}</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/inscription">Créer un compte</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -84,13 +104,27 @@ export function Header() {
                 {l.label}
               </NavLink>
             ))}
-            <div className="mt-2 flex items-center justify-between gap-3 px-2">
+            <div className="mt-2 flex flex-col gap-2 px-2">
               <LocaleSwitcher />
-              <Button asChild variant="outline" className="flex-1">
-                <Link to="/connexion" onClick={() => setOpen(false)}>
-                  {t("nav.login")}
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link to={myLink} onClick={() => setOpen(false)}>{myLabel}</Link>
+                  </Button>
+                  <Button variant="ghost" onClick={() => { signOut(); setOpen(false); }}>
+                    Se déconnecter
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button asChild variant="outline" className="flex-1">
+                    <Link to="/connexion" onClick={() => setOpen(false)}>{t("nav.login")}</Link>
+                  </Button>
+                  <Button asChild className="flex-1">
+                    <Link to="/inscription" onClick={() => setOpen(false)}>Créer un compte</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>

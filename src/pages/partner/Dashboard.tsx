@@ -6,8 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Building2 } from "lucide-react";
+import { Plus, Building2, Eye, MousePointerClick, Mail, Heart } from "lucide-react";
 import { toast } from "sonner";
+
+type Stats = {
+  views_30d: number;
+  clicks_phone_30d: number;
+  clicks_email_30d: number;
+  clicks_website_30d: number;
+  clicks_contact_30d: number;
+  leads_30d: number;
+  favorites_total: number;
+};
 
 type Row = {
   id: string;
@@ -17,6 +27,7 @@ type Row = {
   type_etablissement: string;
   org_id: string;
   completeness: number;
+  stats: Stats;
 };
 
 const statusLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -43,10 +54,22 @@ export default function PartnerDashboard() {
     if (error) toast.error(error.message);
 
     const list = residences ?? [];
+    const emptyStats: Stats = {
+      views_30d: 0, clicks_phone_30d: 0, clicks_email_30d: 0,
+      clicks_website_30d: 0, clicks_contact_30d: 0, leads_30d: 0, favorites_total: 0,
+    };
     const withScore: Row[] = await Promise.all(
       list.map(async (r) => {
-        const { data: c } = await supabase.rpc("residence_completeness", { _residence_id: r.id });
-        return { ...r, completeness: (c as number) ?? 0 };
+        const [{ data: c }, { data: s }] = await Promise.all([
+          supabase.rpc("residence_completeness", { _residence_id: r.id }),
+          (supabase.from("residence_stats_30d" as any) as any)
+            .select("*").eq("residence_id", r.id).maybeSingle(),
+        ]);
+        return {
+          ...r,
+          completeness: (c as number) ?? 0,
+          stats: (s as Stats) ?? emptyStats,
+        };
       }),
     );
     setRows(withScore);
@@ -125,7 +148,7 @@ export default function PartnerDashboard() {
                   </div>
                   <Badge variant={meta.variant}>{meta.label}</Badge>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-5">
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex justify-between text-sm mb-1">
@@ -138,12 +161,37 @@ export default function PartnerDashboard() {
                       <Link to={`/partenaire/residences/${r.id}/edition`}>Éditer</Link>
                     </Button>
                   </div>
+
+                  {r.status === "published" && (
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-2">
+                        Statistiques (30 derniers jours)
+                      </p>
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <StatTile icon={<Eye className="h-4 w-4" />} label="Vues fiche" value={r.stats.views_30d} />
+                        <StatTile icon={<MousePointerClick className="h-4 w-4" />} label="Clics contact" value={r.stats.clicks_contact_30d + r.stats.clicks_phone_30d + r.stats.clicks_email_30d} />
+                        <StatTile icon={<Mail className="h-4 w-4" />} label="Demandes" value={r.stats.leads_30d} />
+                        <StatTile icon={<Heart className="h-4 w-4" />} label="Favoris" value={r.stats.favorites_total} />
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+function StatTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+  return (
+    <div className="rounded-lg border bg-muted/30 p-3">
+      <div className="flex items-center gap-2 text-muted-foreground text-xs">
+        {icon} {label}
+      </div>
+      <div className="mt-1 text-2xl font-display font-semibold">{value}</div>
     </div>
   );
 }
