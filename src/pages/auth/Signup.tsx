@@ -74,6 +74,7 @@ function ChoiceScreen({ onSelect }: { onSelect: (t: AccountType) => void }) {
 }
 
 function SignupForm({ type, onBack, onDone }: { type: AccountType; onBack: () => void; onDone: () => void }) {
+  const nav = useNavigate();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -104,7 +105,14 @@ function SignupForm({ type, onBack, onDone }: { type: AccountType; onBack: () =>
     });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      const msg = error.message?.toLowerCase() || "";
+      if (msg.includes("already") || msg.includes("registered") || (error as any).code === "user_already_exists") {
+        toast.error("Cet e-mail est déjà utilisé. Connectez-vous plutôt.", {
+          action: { label: "Se connecter", onClick: () => nav(`/connexion?email=${encodeURIComponent(email.trim())}`) },
+        });
+      } else {
+        toast.error(error.message);
+      }
       return;
     }
     toast.success("Compte créé ! Vous êtes connecté.");
