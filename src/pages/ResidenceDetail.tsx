@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, BadgeCheck, Accessibility, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { getResidenceFullBySlug } from "@/modules/residences/publicApi";
 import { trackResidenceEvent } from "@/modules/analytics/track";
-import { supabase } from "@/integrations/supabase/client";
+import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
 
-type CTAType = "brochure" | "visit" | "callback";
 
 export default function ResidenceDetailPage() {
   const { t } = useI18n();
