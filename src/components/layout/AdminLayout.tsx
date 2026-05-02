@@ -2,13 +2,15 @@ import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ListChecks, ScrollText, LogOut, Home } from "lucide-react";
+import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { APP_VERSION } from "@/lib/version";
 
 const items = [
   { to: "/admin/validation", label: "Validation", icon: ListChecks },
   { to: "/admin/residences", label: "Résidences", icon: ShieldCheck },
   { to: "/admin/audit", label: "Journal", icon: ScrollText },
+  { to: "/admin/deploiements", label: "Déploiements", icon: Rocket },
 ];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
@@ -70,6 +72,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
       </header>
       <main className="container py-8">{children}</main>
+      <footer className="border-t bg-card/50 py-4 text-center text-xs text-muted-foreground">
+        Version <span className="font-mono">{APP_VERSION}</span>
+      </footer>
     </div>
   );
 }
