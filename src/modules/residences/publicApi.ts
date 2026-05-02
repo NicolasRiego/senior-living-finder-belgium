@@ -87,6 +87,7 @@ export async function searchResidences(filters: SearchFilters) {
 
 export async function getCoverUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
+  if (/^https?:\/\//i.test(path)) return path; // demo / external URLs
   const { data } = await supabase.storage.from("residence-photos").createSignedUrl(path, 3600);
   return data?.signedUrl ?? null;
 }
@@ -132,14 +133,20 @@ export async function getResidenceFullBySlug(slug: string) {
     const p = await supabase.from("pricing").select("*").in("unit_type_id", unitIds);
     pricing = p.data ?? [];
   }
-  // Sign photo URLs
+  // Sign photo URLs (or pass through external/demo URLs)
   const photoUrls: { id: string; url: string; alt: string; category: string; cover: boolean }[] = [];
   for (const ph of photos.data ?? []) {
-    const { data: signed } = await supabase.storage.from("residence-photos").createSignedUrl(ph.storage_path, 3600);
-    if (signed?.signedUrl) {
+    let url: string | null = null;
+    if (/^https?:\/\//i.test(ph.storage_path)) {
+      url = ph.storage_path;
+    } else {
+      const { data: signed } = await supabase.storage.from("residence-photos").createSignedUrl(ph.storage_path, 3600);
+      url = signed?.signedUrl ?? null;
+    }
+    if (url) {
       photoUrls.push({
         id: ph.id,
-        url: signed.signedUrl,
+        url,
         alt: ph.alt_text ?? "",
         category: ph.category,
         cover: ph.category === "cover",

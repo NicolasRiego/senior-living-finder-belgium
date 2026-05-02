@@ -221,6 +221,7 @@ export type Database = {
           created_at: string
           for_whom: string | null
           id: string
+          is_demo: boolean
           message: string | null
           region_target: string | null
           residence_id: string
@@ -243,6 +244,7 @@ export type Database = {
           created_at?: string
           for_whom?: string | null
           id?: string
+          is_demo?: boolean
           message?: string | null
           region_target?: string | null
           residence_id: string
@@ -265,6 +267,7 @@ export type Database = {
           created_at?: string
           for_whom?: string | null
           id?: string
+          is_demo?: boolean
           message?: string | null
           region_target?: string | null
           residence_id?: string
@@ -831,6 +834,7 @@ export type Database = {
           description_fr: string | null
           description_nl: string | null
           id: string
+          is_demo: boolean
           latitude: number | null
           longitude: number | null
           nom_fr: string
@@ -862,6 +866,7 @@ export type Database = {
           description_fr?: string | null
           description_nl?: string | null
           id?: string
+          is_demo?: boolean
           latitude?: number | null
           longitude?: number | null
           nom_fr: string
@@ -893,6 +898,7 @@ export type Database = {
           description_fr?: string | null
           description_nl?: string | null
           id?: string
+          is_demo?: boolean
           latitude?: number | null
           longitude?: number | null
           nom_fr?: string
@@ -1187,6 +1193,7 @@ export type Database = {
         }
         Returns: string
       }
+      ensure_demo_org: { Args: never; Returns: string }
       export_my_data: { Args: never; Returns: Json }
       has_role: {
         Args: {
@@ -1202,6 +1209,7 @@ export type Database = {
       }
       log_lead_view: { Args: { _lead_id: string }; Returns: undefined }
       promote_email_to_admin: { Args: { _email: string }; Returns: undefined }
+      purge_demo_data: { Args: never; Returns: Json }
       purge_old_leads: { Args: { _months?: number }; Returns: number }
       reject_residence: {
         Args: { _reason: string; _residence_id: string }
@@ -1219,6 +1227,7 @@ export type Database = {
         Args: { _version_id: string }
         Returns: undefined
       }
+      seed_demo_data: { Args: never; Returns: Json }
       snapshot_residence: {
         Args: { _actor: string; _reason: string; _residence_id: string }
         Returns: undefined

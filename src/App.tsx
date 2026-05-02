@@ -34,6 +34,7 @@ import AdminResidences from "./pages/admin/AdminResidences";
 import AdminVersions from "./pages/admin/AdminVersions";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import AdminDeployHistory from "./pages/admin/AdminDeployHistory";
+import AdminDemo from "./pages/admin/AdminDemo";
 import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
@@ -124,6 +125,10 @@ const App = () => (
                   <Route
                     path="/admin/deploiements"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminDeployHistory /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/demo"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminDemo /></AdminLayout></RequireAuth>}
                   />
 
                   <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
