@@ -14,9 +14,11 @@ import { supabase } from "@/integrations/supabase/client";
 const STATUSES = [
   { value: "new", label: "Nouveau", color: "bg-primary text-primary-foreground" },
   { value: "contacted", label: "Contacté", color: "bg-blue-100 text-blue-900" },
+  { value: "qualified", label: "Qualifié", color: "bg-indigo-100 text-indigo-900" },
   { value: "visit_scheduled", label: "Visite planifiée", color: "bg-amber-100 text-amber-900" },
-  { value: "not_qualified", label: "Non qualifié", color: "bg-muted text-muted-foreground" },
-  { value: "closed", label: "Clôturé", color: "bg-green-100 text-green-900" },
+  { value: "visit_done", label: "Visite réalisée", color: "bg-amber-200 text-amber-900" },
+  { value: "won", label: "Clôturé (gagné)", color: "bg-green-100 text-green-900" },
+  { value: "lost", label: "Non qualifié", color: "bg-muted text-muted-foreground" },
 ] as const;
 
 type StatusValue = (typeof STATUSES)[number]["value"];
@@ -236,7 +238,7 @@ function LeadDetailDialog({ lead, onClose }: { lead: LeadRow | null; onClose: ()
   // Log access on open
   useEffect(() => {
     if (lead?.id) {
-      supabase.rpc("log_lead_view", { _lead_id: lead.id }).catch(() => { /* ignore */ });
+      void supabase.rpc("log_lead_view", { _lead_id: lead.id });
     }
   }, [lead?.id]);
 
