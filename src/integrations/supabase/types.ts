@@ -97,6 +97,36 @@ export type Database = {
           },
         ]
       }
+      app_versions: {
+        Row: {
+          commit_sha: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          released_at: string
+          version: string
+        }
+        Insert: {
+          commit_sha?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          released_at?: string
+          version: string
+        }
+        Update: {
+          commit_sha?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          released_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string

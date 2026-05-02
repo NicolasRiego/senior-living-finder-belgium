@@ -11,6 +11,8 @@ type Ctx = {
   locale: Locale;
   setLocale: (l: Locale) => void;
   t: (path: string, vars?: Record<string, string | number>) => string;
+  /** Returns the localized value for a fr/nl pair, falling back to the other locale or empty string. */
+  tr: (fr: string | null | undefined, nl: string | null | undefined) => string;
 };
 
 const I18nContext = createContext<Ctx | null>(null);
@@ -49,8 +51,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return str;
   };
 
+  const tr = (frVal: string | null | undefined, nlVal: string | null | undefined): string => {
+    if (locale === "nl") return (nlVal ?? frVal ?? "") as string;
+    return (frVal ?? nlVal ?? "") as string;
+  };
+
   return (
-    <I18nContext.Provider value={{ locale, setLocale: setLocaleState, t }}>
+    <I18nContext.Provider value={{ locale, setLocale: setLocaleState, t, tr }}>
       {children}
     </I18nContext.Provider>
   );

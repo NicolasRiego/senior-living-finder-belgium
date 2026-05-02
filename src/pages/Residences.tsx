@@ -27,7 +27,7 @@ function paramOr<T extends string>(sp: URLSearchParams, k: string, fallback?: T)
 }
 
 export default function ResidencesPage() {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const [sp, setSp] = useSearchParams();
 
   const filters: SearchFilters = useMemo(() => ({
@@ -212,7 +212,7 @@ export default function ResidencesPage() {
                             updateParam({ services: next });
                           }}
                         />
-                        {s.label_fr}
+                        {tr(s.label_fr, s.label_nl)}
                       </label>
                     );
                   })}
@@ -316,10 +316,12 @@ export default function ResidencesPage() {
 }
 
 function PublicResidenceCard({ row }: { row: SearchRow }) {
-  const { t } = useI18n();
+  const { t, tr } = useI18n();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const { has, toggle, isFull } = useCompare();
   const inCompare = has(row.id);
+  const name = tr(row.nom_fr, row.nom_nl);
+  const tagline = tr(row.tagline_fr, row.tagline_nl);
 
   useEffect(() => {
     let active = true;
@@ -337,7 +339,7 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
         {coverUrl ? (
           <img
             src={coverUrl}
-            alt={row.nom_fr}
+            alt={name}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -358,15 +360,15 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
 
       <div className="flex flex-1 flex-col p-6">
         <h3 className="font-display text-xl font-semibold leading-tight">
-          <Link to={`/residences/${row.slug}`} className="hover:text-primary">{row.nom_fr}</Link>
+          <Link to={`/residences/${row.slug}`} className="hover:text-primary">{name}</Link>
         </h3>
         {(row.ville || row.region) && (
           <div className="mt-2 flex items-center gap-1.5 text-base text-muted-foreground">
             <MapPin className="h-4 w-4" /> {[row.ville, row.region].filter(Boolean).join(" · ")}
           </div>
         )}
-        {row.tagline_fr && (
-          <p className="mt-3 line-clamp-2 text-base text-muted-foreground">{row.tagline_fr}</p>
+        {tagline && (
+          <p className="mt-3 line-clamp-2 text-base text-muted-foreground">{tagline}</p>
         )}
 
         <div className="mt-3 flex flex-wrap gap-1.5">
