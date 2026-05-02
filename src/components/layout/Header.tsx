@@ -54,9 +54,25 @@ export function Header() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <LocaleSwitcher />
-          <Button asChild variant="outline" size="default">
-            <Link to="/connexion">{t("nav.login")}</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button asChild variant="outline">
+                <Link to={myLink}><User className="h-4 w-4 mr-2" /> {myLabel}</Link>
+              </Button>
+              <Button variant="ghost" size="icon" onClick={signOut} aria-label="Se déconnecter">
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost">
+                <Link to="/connexion">{t("nav.login")}</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/inscription">Créer un compte</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
