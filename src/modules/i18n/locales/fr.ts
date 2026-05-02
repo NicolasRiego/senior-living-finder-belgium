@@ -1,3 +1,5 @@
+export type DeepStringDict = { [k: string]: string | DeepStringDict };
+
 export const fr = {
   brand: {
     name: "SereniaCare",
