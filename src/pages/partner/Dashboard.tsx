@@ -6,8 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Building2 } from "lucide-react";
+import { Plus, Building2, Eye, MousePointerClick, Mail, Heart } from "lucide-react";
 import { toast } from "sonner";
+
+type Stats = {
+  views_30d: number;
+  clicks_phone_30d: number;
+  clicks_email_30d: number;
+  clicks_website_30d: number;
+  clicks_contact_30d: number;
+  leads_30d: number;
+  favorites_total: number;
+};
 
 type Row = {
   id: string;
@@ -17,6 +27,7 @@ type Row = {
   type_etablissement: string;
   org_id: string;
   completeness: number;
+  stats: Stats;
 };
 
 const statusLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
