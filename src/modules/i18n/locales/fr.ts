@@ -121,6 +121,6 @@ export const fr = {
     title: "Page introuvable",
     body: "La page que vous cherchez n'existe pas ou a été déplacée.",
   },
-} as const;
+};
 
 export type Dict = typeof fr;
