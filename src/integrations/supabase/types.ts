@@ -185,6 +185,45 @@ export type Database = {
           },
         ]
       }
+      org_invitations: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          expires_at: string
+          id: string
+          org_id: string
+          role_in_org: Database["public"]["Enums"]["org_role"]
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          expires_at?: string
+          id?: string
+          org_id: string
+          role_in_org?: Database["public"]["Enums"]["org_role"]
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          expires_at?: string
+          id?: string
+          org_id?: string
+          role_in_org?: Database["public"]["Enums"]["org_role"]
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       org_members: {
         Row: {
           created_at: string
@@ -776,9 +815,20 @@ export type Database = {
       }
     }
     Functions: {
+      accept_org_invitation: { Args: { _code: string }; Returns: string }
+      approve_residence: { Args: { _residence_id: string }; Returns: undefined }
       can_manage_residence: {
         Args: { _residence_id: string; _user_id: string }
         Returns: boolean
+      }
+      create_organization_with_owner: {
+        Args: {
+          _contact_email: string
+          _contact_phone: string
+          _name: string
+          _slug: string
+        }
+        Returns: string
       }
       has_role: {
         Args: {
@@ -792,6 +842,14 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      reject_residence: {
+        Args: { _reason: string; _residence_id: string }
+        Returns: undefined
+      }
+      residence_completeness: {
+        Args: { _residence_id: string }
+        Returns: number
+      }
       residence_is_published: {
         Args: { _residence_id: string }
         Returns: boolean
@@ -801,6 +859,7 @@ export type Database = {
         Returns: undefined
       }
       storage_residence_id: { Args: { _name: string }; Returns: string }
+      submit_residence: { Args: { _residence_id: string }; Returns: undefined }
       unit_type_residence: { Args: { _unit_type_id: string }; Returns: string }
       user_org_ids: { Args: { _user_id: string }; Returns: string[] }
     }
