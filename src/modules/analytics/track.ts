@@ -1,6 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
-type EventType = "view" | "click_phone" | "click_email" | "click_website" | "click_contact";
+type EventType =
+  | "view"
+  | "click_phone"
+  | "click_email"
+  | "click_website"
+  | "click_contact"
+  | "lead_brochure"
+  | "lead_visit"
+  | "lead_callback";
 
 const SESSION_KEY = "sc_session_id";
 function getSessionId() {

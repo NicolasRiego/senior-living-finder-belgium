@@ -71,6 +71,13 @@ export type Database = {
             foreignKeyName: "admin_notes_residence_id_fkey"
             columns: ["residence_id"]
             isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_notes_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
             referencedRelation: "residence_stats_30d"
             referencedColumns: ["residence_id"]
           },
@@ -140,6 +147,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "favorites_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "favorites_residence_id_fkey"
             columns: ["residence_id"]
@@ -219,6 +233,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "leads_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "leads_residence_id_fkey"
             columns: ["residence_id"]
@@ -382,6 +403,13 @@ export type Database = {
             foreignKeyName: "photos_residence_id_fkey"
             columns: ["residence_id"]
             isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photos_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
             referencedRelation: "residence_stats_30d"
             referencedColumns: ["residence_id"]
           },
@@ -527,6 +555,13 @@ export type Database = {
             foreignKeyName: "residence_activities_residence_id_fkey"
             columns: ["residence_id"]
             isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "residence_activities_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
             referencedRelation: "residence_stats_30d"
             referencedColumns: ["residence_id"]
           },
@@ -578,6 +613,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "residence_events_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "residence_events_residence_id_fkey"
             columns: ["residence_id"]
@@ -643,6 +685,13 @@ export type Database = {
             foreignKeyName: "residence_services_residence_id_fkey"
             columns: ["residence_id"]
             isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "residence_services_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
             referencedRelation: "residence_stats_30d"
             referencedColumns: ["residence_id"]
           },
@@ -698,6 +747,13 @@ export type Database = {
           version_number?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "residence_versions_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "residence_versions_residence_id_fkey"
             columns: ["residence_id"]
@@ -903,6 +959,13 @@ export type Database = {
             foreignKeyName: "unit_types_residence_id_fkey"
             columns: ["residence_id"]
             isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unit_types_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
             referencedRelation: "residence_stats_30d"
             referencedColumns: ["residence_id"]
           },
@@ -945,6 +1008,90 @@ export type Database = {
       }
     }
     Views: {
+      residence_search_view: {
+        Row: {
+          adresse: string | null
+          capacity: number | null
+          code_postal: string | null
+          completeness: number | null
+          cover_path: string | null
+          has_availability: boolean | null
+          id: string | null
+          included_service_codes: string[] | null
+          is_complete: boolean | null
+          is_pmr: boolean | null
+          nom_fr: string | null
+          nom_nl: string | null
+          price_from: number | null
+          province: string | null
+          published_at: string | null
+          region: string | null
+          rent_from: number | null
+          slug: string | null
+          status: Database["public"]["Enums"]["publication_status"] | null
+          tagline_fr: string | null
+          tagline_nl: string | null
+          type_etablissement:
+            | Database["public"]["Enums"]["establishment_type"]
+            | null
+          ville: string | null
+        }
+        Insert: {
+          adresse?: string | null
+          capacity?: number | null
+          code_postal?: string | null
+          completeness?: never
+          cover_path?: never
+          has_availability?: never
+          id?: string | null
+          included_service_codes?: never
+          is_complete?: never
+          is_pmr?: never
+          nom_fr?: string | null
+          nom_nl?: string | null
+          price_from?: never
+          province?: string | null
+          published_at?: string | null
+          region?: string | null
+          rent_from?: never
+          slug?: string | null
+          status?: Database["public"]["Enums"]["publication_status"] | null
+          tagline_fr?: string | null
+          tagline_nl?: string | null
+          type_etablissement?:
+            | Database["public"]["Enums"]["establishment_type"]
+            | null
+          ville?: string | null
+        }
+        Update: {
+          adresse?: string | null
+          capacity?: number | null
+          code_postal?: string | null
+          completeness?: never
+          cover_path?: never
+          has_availability?: never
+          id?: string | null
+          included_service_codes?: never
+          is_complete?: never
+          is_pmr?: never
+          nom_fr?: string | null
+          nom_nl?: string | null
+          price_from?: never
+          province?: string | null
+          published_at?: string | null
+          region?: string | null
+          rent_from?: never
+          slug?: string | null
+          status?: Database["public"]["Enums"]["publication_status"] | null
+          tagline_fr?: string | null
+          tagline_nl?: string | null
+          type_etablissement?:
+            | Database["public"]["Enums"]["establishment_type"]
+            | null
+          ville?: string | null
+        }
+        Relationships: []
+      }
       residence_stats_30d: {
         Row: {
           clicks_contact_30d: number | null
