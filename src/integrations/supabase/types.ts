@@ -980,6 +980,10 @@ export type Database = {
     Functions: {
       accept_org_invitation: { Args: { _code: string }; Returns: string }
       approve_residence: { Args: { _residence_id: string }; Returns: undefined }
+      archive_residence: {
+        Args: { _reason?: string; _residence_id: string }
+        Returns: undefined
+      }
       can_manage_residence: {
         Args: { _residence_id: string; _user_id: string }
         Returns: boolean
@@ -1018,12 +1022,20 @@ export type Database = {
         Args: { _residence_id: string }
         Returns: boolean
       }
+      restore_residence_version: {
+        Args: { _version_id: string }
+        Returns: undefined
+      }
       snapshot_residence: {
         Args: { _actor: string; _reason: string; _residence_id: string }
         Returns: undefined
       }
       storage_residence_id: { Args: { _name: string }; Returns: string }
       submit_residence: { Args: { _residence_id: string }; Returns: undefined }
+      unarchive_residence: {
+        Args: { _residence_id: string }
+        Returns: undefined
+      }
       unit_type_residence: { Args: { _unit_type_id: string }; Returns: string }
       user_org_ids: { Args: { _user_id: string }; Returns: string[] }
     }
