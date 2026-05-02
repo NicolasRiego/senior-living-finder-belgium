@@ -54,10 +54,22 @@ export default function PartnerDashboard() {
     if (error) toast.error(error.message);
 
     const list = residences ?? [];
+    const emptyStats: Stats = {
+      views_30d: 0, clicks_phone_30d: 0, clicks_email_30d: 0,
+      clicks_website_30d: 0, clicks_contact_30d: 0, leads_30d: 0, favorites_total: 0,
+    };
     const withScore: Row[] = await Promise.all(
       list.map(async (r) => {
-        const { data: c } = await supabase.rpc("residence_completeness", { _residence_id: r.id });
-        return { ...r, completeness: (c as number) ?? 0 };
+        const [{ data: c }, { data: s }] = await Promise.all([
+          supabase.rpc("residence_completeness", { _residence_id: r.id }),
+          (supabase.from("residence_stats_30d" as any) as any)
+            .select("*").eq("residence_id", r.id).maybeSingle(),
+        ]);
+        return {
+          ...r,
+          completeness: (c as number) ?? 0,
+          stats: (s as Stats) ?? emptyStats,
+        };
       }),
     );
     setRows(withScore);
