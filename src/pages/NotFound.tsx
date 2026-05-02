@@ -1,21 +1,18 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useI18n } from "@/modules/i18n/I18nProvider";
 
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
-
+  const { t } = useI18n();
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
+    <div className="flex min-h-[60vh] items-center justify-center px-6 py-20 text-center">
+      <div className="max-w-md">
+        <p className="font-display text-7xl font-semibold text-primary">404</p>
+        <h1 className="mt-4 font-display text-3xl font-semibold">{t("notFound.title")}</h1>
+        <p className="mt-3 text-lg text-muted-foreground">{t("notFound.body")}</p>
+        <Button asChild variant="hero" size="lg" className="mt-8">
+          <Link to="/">{t("common.backHome")}</Link>
+        </Button>
       </div>
     </div>
   );
