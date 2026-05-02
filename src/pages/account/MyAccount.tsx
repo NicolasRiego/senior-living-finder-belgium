@@ -5,7 +5,7 @@ import { useAuth } from "@/modules/auth/AuthProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Mail, Building2, ShieldCheck } from "lucide-react";
+import { Heart, Mail, Building2, ShieldCheck, Shield } from "lucide-react";
 
 type FavRow = { residence_id: string; residences: { nom_fr: string; ville: string | null; slug: string } | null };
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
@@ -45,6 +45,11 @@ export default function MyAccountPage() {
           <p className="text-lg text-muted-foreground">Bonjour {user?.email}</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline">
+            <Link to="/mon-espace/donnees">
+              <Shield className="h-4 w-4 mr-2" /> Mes données (RGPD)
+            </Link>
+          </Button>
           {isAdmin && (
             <Button asChild>
               <Link to="/admin/validation">
