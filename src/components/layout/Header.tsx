@@ -1,14 +1,18 @@
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, Heart } from "lucide-react";
+import { Menu, X, Heart, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/modules/auth/AuthProvider";
 
 export function Header() {
   const { t } = useI18n();
+  const { user, isPartner, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const myLink = isPartner ? "/partenaire" : "/mon-espace";
+  const myLabel = isPartner ? "Espace partenaire" : "Mon espace";
 
   const links = [
     { to: "/", label: t("nav.home"), end: true },
