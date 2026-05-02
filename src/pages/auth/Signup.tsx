@@ -74,6 +74,7 @@ function ChoiceScreen({ onSelect }: { onSelect: (t: AccountType) => void }) {
 }
 
 function SignupForm({ type, onBack, onDone }: { type: AccountType; onBack: () => void; onDone: () => void }) {
+  const nav = useNavigate();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
