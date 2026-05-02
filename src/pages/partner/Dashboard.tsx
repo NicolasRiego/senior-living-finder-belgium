@@ -148,7 +148,7 @@ export default function PartnerDashboard() {
                   </div>
                   <Badge variant={meta.variant}>{meta.label}</Badge>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-5">
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex justify-between text-sm mb-1">
@@ -161,6 +161,20 @@ export default function PartnerDashboard() {
                       <Link to={`/partenaire/residences/${r.id}/edition`}>Éditer</Link>
                     </Button>
                   </div>
+
+                  {r.status === "published" && (
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-2">
+                        Statistiques (30 derniers jours)
+                      </p>
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <StatTile icon={<Eye className="h-4 w-4" />} label="Vues fiche" value={r.stats.views_30d} />
+                        <StatTile icon={<MousePointerClick className="h-4 w-4" />} label="Clics contact" value={r.stats.clicks_contact_30d + r.stats.clicks_phone_30d + r.stats.clicks_email_30d} />
+                        <StatTile icon={<Mail className="h-4 w-4" />} label="Demandes" value={r.stats.leads_30d} />
+                        <StatTile icon={<Heart className="h-4 w-4" />} label="Favoris" value={r.stats.favorites_total} />
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );
