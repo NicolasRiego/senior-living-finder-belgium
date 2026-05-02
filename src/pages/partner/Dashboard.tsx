@@ -184,3 +184,14 @@ export default function PartnerDashboard() {
     </div>
   );
 }
+
+function StatTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: number }) {
+  return (
+    <div className="rounded-lg border bg-muted/30 p-3">
+      <div className="flex items-center gap-2 text-muted-foreground text-xs">
+        {icon} {label}
+      </div>
+      <div className="mt-1 text-2xl font-display font-semibold">{value}</div>
+    </div>
+  );
+}
