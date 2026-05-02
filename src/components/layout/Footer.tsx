@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import { Heart, Mail, MapPin } from "lucide-react";
 import { useI18n } from "@/modules/i18n/I18nProvider";
+import { useAuth } from "@/modules/auth/AuthProvider";
+import { APP_VERSION } from "@/lib/version";
 
 export function Footer() {
   const { t } = useI18n();
+  const { isAdmin } = useAuth();
   const year = new Date().getFullYear();
 
   return (
@@ -48,8 +51,11 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60">
-        <div className="container py-6 text-sm text-muted-foreground">
-          © {year} {t("brand.name")}. {t("footer.rights")}
+        <div className="container flex flex-wrap items-center justify-between gap-2 py-6 text-sm text-muted-foreground">
+          <span>© {year} {t("brand.name")}. {t("footer.rights")}</span>
+          {isAdmin && (
+            <span className="font-mono text-xs">v{APP_VERSION}</span>
+          )}
         </div>
       </div>
     </footer>
