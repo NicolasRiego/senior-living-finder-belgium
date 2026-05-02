@@ -95,7 +95,19 @@ const App = () => (
                   {/* Admin */}
                   <Route
                     path="/admin/validation"
-                    element={<RequireAuth requireAdmin><AdminValidation /></RequireAuth>}
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminValidation /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/residences"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminResidences /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/residences/:id/versions"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminVersions /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/audit"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminAuditLog /></AdminLayout></RequireAuth>}
                   />
 
                   <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
