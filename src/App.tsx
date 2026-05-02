@@ -56,6 +56,8 @@ const App = () => (
                     <Route path="/conseils" element={<AdvicePage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/connexion" element={<LoginPage />} />
+                    <Route path="/inscription" element={<SignupPage />} />
+                    <Route path="/mon-espace" element={<RequireAuth><MyAccountPage /></RequireAuth>} />
                   </Route>
 
                   {/* Partner onboarding (auth, no layout) */}
