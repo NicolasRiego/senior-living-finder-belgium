@@ -28,6 +28,10 @@ import PartnerDashboard from "./pages/partner/Dashboard";
 import ResidenceEditor from "./pages/partner/ResidenceEditor";
 import ResidencePreview from "./pages/partner/ResidencePreview";
 import AdminValidation from "./pages/admin/AdminValidation";
+import AdminResidences from "./pages/admin/AdminResidences";
+import AdminVersions from "./pages/admin/AdminVersions";
+import AdminAuditLog from "./pages/admin/AdminAuditLog";
+import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
 const MAINTENANCE = import.meta.env.VITE_MAINTENANCE_MODE === "true";
@@ -91,7 +95,19 @@ const App = () => (
                   {/* Admin */}
                   <Route
                     path="/admin/validation"
-                    element={<RequireAuth requireAdmin><AdminValidation /></RequireAuth>}
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminValidation /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/residences"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminResidences /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/residences/:id/versions"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminVersions /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/audit"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminAuditLog /></AdminLayout></RequireAuth>}
                   />
 
                   <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
