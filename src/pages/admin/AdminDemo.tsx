@@ -27,7 +27,7 @@ export default function AdminDemo() {
 
   const seed = async () => {
     if (count && count > 0) {
-      if (!confirm("Des données de démo existent déjà. Ajouter 25 résidences supplémentaires ?")) return;
+      if (!confirm("Des données de démo existent déjà. Ajouter 50 résidences supplémentaires ?")) return;
     }
     setBusy("seed");
     const { data, error } = await supabase.rpc("seed_demo_data" as any);
@@ -36,7 +36,7 @@ export default function AdminDemo() {
       toast({ title: "Erreur", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Démo créée", description: `${(data as any)?.residences_created ?? 25} résidences ajoutées.` });
+    toast({ title: "Démo créée", description: `${(data as any)?.residences_created ?? 50} résidences ajoutées.` });
     refresh();
   };
 
@@ -60,7 +60,7 @@ export default function AdminDemo() {
           <Database className="h-7 w-7 text-primary" /> Données de démonstration
         </h1>
         <p className="text-muted-foreground mt-1">
-          Crée ou supprime un jeu de 25 résidences fictives à Bruxelles pour tester l'application.
+          Crée ou supprime un jeu de 50 résidences fictives en Belgique pour tester l'application.
         </p>
       </div>
 
@@ -91,7 +91,7 @@ export default function AdminDemo() {
               <Sparkles className="h-5 w-5 text-primary" /> Seed démo
             </CardTitle>
             <CardDescription>
-              Crée 25 résidences fictives avec logements, prix, services, activités et photos placeholder.
+              Crée 50 résidences fictives avec logements, prix, services, activités et photos placeholder.
             </CardDescription>
           </CardHeader>
           <CardContent>
