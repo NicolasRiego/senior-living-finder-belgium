@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Building2, Eye, MousePointerClick, Mail, Heart } from "lucide-react";
+import { Plus, Building2, Eye, MousePointerClick, Mail, Heart, Home } from "lucide-react";
 import { toast } from "sonner";
 
 type Stats = {
@@ -28,6 +28,7 @@ type Row = {
   org_id: string;
   completeness: number;
   stats: Stats;
+  apartments_count: number;
 };
 
 const statusLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -60,15 +61,17 @@ export default function PartnerDashboard() {
     };
     const withScore: Row[] = await Promise.all(
       list.map(async (r) => {
-        const [{ data: c }, { data: s }] = await Promise.all([
+        const [{ data: c }, { data: s }, { count: aptCount }] = await Promise.all([
           supabase.rpc("residence_completeness", { _residence_id: r.id }),
           (supabase.from("residence_stats_30d" as any) as any)
             .select("*").eq("residence_id", r.id).maybeSingle(),
+          supabase.from("apartments").select("id", { count: "exact", head: true }).eq("residence_id", r.id),
         ]);
         return {
           ...r,
           completeness: (c as number) ?? 0,
           stats: (s as Stats) ?? emptyStats,
+          apartments_count: aptCount ?? 0,
         };
       }),
     );
@@ -159,6 +162,18 @@ export default function PartnerDashboard() {
                     </div>
                     <Button variant="outline" asChild>
                       <Link to={`/partenaire/residences/${r.id}/edition`}>Éditer</Link>
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Home className="h-4 w-4" />
+                      {r.apartments_count} appartement{r.apartments_count > 1 ? "s" : ""}
+                    </p>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/partenaire/residences/${r.id}/appartements`}>
+                        <Home className="h-4 w-4 mr-2" /> Gérer les appartements
+                      </Link>
                     </Button>
                   </div>
 
