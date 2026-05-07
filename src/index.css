@@ -236,7 +236,11 @@
   main[data-fontsize] aside label {
     white-space: normal;
     word-break: break-word;
-  }
+  /* Wider container at large/xlarge to give more space to cards & filters */
+  main[data-fontsize="normal"] .container { max-width: 1400px; }
+  main[data-fontsize="large"] .container { max-width: 1600px; }
+  main[data-fontsize="xlarge"] .container { max-width: 1800px; }
+}
 }
 
 @layer utilities {
