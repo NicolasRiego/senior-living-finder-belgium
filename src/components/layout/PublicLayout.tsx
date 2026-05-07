@@ -11,7 +11,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <main
         id="main"
         data-fontsize={size}
-        className="flex-1 overflow-x-hidden max-w-[100vw]"
+        className="flex-1 max-w-[100vw] [overflow-x:clip]"
       >
         {children}
       </main>
