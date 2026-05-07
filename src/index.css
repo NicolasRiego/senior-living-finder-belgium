@@ -114,20 +114,76 @@
   html {
     /* Larger base size for senior accessibility */
     font-size: 17px;
+    overflow-x: hidden;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "ss01", "cv11";
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  #root {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
   h1, h2, h3, h4, h5 {
     @apply font-display font-semibold tracking-tight;
+    word-break: break-word;
+    hyphens: auto;
   }
+
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Header: never scale with the user font-size choice */
+  header[data-fixed-size="true"],
+  header[data-fixed-size="true"] * {
+    font-size: 1rem;
+  }
+  header[data-fixed-size="true"] .text-xl { font-size: 1.25rem; }
+  header[data-fixed-size="true"] .text-lg { font-size: 1.125rem; }
+  header[data-fixed-size="true"] .text-sm { font-size: 0.875rem; }
 
   /* Generous focus ring for accessibility */
   :focus-visible {
     @apply outline-none ring-4 ring-ring/40 ring-offset-2 ring-offset-background rounded-md;
+  }
+
+  /* Adaptive grids based on user font size */
+  html[data-fontsize="large"] .grid-3col,
+  html[data-fontsize="large"] .md\:grid-cols-3,
+  html[data-fontsize="large"] .lg\:grid-cols-3,
+  html[data-fontsize="large"] .xl\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html[data-fontsize="xlarge"] .grid-3col,
+  html[data-fontsize="xlarge"] .grid-cols-2,
+  html[data-fontsize="xlarge"] .md\:grid-cols-2,
+  html[data-fontsize="xlarge"] .md\:grid-cols-3,
+  html[data-fontsize="xlarge"] .lg\:grid-cols-3,
+  html[data-fontsize="xlarge"] .xl\:grid-cols-3 {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  /* Filters sidebar collapses at xlarge */
+  html[data-fontsize="xlarge"] .lg\:grid-cols-\[300px_1fr\] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  html[data-fontsize="xlarge"] aside.lg\:sticky {
+    position: static !important;
+    max-height: none !important;
   }
 }
 
