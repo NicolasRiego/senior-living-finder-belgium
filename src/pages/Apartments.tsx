@@ -126,21 +126,21 @@ export default function ApartmentsPage() {
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
-        <aside className="rounded-2xl border border-border/60 bg-card p-6 shadow-soft lg:sticky lg:top-28 lg:h-fit lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+        <aside className="rounded-2xl border border-border/60 bg-card p-4 shadow-soft lg:sticky lg:top-28 lg:h-fit lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
           <h2 className="mb-5 font-display text-xl font-semibold">Filtres</h2>
 
           <div className="space-y-5">
             {/* Transaction toggle */}
             <div>
               <label className="mb-2 block text-sm font-medium">Transaction</label>
-              <div className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-background p-1">
+              <div className="flex flex-wrap gap-1 rounded-xl border border-border bg-background p-1 tx-toggle">
                 {TX_OPTIONS.map((o) => (
                   <button
                     key={o.value}
                     type="button"
                     onClick={() => setTx(o.value)}
                     className={
-                      "rounded-lg px-2 py-2 text-sm font-medium transition " +
+                      "flex-1 min-w-[80px] whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition " +
                       (filters.tx === o.value
                         ? "bg-primary text-primary-foreground shadow-soft"
                         : "text-foreground/80 hover:bg-muted")
