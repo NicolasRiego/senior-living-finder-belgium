@@ -146,13 +146,14 @@
     height: auto;
   }
 
-  /* Header: never scale with the user font-size choice */
-  header[data-fixed-size="true"],
-  header[data-fixed-size="true"] * {
-    font-size: 1rem;
+  /* Header: never scale with the user font-size choice.
+     Anchor at 16px so all rem-based sizes (icons, paddings) stay constant. */
+  header[data-fixed-size="true"] {
+    font-size: 16px;
   }
   header[data-fixed-size="true"] .text-xl { font-size: 1.25rem; }
   header[data-fixed-size="true"] .text-lg { font-size: 1.125rem; }
+  header[data-fixed-size="true"] .text-base { font-size: 1rem; }
   header[data-fixed-size="true"] .text-sm { font-size: 0.875rem; }
 
   /* Generous focus ring for accessibility */
