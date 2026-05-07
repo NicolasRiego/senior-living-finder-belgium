@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import {
   type TxFilter,
 } from "@/modules/apartments/types";
 import { ApartmentCard } from "@/modules/apartments/ApartmentCard";
+import { ResidencePickerDialog } from "@/modules/apartments/ResidencePickerDialog";
 
 const APT_TYPES: ApartmentType[] = ["appartement", "chambre", "studio"];
 const TX_OPTIONS: { value: TxFilter; label: string; urlValue: string | null }[] = [
