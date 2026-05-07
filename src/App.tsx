@@ -14,6 +14,7 @@ import { PartnerLayout } from "@/components/layout/PartnerLayout";
 
 import HomePage from "./pages/Home";
 import ResidencesPage from "./pages/Residences";
+import ApartmentsPage from "./pages/Apartments";
 import ResidenceDetailPage from "./pages/ResidenceDetail";
 import ComparePage from "./pages/Compare";
 import AdvicePage from "./pages/Advice";
@@ -62,6 +63,7 @@ const App = () => (
                     <Route path="/" element={<HomePage />} />
                     <Route path="/residences" element={<ResidencesPage />} />
                     <Route path="/residences/:slug" element={<ResidenceDetailPage />} />
+                    <Route path="/appartements" element={<ApartmentsPage />} />
                     <Route path="/comparateur" element={<ComparePage />} />
                     <Route path="/conseils" element={<AdvicePage />} />
                     <Route path="/contact" element={<ContactPage />} />
