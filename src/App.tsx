@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/modules/i18n/I18nProvider";
 import { CompareProvider } from "@/modules/compare/CompareProvider";
 import { AuthProvider } from "@/modules/auth/AuthProvider";
+import { FontSizeProvider } from "@/modules/accessibility/FontSizeContext";
 import { RequireAuth } from "@/modules/auth/RequireAuth";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { PartnerLayout } from "@/components/layout/PartnerLayout";
@@ -43,7 +44,8 @@ const MAINTENANCE = import.meta.env.VITE_MAINTENANCE_MODE === "true";
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <I18nProvider>
-      <AuthProvider>
+      <FontSizeProvider>
+       <AuthProvider>
         <CompareProvider>
           <TooltipProvider>
             <Toaster />
@@ -137,7 +139,8 @@ const App = () => (
             </BrowserRouter>
           </TooltipProvider>
         </CompareProvider>
-      </AuthProvider>
+       </AuthProvider>
+      </FontSizeProvider>
     </I18nProvider>
   </QueryClientProvider>
 );
