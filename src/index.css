@@ -252,6 +252,21 @@
     word-break: break-word;
   }
 
+  /* Range sliders never overflow */
+  main[data-fontsize] input[type="range"] {
+    width: 100%;
+  }
+
+  /* Transaction toggle stacks vertically at large/xlarge */
+  main[data-fontsize="large"] .tx-toggle,
+  main[data-fontsize="xlarge"] .tx-toggle {
+    flex-direction: column;
+  }
+  main[data-fontsize="large"] .tx-toggle > button,
+  main[data-fontsize="xlarge"] .tx-toggle > button {
+    width: 100%;
+  }
+
   /* Wider container at large/xlarge to give more space to cards & filters */
   main[data-fontsize="normal"] .container { max-width: 1400px; }
   main[data-fontsize="large"] .container { max-width: 1600px; }
