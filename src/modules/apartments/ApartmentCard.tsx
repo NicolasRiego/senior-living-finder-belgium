@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import { MapPin, Heart, Building2, Maximize, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
-import { useFavorites } from "@/modules/favorites/useFavorites";
 import { getCoverUrl } from "./publicApi";
+import { useSavedApartments } from "./savedApartments";
 import type { ApartmentSearchRow } from "./types";
 
 const TYPE_LABEL: Record<string, string> = {
