@@ -113,7 +113,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-border/50 bg-background lg:hidden">
+        <div className="border-t border-border/50 bg-background min-[1100px]:hidden">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
               <Fragment key={l.to}>
