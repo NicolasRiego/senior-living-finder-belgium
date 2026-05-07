@@ -9,9 +9,9 @@ interface SizeOption {
 }
 
 const OPTIONS: SizeOption[] = [
-  { value: "normal", label: "A", ariaLabel: "Taille de texte normale", textClass: "text-sm" },
-  { value: "large", label: "A+", ariaLabel: "Taille de texte large", textClass: "text-base" },
-  { value: "xlarge", label: "A++", ariaLabel: "Taille de texte très large", textClass: "text-lg" },
+  { value: "normal", label: "A", ariaLabel: "Taille de texte normale", textClass: "text-base" },
+  { value: "large", label: "A+", ariaLabel: "Taille de texte large", textClass: "text-lg" },
+  { value: "xlarge", label: "A++", ariaLabel: "Taille de texte très large", textClass: "text-xl" },
 ];
 
 interface FontSizeControlsProps {
@@ -40,7 +40,7 @@ export function FontSizeControls({ className }: FontSizeControlsProps) {
             aria-label={opt.ariaLabel}
             aria-pressed={active}
             className={cn(
-              "inline-flex h-7 min-w-7 items-center justify-center whitespace-nowrap rounded-full px-1.5 font-semibold leading-none transition-colors",
+              "inline-flex h-10 min-w-10 items-center justify-center whitespace-nowrap rounded-full px-2.5 font-semibold leading-none transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               opt.textClass,
               active

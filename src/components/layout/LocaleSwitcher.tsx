@@ -10,14 +10,14 @@ export function LocaleSwitcher() {
       aria-label="Language"
       className="inline-flex items-center gap-1 rounded-full border border-border bg-background p-1"
     >
-      <Globe className="ml-1.5 h-4 w-4 text-muted-foreground" aria-hidden />
+      <Globe className="ml-2 h-5 w-5 text-muted-foreground" aria-hidden />
       {(["fr", "nl"] as Locale[]).map((l) => (
         <button
           key={l}
           onClick={() => setLocale(l)}
           aria-pressed={locale === l}
           className={
-            "rounded-full px-3 py-1.5 text-sm font-semibold uppercase transition-colors " +
+            "rounded-full px-3.5 py-2 text-base font-semibold uppercase transition-colors " +
             (locale === l
               ? "bg-primary text-primary-foreground"
               : "text-muted-foreground hover:text-foreground")
