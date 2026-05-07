@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowLeft, MapPin, Heart, Maximize, Layers, Building2,
-  CalendarDays, Check, Home,
-} from "lucide-react";
+import { ArrowLeft, MapPin, Heart, Building2, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
@@ -46,10 +43,18 @@ export default function ApartmentDetailPage() {
 
   const { apartment: a, residence: r, photos } = data;
   const residenceName = tr(r.nom_fr, r.nom_nl);
-  const aptTitle = tr(a.description_fr, a.description_nl)
-    ? `${TYPE_LABEL[a.type ?? "appartement"] ?? "Logement"} ${a.surface_m2 ? `de ${a.surface_m2} m²` : ""}`.trim()
-    : `${TYPE_LABEL[a.type ?? "appartement"] ?? "Logement"} ${a.surface_m2 ? `de ${a.surface_m2} m²` : ""}`.trim();
   const description = tr(a.description_fr, a.description_nl);
+  const typeLabel = a.type ? (TYPE_LABEL[a.type] ?? a.type) : "Logement";
+  const aptTitleBase = tr(a.title_fr, a.title_nl);
+  const aptTitle = aptTitleBase
+    ? `${aptTitleBase} — ${residenceName}`
+    : `${typeLabel} ${a.surface_m2 ? `de ${a.surface_m2} m²` : ""} — ${residenceName}`.trim();
+
+  const subtitleParts: string[] = [];
+  if (a.surface_m2) subtitleParts.push(`${a.surface_m2} m²`);
+  subtitleParts.push(typeLabel);
+  if (a.floor != null) subtitleParts.push(a.floor === 0 ? "Rez-de-chaussée" : `Étage ${a.floor}`);
+
   const isSaved = hasSaved(a.id);
   const onToggleSave = () => {
     if (isSaved) {
@@ -81,11 +86,34 @@ export default function ApartmentDetailPage() {
         <Link to="/appartements"><ArrowLeft className="h-4 w-4" /> Tous les appartements</Link>
       </Button>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
-        <div className="space-y-8">
-          {/* Galerie */}
-          <div>
-            <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
+      <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
+        <div className="space-y-8 min-w-0">
+          {/* 1 — Titre */}
+          <header className="space-y-2">
+            <h1 className="font-display font-semibold text-balance leading-tight">{aptTitle}</h1>
+            <p className="text-muted-foreground">
+              {subtitleParts.join(" · ")}
+            </p>
+            {/* 2 — Résidence + lieu (lien cliquable) */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1">
+              <Link to={`/residences/${r.slug}`} className="font-medium text-primary hover:underline">
+                {residenceName}
+              </Link>
+              {(r.ville || r.region) && (
+                <span className="inline-flex items-center gap-1 text-muted-foreground">
+                  <MapPin className="h-4 w-4 shrink-0" />
+                  {[r.ville, r.region].filter(Boolean).join(" · ")}
+                </span>
+              )}
+            </div>
+          </header>
+
+          {/* 3 — Photo principale + miniatures */}
+          <div className="mx-auto w-full" style={{ maxWidth: 860 }}>
+            <div
+              className="relative w-full overflow-hidden rounded-2xl bg-muted"
+              style={{ aspectRatio: "16 / 9", maxHeight: 420 }}
+            >
               {main ? (
                 <img src={main.url} alt={main.alt || residenceName} className="h-full w-full object-cover" />
               ) : (
@@ -93,36 +121,42 @@ export default function ApartmentDetailPage() {
                   <Building2 className="h-12 w-12" />
                 </div>
               )}
-              <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+              <div className="absolute left-3 top-3 flex flex-wrap gap-2">
                 {a.type && (
-                  <span className="badge-fixed rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">
-                    {TYPE_LABEL[a.type] ?? a.type}
+                  <span className="badge-fixed rounded-full bg-background/95 px-3 py-1 font-medium text-foreground shadow-soft">
+                    {typeLabel}
                   </span>
                 )}
                 {showSale && (
-                  <span className="badge-fixed rounded-full bg-success px-3 py-1.5 font-medium text-success-foreground shadow-soft">
+                  <span className="badge-fixed rounded-full bg-success px-3 py-1 font-medium text-success-foreground shadow-soft">
                     À vendre
                   </span>
                 )}
-                {!showSale && showRent && (
-                  <span className="badge-fixed rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
+                {showRent && (
+                  <span className="badge-fixed rounded-full bg-primary px-3 py-1 font-medium text-primary-foreground shadow-soft">
                     À louer
                   </span>
                 )}
               </div>
             </div>
             {photos.length > 1 && (
-              <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">
-                {photos.slice(0, 12).map((p, i) => (
+              <div
+                className="mt-2 flex gap-2 overflow-x-auto pb-1"
+                style={{ scrollbarWidth: "thin" }}
+              >
+                {photos.map((p, i) => (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => setActivePhoto(i)}
                     aria-label={`Photo ${i + 1}`}
                     className={
-                      "aspect-square overflow-hidden rounded-lg border-2 transition " +
-                      (i === activePhoto ? "border-primary" : "border-transparent hover:border-border")
+                      "shrink-0 overflow-hidden rounded-lg border-2 transition " +
+                      (i === activePhoto
+                        ? "border-primary opacity-100"
+                        : "border-transparent opacity-60 hover:opacity-100")
                     }
+                    style={{ height: 80, aspectRatio: "4 / 3" }}
                   >
                     <img src={p.url} alt={p.alt} className="h-full w-full object-cover" />
                   </button>
@@ -131,45 +165,17 @@ export default function ApartmentDetailPage() {
             )}
           </div>
 
-          {/* Titre + résidence + localisation */}
-          <header className="space-y-3">
-            <h1 className="font-display text-3xl font-semibold md:text-4xl text-balance">{aptTitle}</h1>
-            <p className="text-lg">
-              <Link to={`/residences/${r.slug}`} className="font-medium text-primary hover:underline">
-                {residenceName}
-              </Link>
-            </p>
-            {(r.ville || r.region) && (
-              <div className="flex items-center gap-1.5 text-base text-muted-foreground">
-                <MapPin className="h-4 w-4 shrink-0" />
-                <span>{[r.ville, r.region].filter(Boolean).join(" · ")}</span>
-              </div>
-            )}
-          </header>
-
-          {/* Infos clés */}
-          <section className="grid grid-cols-2 gap-4 rounded-2xl border border-border/60 bg-card p-6 shadow-soft md:grid-cols-4">
-            <KeyInfo icon={<Maximize className="h-5 w-5" />} label="Surface" value={a.surface_m2 ? `${a.surface_m2} m²` : "—"} />
-            <KeyInfo icon={<Layers className="h-5 w-5" />} label="Étage" value={a.floor != null ? (a.floor === 0 ? "Rez-de-chaussée" : String(a.floor)) : "—"} />
-            <KeyInfo icon={<Home className="h-5 w-5" />} label="Type" value={a.type ? (TYPE_LABEL[a.type] ?? a.type) : "—"} />
-            <KeyInfo
-              icon={<CalendarDays className="h-5 w-5" />}
-              label="Disponible"
-              value={a.available_from ? new Date(a.available_from).toLocaleDateString("fr-BE") : "Immédiatement"}
-            />
-          </section>
-
-          {/* Description */}
+          {/* 4 — Description */}
           {description && (
             <section>
-              <h2 className="mb-3 font-display text-2xl font-semibold">Description</h2>
-              <p className="whitespace-pre-line text-base leading-relaxed text-foreground/85">{description}</p>
+              <h2 className="mb-3 font-display font-semibold">Description</h2>
+              <p className="whitespace-pre-line leading-relaxed text-foreground/85">{description}</p>
             </section>
           )}
 
-          {/* Équipements */}
+          {/* 5 — Équipements */}
           <section>
-            <h2 className="mb-3 font-display text-2xl font-semibold">Équipements</h2>
+            <h2 className="mb-3 font-display font-semibold">Équipements</h2>
             <div className="flex flex-wrap gap-2">
               {APT_BOOL_FIELDS.filter((f) => a[f]).map((f) => (
                 <span
@@ -186,79 +192,49 @@ export default function ApartmentDetailPage() {
           </section>
         </div>
 
-        {/* Sidebar */}
-        <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
-          <div className="space-y-4 rounded-2xl border border-border/60 bg-card p-6 shadow-soft">
-            <div>
-              {showSale && a.sale_price != null && (
-                <div>
-                  <div className="text-sm text-muted-foreground">Prix d'achat</div>
-                  <div className="font-display text-3xl font-semibold text-primary">
-                    {a.sale_price.toLocaleString("fr-BE")} €
-                  </div>
+        {/* 6 — Encadré prix + actions */}
+        <aside
+          className="space-y-4 rounded-2xl border border-border/60 bg-card p-5 shadow-soft lg:sticky lg:top-32 lg:self-start"
+          style={{ minWidth: 240, maxWidth: 320 }}
+        >
+          <div className="space-y-3">
+            {showSale && a.sale_price != null && a.sale_price > 0 && (
+              <div>
+                <div className="text-muted-foreground">Prix d'achat</div>
+                <div className="font-display font-semibold text-primary leading-tight">
+                  {a.sale_price.toLocaleString("fr-BE")} €
                 </div>
-              )}
-              {showRent && a.rent_price != null && (
-                <div className={showSale ? "mt-3" : ""}>
-                  <div className="text-sm text-muted-foreground">Loyer mensuel</div>
-                  <div className="font-display text-3xl font-semibold text-primary">
-                    {a.rent_price.toLocaleString("fr-BE")} €<span className="text-base text-muted-foreground"> /mois</span>
-                  </div>
+              </div>
+            )}
+            {showRent && a.rent_price != null && a.rent_price > 0 && (
+              <div>
+                <div className="text-muted-foreground">Loyer mensuel</div>
+                <div className="font-display font-semibold text-primary leading-tight">
+                  {a.rent_price.toLocaleString("fr-BE")} €
+                  <span className="text-muted-foreground"> /mois</span>
                 </div>
-              )}
-              {!showSale && !showRent && (
-                <div className="text-base text-muted-foreground">Prix sur demande</div>
-              )}
-            </div>
-
-            <Button
-              type="button"
-              size="lg"
-              variant={isSaved ? "soft" : "default"}
-              className="w-full"
-              onClick={onToggleSave}
-              aria-pressed={isSaved}
-            >
-              <Heart className={"h-5 w-5 " + (isSaved ? "fill-current" : "")} />
-              {isSaved ? "Enregistré" : "Enregistrer cet appartement"}
-            </Button>
-            <Button asChild variant="outline" size="lg" className="w-full">
-              <Link to={`/residences/${r.slug}`}>Voir la résidence complète</Link>
-            </Button>
+              </div>
+            )}
+            {!(showSale && a.sale_price) && !(showRent && a.rent_price) && (
+              <div className="text-muted-foreground">Prix sur demande</div>
+            )}
           </div>
 
-          {/* Encadré résidence */}
-          <Link
-            to={`/residences/${r.slug}`}
-            className="block overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition hover:shadow-elegant"
+          <Button
+            type="button"
+            variant={isSaved ? "soft" : "default"}
+            className="w-full whitespace-normal py-3 px-4 h-auto leading-tight"
+            onClick={onToggleSave}
+            aria-pressed={isSaved}
           >
-            <div className="aspect-[16/10] bg-muted">
-              {main && <img src={main.url} alt={residenceName} className="h-full w-full object-cover" />}
-            </div>
-            <div className="p-4">
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">Résidence</div>
-              <div className="mt-1 font-display text-lg font-semibold leading-tight">{residenceName}</div>
-              {r.ville && (
-                <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                  <MapPin className="h-3.5 w-3.5" /> {r.ville}
-                </div>
-              )}
-              <span className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
-                Voir la résidence →
-              </span>
-            </div>
-          </Link>
+            <Heart className={"h-5 w-5 shrink-0 " + (isSaved ? "fill-current" : "")} />
+            <span className="text-left">{isSaved ? "Enregistré" : "Enregistrer cet appartement"}</span>
+          </Button>
+          <Button asChild variant="outline" className="w-full whitespace-normal py-3 px-4 h-auto leading-tight">
+            <Link to={`/residences/${r.slug}`}>Voir la résidence complète</Link>
+          </Button>
         </aside>
       </div>
     </article>
-  );
-}
-
-function KeyInfo({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="flex flex-col items-start gap-1">
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">{icon} {label}</div>
-      <div className="font-display text-lg font-semibold">{value}</div>
-    </div>
   );
 }
