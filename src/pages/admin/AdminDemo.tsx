@@ -4,20 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Database, Trash2, Sparkles, RefreshCw } from "lucide-react";
+import { Database, Trash2, Sparkles, RefreshCw, Home } from "lucide-react";
 
 export default function AdminDemo() {
   const [count, setCount] = useState<number | null>(null);
+  const [aptCount, setAptCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [busy, setBusy] = useState<"seed" | "purge" | null>(null);
+  const [busy, setBusy] = useState<"seed" | "purge" | "seed-apt" | "purge-apt" | null>(null);
 
   const refresh = async () => {
     setLoading(true);
-    const { count: c } = await supabase
-      .from("residences")
-      .select("*", { count: "exact", head: true })
-      .eq("is_demo", true);
+    const [{ count: c }, { count: ac }] = await Promise.all([
+      supabase.from("residences").select("*", { count: "exact", head: true }).eq("is_demo", true),
+      supabase.from("apartments").select("*", { count: "exact", head: true }).eq("is_demo", true),
+    ]);
     setCount(c ?? 0);
+    setAptCount(ac ?? 0);
     setLoading(false);
   };
 
