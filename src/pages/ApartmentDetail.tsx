@@ -8,8 +8,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
-import { useFavorites } from "@/modules/favorites/useFavorites";
 import { getApartmentById } from "@/modules/apartments/publicApi";
+import { useSavedApartments } from "@/modules/apartments/savedApartments";
 import { APT_BOOL_FIELDS, APT_BOOL_LABELS } from "@/modules/apartments/types";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -22,7 +22,7 @@ export default function ApartmentDetailPage() {
   const { tr } = useI18n();
   const { id = "" } = useParams();
   const [activePhoto, setActivePhoto] = useState(0);
-  const { has, toggle } = useFavorites();
+  const { has: hasSaved, add: addSaved, remove: removeSaved } = useSavedApartments();
 
   const { data, isLoading } = useQuery({
     queryKey: ["apartment-detail", id],
@@ -50,7 +50,26 @@ export default function ApartmentDetailPage() {
     ? `${TYPE_LABEL[a.type ?? "appartement"] ?? "Logement"} ${a.surface_m2 ? `de ${a.surface_m2} m²` : ""}`.trim()
     : `${TYPE_LABEL[a.type ?? "appartement"] ?? "Logement"} ${a.surface_m2 ? `de ${a.surface_m2} m²` : ""}`.trim();
   const description = tr(a.description_fr, a.description_nl);
-  const isFav = has(r.id);
+  const isSaved = hasSaved(a.id);
+  const onToggleSave = () => {
+    if (isSaved) {
+      removeSaved(a.id);
+    } else {
+      addSaved({
+        id: a.id,
+        residence_id: a.residence_id,
+        residence_slug: r.slug,
+        residence_nom_fr: r.nom_fr,
+        type: a.type,
+        surface_m2: a.surface_m2,
+        sale_price: a.sale_price,
+        rent_price: a.rent_price,
+        transaction_type: a.transaction_type,
+        cover_path: a.cover_path,
+        ville: r.ville,
+      });
+    }
+  };
 
   const showSale = a.transaction_type === "sale" || a.transaction_type === "both";
   const showRent = a.transaction_type === "rent" || a.transaction_type === "both";
@@ -195,13 +214,13 @@ export default function ApartmentDetailPage() {
             <Button
               type="button"
               size="lg"
-              variant={isFav ? "soft" : "default"}
+              variant={isSaved ? "soft" : "default"}
               className="w-full"
-              onClick={() => toggle(r.id)}
-              aria-pressed={isFav}
+              onClick={onToggleSave}
+              aria-pressed={isSaved}
             >
-              <Heart className={"h-5 w-5 " + (isFav ? "fill-current" : "")} />
-              {isFav ? "Enregistré dans vos favoris" : "Enregistrer cet appartement"}
+              <Heart className={"h-5 w-5 " + (isSaved ? "fill-current" : "")} />
+              {isSaved ? "Enregistré" : "Enregistrer cet appartement"}
             </Button>
             <Button asChild variant="outline" size="lg" className="w-full">
               <Link to={`/residences/${r.slug}`}>Voir la résidence complète</Link>
