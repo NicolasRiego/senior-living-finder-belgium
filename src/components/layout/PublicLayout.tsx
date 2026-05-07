@@ -1,12 +1,19 @@
 import type { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { useFontSize, FONT_SIZE_PX } from "@/modules/accessibility/FontSizeContext";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
+  const { size } = useFontSize();
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <Header />
-      <main id="main" className="flex-1">
+      <main
+        id="main"
+        data-fontsize={size}
+        style={{ fontSize: FONT_SIZE_PX[size] }}
+        className="flex-1 overflow-x-hidden max-w-[100vw]"
+      >
         {children}
       </main>
       <Footer />
