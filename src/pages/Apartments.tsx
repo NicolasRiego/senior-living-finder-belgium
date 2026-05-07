@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchApartments } from "@/modules/apartments/publicApi";
+import { listApartmentResidences, searchApartments } from "@/modules/apartments/publicApi";
 import {
   APT_BOOL_FIELDS,
   APT_BOOL_LABELS,
   type ApartmentFilters,
+  type ApartmentSort,
   type ApartmentType,
   type TxFilter,
 } from "@/modules/apartments/types";
@@ -35,6 +36,9 @@ export default function ApartmentsPage() {
 
   const filters: ApartmentFilters = useMemo(() => {
     const tx = urlToTx(sp.get("type"));
+    const residencesParam = sp.get("residences");
+    const sortParam = sp.get("sort") as ApartmentSort | null;
+    const validSorts: ApartmentSort[] = ["price_asc", "price_desc", "surface_asc", "surface_desc"];
     const f: ApartmentFilters = {
       tx,
       country: (sp.get("pays") as "BE" | "FR") || "BE",
@@ -43,6 +47,8 @@ export default function ApartmentsPage() {
       surface_min: sp.get("surface") ? Number(sp.get("surface")) : undefined,
       sale_max: sp.get("saleMax") ? Number(sp.get("saleMax")) : undefined,
       rent_max: sp.get("rentMax") ? Number(sp.get("rentMax")) : undefined,
+      residence_ids: residencesParam ? residencesParam.split(",").filter(Boolean) : undefined,
+      sort: sortParam && validSorts.includes(sortParam) ? sortParam : "price_asc",
       page: sp.get("page") ? Number(sp.get("page")) : 1,
       pageSize: 12,
     };
@@ -65,19 +71,48 @@ export default function ApartmentsPage() {
 
   const setTx = (tx: TxFilter) => {
     const opt = TX_OPTIONS.find((o) => o.value === tx)!;
-    updateParam({ type: opt.urlValue, saleMax: null, rentMax: null });
+    updateParam({ type: opt.urlValue, saleMax: null, rentMax: null, sort: "price_asc" });
   };
+
+  const setSort = (s: ApartmentSort) => updateParam({ sort: s });
+
+  const setResidenceIds = (ids: string[]) =>
+    updateParam({ residences: ids.length ? ids.join(",") : null });
 
   const search = useQuery({
     queryKey: ["apartments-search", filters],
     queryFn: () => searchApartments(filters),
   });
 
+  const residencesFacet = useQuery({
+    queryKey: ["apartments-residences-facet"],
+    queryFn: listApartmentResidences,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const [residenceQuery, setResidenceQuery] = useState("");
+  const selectedIds = filters.residence_ids ?? [];
+  const filteredResidences = useMemo(() => {
+    const list = residencesFacet.data ?? [];
+    const q = residenceQuery.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(
+      (r) => r.nom_fr.toLowerCase().includes(q) || (r.ville ?? "").toLowerCase().includes(q),
+    );
+  }, [residencesFacet.data, residenceQuery]);
+
   const total = search.data?.total ?? 0;
   const totalPages = search.data?.totalPages ?? 1;
   const page = filters.page ?? 1;
   const showSaleSlider = filters.tx === "sale" || filters.tx === "all";
   const showRentSlider = filters.tx === "rent" || filters.tx === "all";
+  const isSaleMode = filters.tx === "sale";
+  const sortOptions: { value: ApartmentSort; label: string }[] = [
+    { value: "price_asc", label: isSaleMode ? "Prix croissant (achat)" : "Prix croissant (loyer)" },
+    { value: "price_desc", label: isSaleMode ? "Prix décroissant (achat)" : "Prix décroissant (loyer)" },
+    { value: "surface_desc", label: "Surface : grande → petite" },
+    { value: "surface_asc", label: "Surface : petite → grande" },
+  ];
 
   return (
     <div className="container py-12 lg:py-16">
@@ -173,6 +208,58 @@ export default function ApartmentsPage() {
               />
             </div>
 
+            <div className="rounded-xl border border-border bg-card p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  Résidence{selectedIds.length > 0 ? ` (${selectedIds.length})` : ""}
+                </label>
+                {selectedIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setResidenceIds([])}
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    Effacer
+                  </button>
+                )}
+              </div>
+              <Input
+                value={residenceQuery}
+                onChange={(e) => setResidenceQuery(e.target.value)}
+                placeholder="Rechercher une résidence..."
+                className="mb-2 h-9"
+                aria-label="Rechercher une résidence"
+              />
+              <div className="max-h-[200px] space-y-1.5 overflow-y-auto pr-1">
+                {residencesFacet.isLoading ? (
+                  <p className="text-xs text-muted-foreground">Chargement…</p>
+                ) : filteredResidences.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Aucune résidence</p>
+                ) : (
+                  filteredResidences.map((r) => {
+                    const checked = selectedIds.includes(r.id);
+                    return (
+                      <label key={r.id} className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm hover:bg-muted">
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(v) => {
+                            const next = v
+                              ? [...selectedIds, r.id]
+                              : selectedIds.filter((id) => id !== r.id);
+                            setResidenceIds(next);
+                          }}
+                        />
+                        <span className="flex-1 truncate">
+                          {r.nom_fr}
+                          {r.ville && <span className="text-muted-foreground"> ({r.ville})</span>}
+                        </span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-medium">Type de bien</label>
               <select
@@ -228,6 +315,25 @@ export default function ApartmentsPage() {
         </aside>
 
         <div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card px-4 py-3 shadow-soft">
+            <span className="text-sm text-muted-foreground">
+              {search.isLoading ? "Chargement…" : `${total} résultat${total > 1 ? "s" : ""}`}
+            </span>
+            <div className="flex items-center gap-2">
+              <label htmlFor="apt-sort" className="text-sm font-medium">Trier par</label>
+              <select
+                id="apt-sort"
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                value={filters.sort ?? "price_asc"}
+                onChange={(e) => setSort(e.target.value as ApartmentSort)}
+              >
+                {sortOptions.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           {search.isLoading ? (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 12 }).map((_, i) => (
