@@ -1,5 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, Heart, User, LogOut } from "lucide-react";
+import { Menu, X, Heart, User, LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
@@ -7,6 +7,12 @@ import { LocaleSwitcher } from "./LocaleSwitcher";
 import { FontSizeControls } from "@/modules/accessibility/FontSizeControls";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/modules/auth/AuthProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
   const { t } = useI18n();
