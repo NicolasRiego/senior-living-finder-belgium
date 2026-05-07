@@ -9,9 +9,9 @@ interface SizeOption {
 }
 
 const OPTIONS: SizeOption[] = [
-  { value: "normal", label: "A", ariaLabel: "Taille de texte normale", textClass: "text-sm" },
-  { value: "large", label: "A+", ariaLabel: "Taille de texte large", textClass: "text-base" },
-  { value: "xlarge", label: "A++", ariaLabel: "Taille de texte très large", textClass: "text-lg" },
+  { value: "normal", label: "A", ariaLabel: "Taille de texte normale", textClass: "text-base" },
+  { value: "large", label: "A+", ariaLabel: "Taille de texte large", textClass: "text-lg" },
+  { value: "xlarge", label: "A++", ariaLabel: "Taille de texte très large", textClass: "text-xl" },
 ];
 
 interface FontSizeControlsProps {
