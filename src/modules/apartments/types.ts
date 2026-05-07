@@ -35,6 +35,8 @@ export type ApartmentSearchRow = {
 
 export type TxFilter = "sale" | "rent" | "all";
 
+export type ApartmentSort = "price_asc" | "price_desc" | "surface_asc" | "surface_desc";
+
 export type ApartmentFilters = {
   tx: TxFilter;
   country: "BE" | "FR";
@@ -43,6 +45,8 @@ export type ApartmentFilters = {
   surface_min?: number;
   sale_max?: number;
   rent_max?: number;
+  residence_ids?: string[];
+  sort?: ApartmentSort;
   parking?: boolean;
   cave?: boolean;
   terrace?: boolean;
