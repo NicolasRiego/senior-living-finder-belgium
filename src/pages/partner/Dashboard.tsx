@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Building2, Eye, MousePointerClick, Mail, Heart, Home } from "lucide-react";
+import { Plus, Building2, Eye, MousePointerClick, Mail, Heart, Home, ShieldCheck, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 type Stats = {
@@ -40,7 +40,7 @@ const statusLabel: Record<string, { label: string; variant: "default" | "seconda
 };
 
 export default function PartnerDashboard() {
-  const { orgIds } = useAuth();
+  const { orgIds, isAdmin } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -109,6 +109,24 @@ export default function PartnerDashboard() {
 
   return (
     <div className="space-y-6">
+      {isAdmin && (
+        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-sm flex items-start gap-3 flex-wrap">
+          <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-[260px]">
+            <p className="font-semibold text-foreground">Mode administrateur</p>
+            <p className="text-muted-foreground mt-1">
+              Vous visualisez cet espace en tant qu'admin. Vous avez accès à toutes les
+              résidences dont vous êtes propriétaire. Pour gérer d'autres résidences,
+              attribuez-les vous depuis l'espace admin.
+            </p>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/admin/residences">
+              Aller à l'espace admin <ArrowRight className="h-4 w-4 ml-2" />
+            </Link>
+          </Button>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl">Tableau de bord</h1>
