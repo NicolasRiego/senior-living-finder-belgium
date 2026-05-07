@@ -315,6 +315,25 @@ export default function ApartmentsPage() {
         </aside>
 
         <div>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card px-4 py-3 shadow-soft">
+            <span className="text-sm text-muted-foreground">
+              {search.isLoading ? "Chargement…" : `${total} résultat${total > 1 ? "s" : ""}`}
+            </span>
+            <div className="flex items-center gap-2">
+              <label htmlFor="apt-sort" className="text-sm font-medium">Trier par</label>
+              <select
+                id="apt-sort"
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                value={filters.sort ?? "price_asc"}
+                onChange={(e) => setSort(e.target.value as ApartmentSort)}
+              >
+                {sortOptions.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           {search.isLoading ? (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 12 }).map((_, i) => (
