@@ -203,13 +203,39 @@
     font-size: unset !important;
   }
 
-  /* Adaptive grids only at xlarge — collapse to single column for readability */
+  /* Adaptive grids: large → 2 cols, xlarge → 1 col */
+  main[data-fontsize="large"] .xl\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  main[data-fontsize="xlarge"] .md\:grid-cols-2,
+  main[data-fontsize="xlarge"] .xl\:grid-cols-3 {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
   main[data-fontsize="xlarge"] .lg\:grid-cols-\[300px_1fr\] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
   main[data-fontsize="xlarge"] aside.lg\:sticky {
     position: static !important;
     max-height: none !important;
+  }
+
+  /* Badges keep fixed font-size, never scaled by user font preference */
+  main[data-fontsize] .badge-fixed,
+  main[data-fontsize] .badge-fixed * {
+    font-size: 0.8125rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Selects: text never overflows */
+  main[data-fontsize] select {
+    max-width: 100%;
+    text-overflow: ellipsis;
+  }
+
+  /* Filter labels wrap naturally */
+  main[data-fontsize] aside label {
+    white-space: normal;
+    word-break: break-word;
   }
 }
 
