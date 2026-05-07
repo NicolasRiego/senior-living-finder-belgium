@@ -59,6 +59,24 @@ export async function searchApartments(filters: ApartmentFilters) {
   };
 }
 
+export type ResidenceFacet = { id: string; nom_fr: string; nom_nl: string | null; ville: string | null };
+
+export async function listApartmentResidences(): Promise<ResidenceFacet[]> {
+  const { data, error } = await supabase
+    .from("apartment_search_view" as never)
+    .select("residence_id, residence_nom_fr, residence_nom_nl, ville")
+    .eq("status", "available")
+    .limit(2000);
+  if (error) throw error;
+  const map = new Map<string, ResidenceFacet>();
+  for (const r of (data ?? []) as Array<{ residence_id: string; residence_nom_fr: string; residence_nom_nl: string | null; ville: string | null }>) {
+    if (!map.has(r.residence_id)) {
+      map.set(r.residence_id, { id: r.residence_id, nom_fr: r.residence_nom_fr, nom_nl: r.residence_nom_nl, ville: r.ville });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => a.nom_fr.localeCompare(b.nom_fr, "fr"));
+}
+
 export async function getCoverUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;
