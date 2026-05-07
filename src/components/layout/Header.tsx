@@ -113,20 +113,42 @@ export function Header() {
         <div className="border-t border-border/50 bg-background lg:hidden">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                end={l.end}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    "rounded-lg px-4 py-3 text-lg font-medium",
-                    isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-muted",
-                  )
-                }
-              >
-                {l.label}
-              </NavLink>
+              <Fragment key={l.to}>
+                <NavLink
+                  to={l.to}
+                  end={l.end}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      "rounded-lg px-4 py-3 text-lg font-medium",
+                      isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-muted",
+                    )
+                  }
+                >
+                  {l.label}
+                </NavLink>
+                {l.to === "/residences" && (
+                  <>
+                    <div className="px-4 pt-3 pb-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Appartements
+                    </div>
+                    <NavLink
+                      to="/appartements?type=vente"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-8 py-2.5 text-base font-medium text-foreground/85 hover:bg-muted"
+                    >
+                      → À vendre
+                    </NavLink>
+                    <NavLink
+                      to="/appartements?type=location"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-8 py-2.5 text-base font-medium text-foreground/85 hover:bg-muted"
+                    >
+                      → À louer
+                    </NavLink>
+                  </>
+                )}
+              </Fragment>
             ))}
             <div className="mt-2 flex flex-col gap-2 px-2">
               <div className="flex items-center justify-between gap-2">
