@@ -24,7 +24,7 @@ export function Header() {
   ];
 
   return (
-    <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] overflow-x-hidden border-b border-border/50 bg-background/85 backdrop-blur-md">
+    <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] [overflow-x:clip] border-b border-border/50 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex h-[72px] w-full max-w-[1400px] flex-nowrap items-center justify-between gap-4 px-4">
         <Link to="/" className="flex shrink-0 items-center gap-2 font-display text-lg font-semibold whitespace-nowrap">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
