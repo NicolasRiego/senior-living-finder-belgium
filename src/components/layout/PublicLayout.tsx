@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { useFontSize, FONT_SIZE_PX } from "@/modules/accessibility/FontSizeContext";
+import { useFontSize } from "@/modules/accessibility/FontSizeContext";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   const { size } = useFontSize();
@@ -11,7 +11,6 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <main
         id="main"
         data-fontsize={size}
-        style={{ fontSize: FONT_SIZE_PX[size] }}
         className="flex-1 overflow-x-hidden max-w-[100vw]"
       >
         {children}
