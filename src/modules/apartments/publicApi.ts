@@ -31,7 +31,7 @@ export async function searchApartments(filters: ApartmentFilters) {
     if (filters[f]) q = q.eq(f, true);
   }
 
-  q = q.order("created_at" as never, { ascending: false }).range(from, to);
+  q = q.order("id" as never, { ascending: false }).range(from, to);
 
   const { data, count, error } = await q;
   if (error) throw error;
