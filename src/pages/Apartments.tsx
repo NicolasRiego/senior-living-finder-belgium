@@ -194,7 +194,7 @@ export default function ApartmentsPage() {
                 onChange={(e) => updateParam({ pays: e.target.value })}
               >
                 <option value="BE">Belgique</option>
-                <option value="FR" disabled>France (bientôt)</option>
+                <option value="FR" disabled>France (disponible bientôt)</option>
               </select>
             </div>
 
