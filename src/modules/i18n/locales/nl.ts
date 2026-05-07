@@ -35,6 +35,9 @@ export const nl: Dict = {
     seigneurie: "Seigneurie",
     repos: "Rusthuis",
     repos_soins: "Rust- en verzorgingstehuis",
+    residence_services: "Service-residentie",
+    maison_repos: "Rusthuis",
+    maison_repos_soins: "Rust- en verzorgingstehuis",
   },
   home: {
     heroTitle: "Een nieuwe stap, in alle sereniteit",
