@@ -56,8 +56,13 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             À vendre
           </span>
         )}
-        {!showSale && showRent && (
-          <span className="badge-fixed absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
+        {showRent && (
+          <span
+            className={
+              "badge-fixed absolute right-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground shadow-soft " +
+              (showSale ? "top-14" : "top-4")
+            }
+          >
             À louer
           </span>
         )}
