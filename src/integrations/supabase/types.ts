@@ -99,8 +99,10 @@ export type Database = {
       }
       apartments: {
         Row: {
+          address_complement: string | null
           available_from: string | null
           cave: boolean
+          charges_monthly: number | null
           created_at: string
           description_fr: string | null
           description_nl: string | null
@@ -126,8 +128,10 @@ export type Database = {
           wheelchair_accessible: boolean
         }
         Insert: {
+          address_complement?: string | null
           available_from?: string | null
           cave?: boolean
+          charges_monthly?: number | null
           created_at?: string
           description_fr?: string | null
           description_nl?: string | null
@@ -153,8 +157,10 @@ export type Database = {
           wheelchair_accessible?: boolean
         }
         Update: {
+          address_complement?: string | null
           available_from?: string | null
           cave?: boolean
+          charges_monthly?: number | null
           created_at?: string
           description_fr?: string | null
           description_nl?: string | null
@@ -1349,6 +1355,18 @@ export type Database = {
     }
     Functions: {
       accept_org_invitation: { Args: { _code: string }; Returns: string }
+      admin_claim_residence: { Args: { _residence_id: string }; Returns: Json }
+      admin_list_residences_with_orgs: {
+        Args: never
+        Returns: {
+          id: string
+          nom_fr: string
+          org_id: string
+          owner_email: string
+          status: string
+          ville: string
+        }[]
+      }
       anonymize_my_account: { Args: never; Returns: undefined }
       approve_residence: { Args: { _residence_id: string }; Returns: undefined }
       archive_residence: {
