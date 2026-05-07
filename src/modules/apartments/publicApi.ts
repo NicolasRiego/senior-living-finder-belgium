@@ -50,3 +50,55 @@ export async function getCoverUrl(path: string | null): Promise<string | null> {
   const { data } = await supabase.storage.from("residence-photos").createSignedUrl(path, 3600);
   return data?.signedUrl ?? null;
 }
+
+export type ApartmentDetail = {
+  apartment: ApartmentSearchRow;
+  residence: {
+    id: string;
+    slug: string;
+    nom_fr: string;
+    nom_nl: string | null;
+    ville: string | null;
+    region: string | null;
+  };
+  photos: { id: string; url: string; alt: string; cover: boolean }[];
+};
+
+export async function getApartmentById(id: string): Promise<ApartmentDetail | null> {
+  const { data: apt } = await supabase
+    .from("apartment_search_view" as never)
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (!apt) return null;
+  const a = apt as unknown as ApartmentSearchRow;
+
+  const { data: r } = await supabase
+    .from("residences")
+    .select("id, slug, nom_fr, nom_nl, ville, region")
+    .eq("id", a.residence_id)
+    .maybeSingle();
+  if (!r) return null;
+
+  const { data: photos } = await supabase
+    .from("photos")
+    .select("id, storage_path, alt_text, category, display_order")
+    .eq("residence_id", a.residence_id)
+    .order("display_order");
+
+  const photoUrls: ApartmentDetail["photos"] = [];
+  for (const ph of photos ?? []) {
+    const url = await getCoverUrl(ph.storage_path);
+    if (url) {
+      photoUrls.push({
+        id: ph.id,
+        url,
+        alt: ph.alt_text ?? "",
+        cover: ph.category === "cover",
+      });
+    }
+  }
+
+  return { apartment: a, residence: r, photos: photoUrls };
+}
+
