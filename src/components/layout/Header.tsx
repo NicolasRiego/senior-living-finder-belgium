@@ -41,9 +41,8 @@ export function Header() {
 
         <nav className="hidden shrink-0 flex-nowrap items-center gap-1 lg:flex" aria-label="Primary">
           {links.map((l) => (
-            <>
+            <Fragment key={l.to}>
               <NavLink
-                key={l.to}
                 to={l.to}
                 end={l.end}
                 className={({ isActive }) =>
@@ -58,7 +57,7 @@ export function Header() {
                 {l.label}
               </NavLink>
               {l.to === "/residences" && (
-                <DropdownMenu key="apt-menu">
+                <DropdownMenu>
                   <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
                     Appartements <ChevronDown className="h-4 w-4" />
                   </DropdownMenuTrigger>
@@ -72,7 +71,7 @@ export function Header() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-            </>
+            </Fragment>
           ))}
         </nav>
 
