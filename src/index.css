@@ -135,6 +135,20 @@
     min-width: 0;
   }
 
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  p, h1, h2, h3, h4, h5, h6,
+  label, span, li, td, th {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  input, select, textarea, button {
+    max-width: 100%;
+  }
+
   h1, h2, h3, h4, h5 {
     @apply font-display font-semibold tracking-tight;
     word-break: break-word;
@@ -236,6 +250,21 @@
   main[data-fontsize] aside label {
     white-space: normal;
     word-break: break-word;
+  }
+
+  /* Range sliders never overflow */
+  main[data-fontsize] input[type="range"] {
+    width: 100%;
+  }
+
+  /* Transaction toggle stacks vertically at large/xlarge */
+  main[data-fontsize="large"] .tx-toggle,
+  main[data-fontsize="xlarge"] .tx-toggle {
+    flex-direction: column;
+  }
+  main[data-fontsize="large"] .tx-toggle > button,
+  main[data-fontsize="xlarge"] .tx-toggle > button {
+    width: 100%;
   }
 
   /* Wider container at large/xlarge to give more space to cards & filters */

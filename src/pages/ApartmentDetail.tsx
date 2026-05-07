@@ -150,7 +150,7 @@ export default function ApartmentDetailPage() {
           {/* Infos clés */}
           <section className="grid grid-cols-2 gap-4 rounded-2xl border border-border/60 bg-card p-6 shadow-soft md:grid-cols-4">
             <KeyInfo icon={<Maximize className="h-5 w-5" />} label="Surface" value={a.surface_m2 ? `${a.surface_m2} m²` : "—"} />
-            <KeyInfo icon={<Layers className="h-5 w-5" />} label="Étage" value={a.floor != null ? String(a.floor) : "—"} />
+            <KeyInfo icon={<Layers className="h-5 w-5" />} label="Étage" value={a.floor != null ? (a.floor === 0 ? "Rez-de-chaussée" : String(a.floor)) : "—"} />
             <KeyInfo icon={<Home className="h-5 w-5" />} label="Type" value={a.type ? (TYPE_LABEL[a.type] ?? a.type) : "—"} />
             <KeyInfo
               icon={<CalendarDays className="h-5 w-5" />}

@@ -56,8 +56,13 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             À vendre
           </span>
         )}
-        {!showSale && showRent && (
-          <span className="badge-fixed absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
+        {showRent && (
+          <span
+            className={
+              "badge-fixed absolute right-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground shadow-soft " +
+              (showSale ? "top-14" : "top-4")
+            }
+          >
             À louer
           </span>
         )}
@@ -82,33 +87,34 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
           )}
           {row.floor != null && (
             <span className="inline-flex items-center gap-1.5">
-              <Layers className="h-4 w-4" /> Étage {row.floor}
+              <Layers className="h-4 w-4" /> {row.floor === 0 ? "Rez-de-chaussée" : `Étage ${row.floor}`}
             </span>
           )}
         </div>
 
         <div className="mt-auto flex flex-col gap-3 pt-3">
           <div className="space-y-1">
-            {showSale && row.sale_price != null && (
+            {showSale && row.sale_price != null && row.sale_price > 0 && (
               <div>
                 <span className="text-sm text-muted-foreground">Prix : </span>
-                <span className="font-display text-2xl font-semibold text-primary">
+                <span className="font-display text-xl font-semibold text-primary xl:text-2xl">
                   {row.sale_price.toLocaleString("fr-BE")} €
                 </span>
               </div>
             )}
-            {showRent && row.rent_price != null && (
+            {showRent && row.rent_price != null && row.rent_price > 0 && (
               <div>
                 <span className="text-sm text-muted-foreground">Loyer : </span>
-                <span className="font-display text-2xl font-semibold text-primary">
+                <span className="font-display text-xl font-semibold text-primary xl:text-2xl">
                   {row.rent_price.toLocaleString("fr-BE")} €
                 </span>
                 <span className="text-sm text-muted-foreground">/mois</span>
               </div>
             )}
-            {!showSale && !showRent && (
-              <span className="text-sm text-muted-foreground">Prix sur demande</span>
-            )}
+            {(!showSale || !row.sale_price || row.sale_price <= 0) &&
+              (!showRent || !row.rent_price || row.rent_price <= 0) && (
+                <span className="text-sm text-muted-foreground">Prix sur demande</span>
+              )}
           </div>
 
           <div className="flex flex-wrap gap-2">
