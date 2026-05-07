@@ -19,28 +19,28 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <span className="absolute left-4 top-4 rounded-full bg-background/95 px-3 py-1.5 text-sm font-medium text-foreground shadow-soft">
+        <span className="badge-fixed absolute left-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">
           {t(`residenceTypes.${residence.type}`)}
         </span>
-        <span className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-foreground/85 px-3 py-1.5 text-sm font-medium text-background">
+        <span className="badge-fixed absolute right-4 top-4 flex items-center gap-1 rounded-full bg-foreground/85 px-3 py-1.5 font-medium text-background">
           <Star className="h-3.5 w-3.5" fill="currentColor" /> {residence.rating.toFixed(1)}
         </span>
       </Link>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-display text-xl font-semibold leading-tight">
+        <h3 className="font-display text-xl font-semibold leading-tight break-words">
           <Link to={`/residences/${residence.slug}`} className="hover:text-primary">
             {residence.name}
           </Link>
         </h3>
         <div className="mt-2 flex items-center gap-1.5 text-base text-muted-foreground">
-          <MapPin className="h-4 w-4" /> {residence.city} · {residence.region}
+          <MapPin className="h-4 w-4 shrink-0" /> <span className="break-words">{residence.city} · {residence.region}</span>
         </div>
-        <p className="mt-3 line-clamp-2 text-base text-muted-foreground">{residence.shortDescription}</p>
+        <p className="mt-3 line-clamp-2 min-h-[3em] text-base text-muted-foreground">{residence.shortDescription}</p>
 
         <div className="mt-4 flex flex-wrap gap-1.5">
           {residence.services.slice(0, 3).map((s) => (
-            <span key={s} className="rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary">
+            <span key={s} className="badge-fixed rounded-full bg-primary-soft px-2.5 py-1 font-medium text-primary">
               {s}
             </span>
           ))}

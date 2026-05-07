@@ -348,37 +348,37 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
             <MapPin className="h-8 w-8" />
           </div>
         )}
-        <span className="absolute left-4 top-4 rounded-full bg-background/95 px-3 py-1.5 text-sm font-medium text-foreground shadow-soft">
+        <span className="badge-fixed absolute left-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">
           {t(`residenceTypes.${row.type_etablissement}`)}
         </span>
         {row.is_complete && (
-          <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary/95 px-3 py-1.5 text-xs font-medium text-primary-foreground shadow-soft">
+          <span className="badge-fixed absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary/95 px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
             <BadgeCheck className="h-3.5 w-3.5" /> Profil complet
           </span>
         )}
       </Link>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-display text-xl font-semibold leading-tight">
+        <h3 className="font-display text-xl font-semibold leading-tight break-words">
           <Link to={`/residences/${row.slug}`} className="hover:text-primary">{name}</Link>
         </h3>
         {(row.ville || row.region) && (
           <div className="mt-2 flex items-center gap-1.5 text-base text-muted-foreground">
-            <MapPin className="h-4 w-4" /> {[row.ville, row.region].filter(Boolean).join(" · ")}
+            <MapPin className="h-4 w-4 shrink-0" /> <span className="break-words">{[row.ville, row.region].filter(Boolean).join(" · ")}</span>
           </div>
         )}
         {tagline && (
-          <p className="mt-3 line-clamp-2 text-base text-muted-foreground">{tagline}</p>
+          <p className="mt-3 line-clamp-2 min-h-[3em] text-base text-muted-foreground">{tagline}</p>
         )}
 
         <div className="mt-3 flex flex-wrap gap-1.5">
           {row.is_pmr && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 text-xs font-medium text-primary">
+            <span className="badge-fixed inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 font-medium text-primary">
               <Accessibility className="h-3 w-3" /> PMR
             </span>
           )}
           {row.has_availability && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 text-xs font-medium text-accent-foreground">
+            <span className="badge-fixed inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 font-medium text-accent-foreground">
               <CheckCircle2 className="h-3 w-3" /> Disponible
             </span>
           )}
