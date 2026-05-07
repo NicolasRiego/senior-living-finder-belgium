@@ -33,6 +33,8 @@ import PartnerDashboard from "./pages/partner/Dashboard";
 import PartnerLeads from "./pages/partner/Leads";
 import ResidenceEditor from "./pages/partner/ResidenceEditor";
 import ResidencePreview from "./pages/partner/ResidencePreview";
+import ApartmentsList from "./pages/partner/ApartmentsList";
+import ApartmentEditor from "./pages/partner/ApartmentEditor";
 import AdminValidation from "./pages/admin/AdminValidation";
 import AdminResidences from "./pages/admin/AdminResidences";
 import AdminVersions from "./pages/admin/AdminVersions";
@@ -103,6 +105,30 @@ const App = () => (
                   <Route
                     path="/partenaire/residences/:id/preview"
                     element={<RequireAuth><ResidencePreview /></RequireAuth>}
+                  />
+                  <Route
+                    path="/partenaire/residences/:residenceId/appartements"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><ApartmentsList /></PartnerLayout>
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="/partenaire/residences/:residenceId/appartements/nouveau"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><ApartmentEditor /></PartnerLayout>
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="/partenaire/residences/:residenceId/appartements/:apartmentId"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><ApartmentEditor /></PartnerLayout>
+                      </RequireAuth>
+                    }
                   />
                   <Route
                     path="/partenaire/leads"
