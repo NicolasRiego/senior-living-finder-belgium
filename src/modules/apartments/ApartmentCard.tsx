@@ -1,0 +1,137 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { MapPin, Heart, Building2, Maximize, Layers } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useI18n } from "@/modules/i18n/I18nProvider";
+import { useFavorites } from "@/modules/favorites/useFavorites";
+import { getCoverUrl } from "./publicApi";
+import type { ApartmentSearchRow } from "./types";
+
+const TYPE_LABEL: Record<string, string> = {
+  appartement: "Appartement",
+  chambre: "Chambre",
+  studio: "Studio",
+};
+
+export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
+  const { tr } = useI18n();
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+  const { has, toggle } = useFavorites();
+  const isFav = has(row.residence_id);
+  const name = tr(row.residence_nom_fr, row.residence_nom_nl);
+
+  useEffect(() => {
+    let active = true;
+    if (row.cover_path) {
+      getCoverUrl(row.cover_path).then((u) => { if (active) setCoverUrl(u); });
+    }
+    return () => { active = false; };
+  }, [row.cover_path]);
+
+  const showSale = row.transaction_type === "sale" || row.transaction_type === "both";
+  const showRent = row.transaction_type === "rent" || row.transaction_type === "both";
+
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant">
+      <Link to={`/appartements/${row.id}`} className="relative block aspect-[4/3] overflow-hidden bg-muted">
+        {coverUrl ? (
+          <img
+            src={coverUrl}
+            alt={name}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+            <Building2 className="h-8 w-8" />
+          </div>
+        )}
+        {row.type && (
+          <span className="badge-fixed absolute left-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">
+            {TYPE_LABEL[row.type] ?? row.type}
+          </span>
+        )}
+        {showSale && (
+          <span className="badge-fixed absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-success px-3 py-1.5 font-medium text-success-foreground shadow-soft">
+            À vendre
+          </span>
+        )}
+        {!showSale && showRent && (
+          <span className="badge-fixed absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
+            À louer
+          </span>
+        )}
+      </Link>
+
+      <div className="flex flex-1 flex-col gap-3 p-6">
+        <h3 className="font-display text-xl font-semibold leading-tight break-words">
+          <Link to={`/appartements/${row.id}`} className="hover:text-primary">{name}</Link>
+        </h3>
+        {(row.ville || row.region) && (
+          <div className="flex items-center gap-1.5 text-base text-muted-foreground">
+            <MapPin className="h-4 w-4 shrink-0" />
+            <span className="break-words">{[row.code_postal, row.ville, row.region].filter(Boolean).join(" · ")}</span>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-3 text-base text-muted-foreground">
+          {row.surface_m2 != null && (
+            <span className="inline-flex items-center gap-1.5">
+              <Maximize className="h-4 w-4" /> {row.surface_m2} m²
+            </span>
+          )}
+          {row.floor != null && (
+            <span className="inline-flex items-center gap-1.5">
+              <Layers className="h-4 w-4" /> Étage {row.floor}
+            </span>
+          )}
+        </div>
+
+        <div className="mt-auto flex flex-col gap-3 pt-3">
+          <div className="space-y-1">
+            {showSale && row.sale_price != null && (
+              <div>
+                <span className="text-sm text-muted-foreground">Prix : </span>
+                <span className="font-display text-2xl font-semibold text-primary">
+                  {row.sale_price.toLocaleString("fr-BE")} €
+                </span>
+              </div>
+            )}
+            {showRent && row.rent_price != null && (
+              <div>
+                <span className="text-sm text-muted-foreground">Loyer : </span>
+                <span className="font-display text-2xl font-semibold text-primary">
+                  {row.rent_price.toLocaleString("fr-BE")} €
+                </span>
+                <span className="text-sm text-muted-foreground">/mois</span>
+              </div>
+            )}
+            {!showSale && !showRent && (
+              <span className="text-sm text-muted-foreground">Prix sur demande</span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm" className="w-auto whitespace-nowrap px-4">
+              <Link to={`/appartements/${row.id}`}>Voir l'appartement</Link>
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={isFav ? "soft" : "outline"}
+              onClick={() => toggle(row.residence_id)}
+              aria-pressed={isFav}
+              aria-label={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+              className="px-3"
+            >
+              <Heart className={"h-4 w-4 " + (isFav ? "fill-current" : "")} />
+            </Button>
+            <Button asChild size="sm" variant="outline" className="w-auto whitespace-nowrap px-4">
+              <Link to={`/residences/${row.residence_slug}`}>Voir la résidence</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}

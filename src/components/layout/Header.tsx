@@ -1,12 +1,18 @@
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X, Heart, User, LogOut } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, Heart, User, LogOut, ChevronDown } from "lucide-react";
+import { Fragment, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { FontSizeControls } from "@/modules/accessibility/FontSizeControls";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/modules/auth/AuthProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Header() {
   const { t } = useI18n();
@@ -35,21 +41,37 @@ export function Header() {
 
         <nav className="hidden shrink-0 flex-nowrap items-center gap-1 lg:flex" aria-label="Primary">
           {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.end}
-              className={({ isActive }) =>
-                cn(
-                  "whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none transition-colors",
-                  isActive
-                    ? "bg-primary-soft text-primary"
-                    : "text-foreground/80 hover:bg-muted hover:text-foreground",
-                )
-              }
-            >
-              {l.label}
-            </NavLink>
+            <Fragment key={l.to}>
+              <NavLink
+                to={l.to}
+                end={l.end}
+                className={({ isActive }) =>
+                  cn(
+                    "whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none transition-colors",
+                    isActive
+                      ? "bg-primary-soft text-primary"
+                      : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                  )
+                }
+              >
+                {l.label}
+              </NavLink>
+              {l.to === "/residences" && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
+                    Appartements <ChevronDown className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-[260px]">
+                    <DropdownMenuItem asChild>
+                      <Link to="/appartements?type=vente" className="text-base">Appartements à vendre</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/appartements?type=location" className="text-base">Appartements à louer</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </Fragment>
           ))}
         </nav>
 
@@ -91,20 +113,42 @@ export function Header() {
         <div className="border-t border-border/50 bg-background lg:hidden">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                end={l.end}
-                onClick={() => setOpen(false)}
-                className={({ isActive }) =>
-                  cn(
-                    "rounded-lg px-4 py-3 text-lg font-medium",
-                    isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-muted",
-                  )
-                }
-              >
-                {l.label}
-              </NavLink>
+              <Fragment key={l.to}>
+                <NavLink
+                  to={l.to}
+                  end={l.end}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      "rounded-lg px-4 py-3 text-lg font-medium",
+                      isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-muted",
+                    )
+                  }
+                >
+                  {l.label}
+                </NavLink>
+                {l.to === "/residences" && (
+                  <>
+                    <div className="px-4 pt-3 pb-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Appartements
+                    </div>
+                    <NavLink
+                      to="/appartements?type=vente"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-8 py-2.5 text-base font-medium text-foreground/85 hover:bg-muted"
+                    >
+                      → À vendre
+                    </NavLink>
+                    <NavLink
+                      to="/appartements?type=location"
+                      onClick={() => setOpen(false)}
+                      className="rounded-lg px-8 py-2.5 text-base font-medium text-foreground/85 hover:bg-muted"
+                    >
+                      → À louer
+                    </NavLink>
+                  </>
+                )}
+              </Fragment>
             ))}
             <div className="mt-2 flex flex-col gap-2 px-2">
               <div className="flex items-center justify-between gap-2">
