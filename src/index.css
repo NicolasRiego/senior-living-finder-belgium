@@ -135,6 +135,20 @@
     min-width: 0;
   }
 
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  p, h1, h2, h3, h4, h5, h6,
+  label, span, li, td, th {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  input, select, textarea, button {
+    max-width: 100%;
+  }
+
   h1, h2, h3, h4, h5 {
     @apply font-display font-semibold tracking-tight;
     word-break: break-word;
