@@ -11,6 +11,7 @@ import { FontSizeProvider } from "@/modules/accessibility/FontSizeContext";
 import { RequireAuth } from "@/modules/auth/RequireAuth";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { PartnerLayout } from "@/components/layout/PartnerLayout";
+import { ScrollToTop } from "@/components/layout/ScrollToTop";
 
 import HomePage from "./pages/Home";
 import ResidencesPage from "./pages/Residences";
@@ -53,6 +54,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <ScrollToTop />
               {MAINTENANCE ? (
                 <Routes>
                   <Route path="*" element={<MaintenancePage />} />
