@@ -31,15 +31,15 @@ export function Header() {
 
   return (
     <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] [overflow-x:clip] border-b border-border/50 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex min-h-28 w-full max-w-[1400px] flex-nowrap items-center justify-between gap-3 px-4">
-        <Link to="/" className="flex shrink-0 items-center gap-3 font-display text-3xl font-semibold whitespace-nowrap">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
-            <Heart className="h-7 w-7" fill="currentColor" />
+      <div className="mx-auto flex min-h-20 w-full max-w-[1400px] flex-nowrap items-center justify-between gap-2 px-4">
+        <Link to="/" className="flex shrink-0 items-center gap-1.5 font-display text-xl font-semibold whitespace-nowrap">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
+            <Heart className="h-5 w-5" fill="currentColor" />
           </span>
           <span>{t("brand.name")}</span>
         </Link>
 
-        <nav className="hidden shrink-0 flex-nowrap items-center gap-1 lg:flex" aria-label="Primary">
+        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 min-[1100px]:flex" aria-label="Primary">
           {links.map((l) => (
             <Fragment key={l.to}>
               <NavLink
@@ -47,7 +47,7 @@ export function Header() {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none transition-colors",
+                    "whitespace-nowrap rounded-full px-3 py-2 text-[0.9rem] font-medium leading-none transition-colors",
                     isActive
                       ? "bg-primary-soft text-primary"
                       : "text-foreground/80 hover:bg-muted hover:text-foreground",
@@ -58,10 +58,10 @@ export function Header() {
               </NavLink>
               {l.to === "/residences" && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
-                    Appartements <ChevronDown className="h-4 w-4" />
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-2 text-[0.9rem] font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
+                    Appartements <ChevronDown className="h-3.5 w-3.5" />
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="min-w-[260px]">
+                  <DropdownMenuContent align="start" className="min-w-[240px]">
                     <DropdownMenuItem asChild>
                       <Link to="/appartements?type=vente" className="text-base">Appartements à vendre</Link>
                     </DropdownMenuItem>
@@ -75,24 +75,27 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden shrink-0 flex-nowrap items-center gap-2 lg:flex">
+        <div className="hidden shrink-0 flex-nowrap items-center gap-2 min-[1100px]:flex">
           <LocaleSwitcher />
           <FontSizeControls />
           {user ? (
             <>
-              <Button asChild variant="outline" size="sm" className="h-12 whitespace-nowrap px-5 text-lg">
-                <Link to={myLink}><User className="h-5 w-5 mr-1.5" /> {myLabel}</Link>
+              <Button asChild variant="outline" size="sm" className="h-8 whitespace-nowrap px-3 py-1.5 text-sm">
+                <Link to={myLink} aria-label={myLabel}>
+                  <User className="h-4 w-4 mr-1.5" />
+                  <span className="hidden xl:inline">{myLabel}</span>
+                </Link>
               </Button>
-              <Button variant="ghost" size="icon" className="h-12 w-12" onClick={signOut} aria-label="Se déconnecter">
-                <LogOut className="h-6 w-6" />
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={signOut} aria-label="Se déconnecter">
+                <LogOut className="h-4 w-4" />
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="h-12 whitespace-nowrap px-5 text-lg">
+              <Button asChild variant="ghost" size="sm" className="h-8 whitespace-nowrap px-3 text-sm">
                 <Link to="/connexion">{t("nav.login")}</Link>
               </Button>
-              <Button asChild size="sm" className="h-12 whitespace-nowrap px-5 text-lg">
+              <Button asChild size="sm" className="h-8 whitespace-nowrap px-3 text-sm">
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
@@ -100,12 +103,12 @@ export function Header() {
         </div>
 
         <button
-          className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted lg:hidden"
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted min-[1100px]:hidden"
           onClick={() => setOpen((o) => !o)}
           aria-label="Menu"
           aria-expanded={open}
         >
-          {open ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
