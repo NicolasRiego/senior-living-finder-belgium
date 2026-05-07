@@ -59,22 +59,43 @@ export async function searchApartments(filters: ApartmentFilters) {
   };
 }
 
-export type ResidenceFacet = { id: string; nom_fr: string; nom_nl: string | null; ville: string | null };
+export type ResidenceFacet = {
+  id: string;
+  nom_fr: string;
+  nom_nl: string | null;
+  ville: string | null;
+  region: string | null;
+  type_etablissement: string | null;
+  capacity: number | null;
+  price_from: number | null;
+  cover_path: string | null;
+  included_service_codes: string[];
+};
 
 export async function listApartmentResidences(): Promise<ResidenceFacet[]> {
-  const { data, error } = await supabase
+  // 1. Distinct residence ids that have an available apartment
+  const { data: apt, error: aptErr } = await supabase
     .from("apartment_search_view" as never)
-    .select("residence_id, residence_nom_fr, residence_nom_nl, ville")
+    .select("residence_id")
     .eq("status", "available")
-    .limit(2000);
+    .limit(5000);
+  if (aptErr) throw aptErr;
+  const ids = Array.from(
+    new Set(((apt ?? []) as Array<{ residence_id: string }>).map((r) => r.residence_id)),
+  );
+  if (ids.length === 0) return [];
+
+  // 2. Rich data from residence_search_view
+  const { data, error } = await supabase
+    .from("residence_search_view" as never)
+    .select(
+      "id, nom_fr, nom_nl, ville, region, type_etablissement, capacity, price_from, cover_path, included_service_codes",
+    )
+    .in("id", ids);
   if (error) throw error;
-  const map = new Map<string, ResidenceFacet>();
-  for (const r of (data ?? []) as Array<{ residence_id: string; residence_nom_fr: string; residence_nom_nl: string | null; ville: string | null }>) {
-    if (!map.has(r.residence_id)) {
-      map.set(r.residence_id, { id: r.residence_id, nom_fr: r.residence_nom_fr, nom_nl: r.residence_nom_nl, ville: r.ville });
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => a.nom_fr.localeCompare(b.nom_fr, "fr"));
+  return ((data ?? []) as unknown as ResidenceFacet[]).sort((a, b) =>
+    a.nom_fr.localeCompare(b.nom_fr, "fr"),
+  );
 }
 
 export async function getCoverUrl(path: string | null): Promise<string | null> {

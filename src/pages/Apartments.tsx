@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import {
   type TxFilter,
 } from "@/modules/apartments/types";
 import { ApartmentCard } from "@/modules/apartments/ApartmentCard";
+import { ResidencePickerDialog } from "@/modules/apartments/ResidencePickerDialog";
 
 const APT_TYPES: ApartmentType[] = ["appartement", "chambre", "studio"];
 const TX_OPTIONS: { value: TxFilter; label: string; urlValue: string | null }[] = [
@@ -90,16 +91,15 @@ export default function ApartmentsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const [residenceQuery, setResidenceQuery] = useState("");
   const selectedIds = filters.residence_ids ?? [];
-  const filteredResidences = useMemo(() => {
+  const selectedResidences = useMemo(() => {
     const list = residencesFacet.data ?? [];
-    const q = residenceQuery.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter(
-      (r) => r.nom_fr.toLowerCase().includes(q) || (r.ville ?? "").toLowerCase().includes(q),
-    );
-  }, [residencesFacet.data, residenceQuery]);
+    return selectedIds
+      .map((id) => list.find((r) => r.id === id))
+      .filter((r): r is NonNullable<typeof r> => !!r);
+  }, [residencesFacet.data, selectedIds]);
+
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const total = search.data?.total ?? 0;
   const totalPages = search.data?.totalPages ?? 1;
@@ -208,56 +208,66 @@ export default function ApartmentsPage() {
               />
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-3">
-              <div className="mb-2 flex items-center justify-between">
-                <label className="text-sm font-medium">
-                  Résidence{selectedIds.length > 0 ? ` (${selectedIds.length})` : ""}
-                </label>
-                {selectedIds.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setResidenceIds([])}
-                    className="text-xs font-medium text-primary hover:underline"
-                  >
-                    Effacer
-                  </button>
-                )}
-              </div>
-              <Input
-                value={residenceQuery}
-                onChange={(e) => setResidenceQuery(e.target.value)}
-                placeholder="Rechercher une résidence..."
-                className="mb-2 h-9"
-                aria-label="Rechercher une résidence"
-              />
-              <div className="max-h-[200px] space-y-1.5 overflow-y-auto pr-1">
-                {residencesFacet.isLoading ? (
-                  <p className="text-xs text-muted-foreground">Chargement…</p>
-                ) : filteredResidences.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">Aucune résidence</p>
-                ) : (
-                  filteredResidences.map((r) => {
-                    const checked = selectedIds.includes(r.id);
-                    return (
-                      <label key={r.id} className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm hover:bg-muted">
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={(v) => {
-                            const next = v
-                              ? [...selectedIds, r.id]
-                              : selectedIds.filter((id) => id !== r.id);
-                            setResidenceIds(next);
-                          }}
-                        />
-                        <span className="flex-1 truncate">
-                          {r.nom_fr}
-                          {r.ville && <span className="text-muted-foreground"> ({r.ville})</span>}
-                        </span>
-                      </label>
-                    );
-                  })
-                )}
-              </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium">
+                Résidence{selectedIds.length > 0 ? ` (${selectedIds.length})` : ""}
+              </label>
+              {selectedIds.length === 0 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-start rounded-xl"
+                  onClick={() => setPickerOpen(true)}
+                >
+                  <Home className="mr-2 h-4 w-4" /> Choisir des résidences
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedResidences.map((r) => (
+                      <span
+                        key={r.id}
+                        className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-foreground"
+                      >
+                        <span className="max-w-[140px] truncate">{r.nom_fr}</span>
+                        <button
+                          type="button"
+                          aria-label={`Retirer ${r.nom_fr}`}
+                          onClick={() =>
+                            setResidenceIds(selectedIds.filter((id) => id !== r.id))
+                          }
+                          className="rounded-full p-0.5 hover:bg-primary/20"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                    {selectedIds.length > selectedResidences.length && (
+                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                        +{selectedIds.length - selectedResidences.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 rounded-xl"
+                      onClick={() => setPickerOpen(true)}
+                    >
+                      Modifier la sélection
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setResidenceIds([])}
+                      className="text-xs font-medium text-muted-foreground hover:text-destructive hover:underline"
+                    >
+                      Tout effacer
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -379,6 +389,13 @@ export default function ApartmentsPage() {
           )}
         </div>
       </div>
+
+      <ResidencePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        appliedIds={selectedIds}
+        onApply={(ids) => setResidenceIds(ids)}
+      />
     </div>
   );
 }
