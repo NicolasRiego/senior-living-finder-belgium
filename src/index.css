@@ -151,24 +151,59 @@
     @apply outline-none ring-4 ring-ring/40 ring-offset-2 ring-offset-background rounded-md;
   }
 
-  /* Adaptive grids based on user font size — scoped to <main> only */
-  main[data-fontsize="large"] .grid-3col,
-  main[data-fontsize="large"] .md\:grid-cols-3,
-  main[data-fontsize="large"] .lg\:grid-cols-3,
-  main[data-fontsize="large"] .xl\:grid-cols-3 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  /* Font-size variables scoped to <main> only — text only, never images/layout */
+  main[data-fontsize="normal"] {
+    --fs-body: 1.125rem;
+    --fs-h1: 2.5rem;
+    --fs-h2: 1.875rem;
+    --fs-h3: 1.25rem;
+    --fs-small: 0.9rem;
+    --fs-label: 1rem;
+  }
+  main[data-fontsize="large"] {
+    --fs-body: 1.3125rem;
+    --fs-h1: 2.875rem;
+    --fs-h2: 2.125rem;
+    --fs-h3: 1.5rem;
+    --fs-small: 1.05rem;
+    --fs-label: 1.125rem;
+  }
+  main[data-fontsize="xlarge"] {
+    --fs-body: 1.5rem;
+    --fs-h1: 3.25rem;
+    --fs-h2: 2.5rem;
+    --fs-h3: 1.75rem;
+    --fs-small: 1.2rem;
+    --fs-label: 1.25rem;
   }
 
-  main[data-fontsize="xlarge"] .grid-3col,
-  main[data-fontsize="xlarge"] .grid-cols-2,
-  main[data-fontsize="xlarge"] .md\:grid-cols-2,
-  main[data-fontsize="xlarge"] .md\:grid-cols-3,
-  main[data-fontsize="xlarge"] .lg\:grid-cols-3,
-  main[data-fontsize="xlarge"] .xl\:grid-cols-3 {
-    grid-template-columns: minmax(0, 1fr) !important;
+  main[data-fontsize] p,
+  main[data-fontsize] span,
+  main[data-fontsize] li,
+  main[data-fontsize] label,
+  main[data-fontsize] button,
+  main[data-fontsize] input,
+  main[data-fontsize] select,
+  main[data-fontsize] textarea,
+  main[data-fontsize] a {
+    font-size: var(--fs-body);
+  }
+  main[data-fontsize] h1 { font-size: var(--fs-h1); }
+  main[data-fontsize] h2 { font-size: var(--fs-h2); }
+  main[data-fontsize] h3 { font-size: var(--fs-h3); }
+  main[data-fontsize] .text-sm,
+  main[data-fontsize] .text-xs { font-size: var(--fs-small); }
+
+  /* Images and media never affected by font-size */
+  main[data-fontsize] img,
+  main[data-fontsize] svg,
+  main[data-fontsize] video,
+  main[data-fontsize] canvas,
+  main[data-fontsize] picture {
+    font-size: unset !important;
   }
 
-  /* Filters sidebar collapses at xlarge */
+  /* Adaptive grids only at xlarge — collapse to single column for readability */
   main[data-fontsize="xlarge"] .lg\:grid-cols-\[300px_1fr\] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
