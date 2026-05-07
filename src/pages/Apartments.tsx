@@ -216,10 +216,11 @@ export default function ApartmentsPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full justify-start rounded-xl"
+                  className="w-full justify-start rounded-xl overflow-hidden"
                   onClick={() => setPickerOpen(true)}
                 >
-                  <Home className="mr-2 h-4 w-4" /> Choisir des résidences
+                  <Home className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">Choisir des résidences</span>
                 </Button>
               ) : (
                 <div className="space-y-2">
