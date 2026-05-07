@@ -4,20 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Database, Trash2, Sparkles, RefreshCw } from "lucide-react";
+import { Database, Trash2, Sparkles, RefreshCw, Home } from "lucide-react";
 
 export default function AdminDemo() {
   const [count, setCount] = useState<number | null>(null);
+  const [aptCount, setAptCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
-  const [busy, setBusy] = useState<"seed" | "purge" | null>(null);
+  const [busy, setBusy] = useState<"seed" | "purge" | "seed-apt" | "purge-apt" | null>(null);
 
   const refresh = async () => {
     setLoading(true);
-    const { count: c } = await supabase
-      .from("residences")
-      .select("*", { count: "exact", head: true })
-      .eq("is_demo", true);
+    const [{ count: c }, { count: ac }] = await Promise.all([
+      supabase.from("residences").select("*", { count: "exact", head: true }).eq("is_demo", true),
+      supabase.from("apartments").select("*", { count: "exact", head: true }).eq("is_demo", true),
+    ]);
     setCount(c ?? 0);
+    setAptCount(ac ?? 0);
     setLoading(false);
   };
 
@@ -53,6 +55,35 @@ export default function AdminDemo() {
     refresh();
   };
 
+  const seedApartments = async () => {
+    setBusy("seed-apt");
+    const { data, error } = await supabase.rpc("seed_demo_apartments" as any);
+    setBusy(null);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    const d = data as any;
+    toast({
+      title: d?.skipped ? "Déjà présents" : "Appartements créés",
+      description: d?.skipped ? d.message : `${d?.apartments_created ?? 500} appartements ajoutés.`,
+    });
+    refresh();
+  };
+
+  const purgeApartments = async () => {
+    if (!confirm("Supprimer TOUS les appartements démo ?")) return;
+    setBusy("purge-apt");
+    const { data, error } = await supabase.rpc("purge_demo_apartments" as any);
+    setBusy(null);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Appartements purgés", description: `${(data as any)?.deleted ?? 0} supprimés.` });
+    refresh();
+  };
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
@@ -74,13 +105,13 @@ export default function AdminDemo() {
           </CardTitle>
           <CardDescription>Toutes les données fictives portent le drapeau <code>is_demo = true</code>.</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center gap-3">
+        <CardContent className="flex flex-wrap items-center gap-3">
           <Badge variant="secondary" className="text-base">
             {loading ? "…" : count ?? 0} résidences de démo
           </Badge>
-          {count !== null && count > 0 && (
-            <span className="text-sm text-muted-foreground">Visibles sur le site public.</span>
-          )}
+          <Badge variant="secondary" className="text-base">
+            {loading ? "…" : aptCount ?? 0} appartements de démo
+          </Badge>
         </CardContent>
       </Card>
 
@@ -88,7 +119,7 @@ export default function AdminDemo() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" /> Seed démo
+              <Sparkles className="h-5 w-5 text-primary" /> Seed résidences
             </CardTitle>
             <CardDescription>
               Crée 50 résidences fictives avec logements, prix, services, activités et photos placeholder.
@@ -96,7 +127,7 @@ export default function AdminDemo() {
           </CardHeader>
           <CardContent>
             <Button onClick={seed} disabled={busy !== null} className="w-full">
-              {busy === "seed" ? "Création en cours…" : "Créer les données de démo"}
+              {busy === "seed" ? "Création en cours…" : "Créer les résidences de démo"}
             </Button>
           </CardContent>
         </Card>
@@ -104,20 +135,48 @@ export default function AdminDemo() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
-              <Trash2 className="h-5 w-5" /> Purge démo
+              <Trash2 className="h-5 w-5" /> Purge résidences
             </CardTitle>
             <CardDescription>
               Supprime toutes les résidences et leads marqués comme démo. Les vraies données sont préservées.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              onClick={purge}
-              disabled={busy !== null || (count ?? 0) === 0}
-              variant="destructive"
-              className="w-full"
-            >
-              {busy === "purge" ? "Suppression…" : "Purger les données de démo"}
+            <Button onClick={purge} disabled={busy !== null || (count ?? 0) === 0} variant="destructive" className="w-full">
+              {busy === "purge" ? "Suppression…" : "Purger les résidences de démo"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Home className="h-5 w-5 text-primary" /> Seed appartements
+            </CardTitle>
+            <CardDescription>
+              Crée 500 appartements fictifs (10 par résidence démo) avec prix, équipements et descriptions.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={seedApartments} disabled={busy !== null || (count ?? 0) === 0} className="w-full">
+              {busy === "seed-apt" ? "Création en cours…" : "Créer les appartements de démo"}
+            </Button>
+            {(count ?? 0) === 0 && (
+              <p className="text-xs text-muted-foreground mt-2">Créez d'abord les résidences de démo.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" /> Purge appartements
+            </CardTitle>
+            <CardDescription>Supprime tous les appartements marqués comme démo.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={purgeApartments} disabled={busy !== null || (aptCount ?? 0) === 0} variant="destructive" className="w-full">
+              {busy === "purge-apt" ? "Suppression…" : "Purger les appartements de démo"}
             </Button>
           </CardContent>
         </Card>
