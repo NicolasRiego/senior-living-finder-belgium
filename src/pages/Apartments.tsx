@@ -36,6 +36,9 @@ export default function ApartmentsPage() {
 
   const filters: ApartmentFilters = useMemo(() => {
     const tx = urlToTx(sp.get("type"));
+    const residencesParam = sp.get("residences");
+    const sortParam = sp.get("sort") as ApartmentSort | null;
+    const validSorts: ApartmentSort[] = ["price_asc", "price_desc", "surface_asc", "surface_desc"];
     const f: ApartmentFilters = {
       tx,
       country: (sp.get("pays") as "BE" | "FR") || "BE",
@@ -44,6 +47,8 @@ export default function ApartmentsPage() {
       surface_min: sp.get("surface") ? Number(sp.get("surface")) : undefined,
       sale_max: sp.get("saleMax") ? Number(sp.get("saleMax")) : undefined,
       rent_max: sp.get("rentMax") ? Number(sp.get("rentMax")) : undefined,
+      residence_ids: residencesParam ? residencesParam.split(",").filter(Boolean) : undefined,
+      sort: sortParam && validSorts.includes(sortParam) ? sortParam : "price_asc",
       page: sp.get("page") ? Number(sp.get("page")) : 1,
       pageSize: 12,
     };
