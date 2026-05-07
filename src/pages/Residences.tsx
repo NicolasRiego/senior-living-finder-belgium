@@ -358,20 +358,20 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-1 flex-col gap-3 p-6">
         <h3 className="font-display text-xl font-semibold leading-tight break-words">
           <Link to={`/residences/${row.slug}`} className="hover:text-primary">{name}</Link>
         </h3>
         {(row.ville || row.region) && (
-          <div className="mt-2 flex items-center gap-1.5 text-base text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-base text-muted-foreground">
             <MapPin className="h-4 w-4 shrink-0" /> <span className="break-words">{[row.ville, row.region].filter(Boolean).join(" · ")}</span>
           </div>
         )}
         {tagline && (
-          <p className="mt-3 line-clamp-2 min-h-[3em] text-base text-muted-foreground">{tagline}</p>
+          <p className="line-clamp-2 text-base text-muted-foreground">{tagline}</p>
         )}
 
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5">
           {row.is_pmr && (
             <span className="badge-fixed inline-flex items-center gap-1 rounded-full bg-primary-soft px-2.5 py-1 font-medium text-primary">
               <Accessibility className="h-3 w-3" /> PMR
@@ -384,7 +384,7 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
           )}
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-3 pt-6">
+        <div className="mt-auto flex flex-col gap-3 pt-3">
           <div>
             {row.price_from != null ? (
               <div>
@@ -398,23 +398,24 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
               <span className="text-sm text-muted-foreground">Tarifs sur demande</span>
             )}
           </div>
-        </div>
 
-        <div className="mt-4 flex gap-2">
-          <Button asChild size="sm" className="flex-1">
-            <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={inCompare ? "soft" : "outline"}
-            disabled={!inCompare && isFull}
-            onClick={() => toggle(row.id)}
-            aria-pressed={inCompare}
-            title={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
-          >
-            {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm" className="w-auto whitespace-nowrap px-4">
+              <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={inCompare ? "soft" : "outline"}
+              disabled={!inCompare && isFull}
+              onClick={() => toggle(row.id)}
+              aria-pressed={inCompare}
+              title={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+              className="px-4"
+            >
+              {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </div>
     </article>

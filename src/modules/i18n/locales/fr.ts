@@ -35,6 +35,9 @@ export const fr = {
     seigneurie: "Seigneurie",
     repos: "Maison de repos",
     repos_soins: "Maison de repos et de soins",
+    residence_services: "Résidence-services",
+    maison_repos: "Maison de repos",
+    maison_repos_soins: "Maison de repos et de soins",
   },
   home: {
     heroTitle: "Une nouvelle étape, en toute sérénité",
