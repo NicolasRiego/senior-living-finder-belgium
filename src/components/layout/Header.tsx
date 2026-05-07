@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { FontSizeControls } from "@/modules/accessibility/FontSizeControls";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/modules/auth/AuthProvider";
 
@@ -54,6 +55,7 @@ export function Header() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <LocaleSwitcher />
+          <FontSizeControls />
           {user ? (
             <>
               <Button asChild variant="outline">
@@ -105,7 +107,10 @@ export function Header() {
               </NavLink>
             ))}
             <div className="mt-2 flex flex-col gap-2 px-2">
-              <LocaleSwitcher />
+              <div className="flex items-center justify-between gap-2">
+                <LocaleSwitcher />
+                <FontSizeControls />
+              </div>
               {user ? (
                 <>
                   <Button asChild variant="outline" className="flex-1">
