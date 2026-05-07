@@ -97,6 +97,116 @@ export type Database = {
           },
         ]
       }
+      apartments: {
+        Row: {
+          available_from: string | null
+          cave: boolean
+          created_at: string
+          description_fr: string | null
+          description_nl: string | null
+          elevator: boolean
+          floor: number | null
+          furnished: boolean
+          garden: boolean
+          id: string
+          kitchen_equipped: boolean
+          parking: boolean
+          rent_price: number | null
+          residence_id: string
+          sale_price: number | null
+          status: string
+          surface_m2: number | null
+          terrace: boolean
+          title_fr: string | null
+          title_nl: string | null
+          transaction_type: string | null
+          type: string | null
+          updated_at: string
+          wheelchair_accessible: boolean
+        }
+        Insert: {
+          available_from?: string | null
+          cave?: boolean
+          created_at?: string
+          description_fr?: string | null
+          description_nl?: string | null
+          elevator?: boolean
+          floor?: number | null
+          furnished?: boolean
+          garden?: boolean
+          id?: string
+          kitchen_equipped?: boolean
+          parking?: boolean
+          rent_price?: number | null
+          residence_id: string
+          sale_price?: number | null
+          status?: string
+          surface_m2?: number | null
+          terrace?: boolean
+          title_fr?: string | null
+          title_nl?: string | null
+          transaction_type?: string | null
+          type?: string | null
+          updated_at?: string
+          wheelchair_accessible?: boolean
+        }
+        Update: {
+          available_from?: string | null
+          cave?: boolean
+          created_at?: string
+          description_fr?: string | null
+          description_nl?: string | null
+          elevator?: boolean
+          floor?: number | null
+          furnished?: boolean
+          garden?: boolean
+          id?: string
+          kitchen_equipped?: boolean
+          parking?: boolean
+          rent_price?: number | null
+          residence_id?: string
+          sale_price?: number | null
+          status?: string
+          surface_m2?: number | null
+          terrace?: boolean
+          title_fr?: string | null
+          title_nl?: string | null
+          transaction_type?: string | null
+          type?: string | null
+          updated_at?: string
+          wheelchair_accessible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_stats_30d"
+            referencedColumns: ["residence_id"]
+          },
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "v_residence_price_summary"
+            referencedColumns: ["residence_id"]
+          },
+        ]
+      }
       app_versions: {
         Row: {
           commit_sha: string | null
@@ -1056,6 +1166,68 @@ export type Database = {
       }
     }
     Views: {
+      apartment_search_view: {
+        Row: {
+          available_from: string | null
+          cave: boolean | null
+          code_postal: string | null
+          cover_path: string | null
+          description_fr: string | null
+          description_nl: string | null
+          elevator: boolean | null
+          floor: number | null
+          furnished: boolean | null
+          garden: boolean | null
+          id: string | null
+          kitchen_equipped: boolean | null
+          parking: boolean | null
+          province: string | null
+          region: string | null
+          rent_price: number | null
+          residence_id: string | null
+          residence_nom_fr: string | null
+          residence_nom_nl: string | null
+          residence_slug: string | null
+          sale_price: number | null
+          status: string | null
+          surface_m2: number | null
+          terrace: boolean | null
+          transaction_type: string | null
+          type: string | null
+          ville: string | null
+          wheelchair_accessible: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_stats_30d"
+            referencedColumns: ["residence_id"]
+          },
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "apartments_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "v_residence_price_summary"
+            referencedColumns: ["residence_id"]
+          },
+        ]
+      }
       residence_search_view: {
         Row: {
           adresse: string | null
