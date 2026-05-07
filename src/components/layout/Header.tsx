@@ -88,7 +88,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-border/50 bg-background xl:hidden">
+        <div className="border-t border-border/50 bg-background lg:hidden">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
               <NavLink
