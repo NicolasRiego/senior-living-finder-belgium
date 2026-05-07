@@ -233,12 +233,41 @@
     max-height: none !important;
   }
 
+  /* Force font-size inheritance inside cards (.rounded-2xl) and sidebars (aside) */
+  main[data-fontsize] .rounded-2xl p,
+  main[data-fontsize] .rounded-2xl span:not(.badge-fixed):not(.badge-fixed *),
+  main[data-fontsize] .rounded-2xl label,
+  main[data-fontsize] .rounded-2xl button:not(.badge-fixed),
+  main[data-fontsize] .rounded-2xl a,
+  main[data-fontsize] .rounded-2xl li,
+  main[data-fontsize] aside p,
+  main[data-fontsize] aside span:not(.badge-fixed):not(.badge-fixed *),
+  main[data-fontsize] aside label,
+  main[data-fontsize] aside button,
+  main[data-fontsize] aside select,
+  main[data-fontsize] aside input:not([type="range"]),
+  main[data-fontsize] aside a,
+  main[data-fontsize] aside li {
+    font-size: var(--fs-body) !important;
+  }
+  main[data-fontsize] .rounded-2xl h3,
+  main[data-fontsize] aside h2 {
+    font-size: var(--fs-h3) !important;
+  }
+  main[data-fontsize] .rounded-2xl .text-sm,
+  main[data-fontsize] .rounded-2xl .text-xs,
+  main[data-fontsize] aside .text-sm,
+  main[data-fontsize] aside .text-xs {
+    font-size: var(--fs-small) !important;
+  }
+
   /* Badges keep fixed font-size, never scaled by user font preference */
   main[data-fontsize] .badge-fixed,
   main[data-fontsize] .badge-fixed * {
     font-size: 0.8125rem !important;
     line-height: 1.1 !important;
   }
+
 
   /* Selects: text never overflows */
   main[data-fontsize] select {
