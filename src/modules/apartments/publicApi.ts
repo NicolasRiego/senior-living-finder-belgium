@@ -106,7 +106,7 @@ export async function getCoverUrl(path: string | null): Promise<string | null> {
 }
 
 export type ApartmentDetail = {
-  apartment: ApartmentSearchRow;
+  apartment: ApartmentSearchRow & { title_fr: string | null; title_nl: string | null };
   residence: {
     id: string;
     slug: string;
@@ -126,6 +126,12 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
     .maybeSingle();
   if (!apt) return null;
   const a = apt as unknown as ApartmentSearchRow;
+
+  const { data: titleRow } = await supabase
+    .from("apartments")
+    .select("title_fr, title_nl")
+    .eq("id", id)
+    .maybeSingle();
 
   const { data: r } = await supabase
     .from("residences")
@@ -153,6 +159,11 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
     }
   }
 
-  return { apartment: a, residence: r, photos: photoUrls };
+  return {
+    apartment: { ...a, title_fr: titleRow?.title_fr ?? null, title_nl: titleRow?.title_nl ?? null },
+    residence: r,
+    photos: photoUrls,
+  };
 }
+
 
