@@ -4,10 +4,10 @@ export type FontSize = "normal" | "large" | "xlarge";
 
 const STORAGE_KEY = "app.fontSize";
 
-const SIZE_TO_PX: Record<FontSize, string> = {
-  normal: "16px",
-  large: "19px",
-  xlarge: "22px",
+export const FONT_SIZE_PX: Record<FontSize, string> = {
+  normal: "18px",
+  large: "21px",
+  xlarge: "24px",
 };
 
 interface FontSizeContextValue {
@@ -16,12 +16,6 @@ interface FontSizeContextValue {
 }
 
 const FontSizeContext = createContext<FontSizeContextValue | undefined>(undefined);
-
-function applySize(size: FontSize): void {
-  const root = document.documentElement;
-  root.setAttribute("data-fontsize", size);
-  root.style.fontSize = SIZE_TO_PX[size];
-}
 
 function readInitial(): FontSize {
   if (typeof window === "undefined") return "normal";
@@ -38,7 +32,6 @@ export function FontSizeProvider({ children }: FontSizeProviderProps) {
   const [size, setSizeState] = useState<FontSize>(readInitial);
 
   useEffect(() => {
-    applySize(size);
     try {
       window.localStorage.setItem(STORAGE_KEY, size);
     } catch {
