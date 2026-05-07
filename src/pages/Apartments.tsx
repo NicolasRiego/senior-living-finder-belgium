@@ -208,6 +208,58 @@ export default function ApartmentsPage() {
               />
             </div>
 
+            <div className="rounded-xl border border-border bg-card p-3">
+              <div className="mb-2 flex items-center justify-between">
+                <label className="text-sm font-medium">
+                  Résidence{selectedIds.length > 0 ? ` (${selectedIds.length})` : ""}
+                </label>
+                {selectedIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setResidenceIds([])}
+                    className="text-xs font-medium text-primary hover:underline"
+                  >
+                    Effacer
+                  </button>
+                )}
+              </div>
+              <Input
+                value={residenceQuery}
+                onChange={(e) => setResidenceQuery(e.target.value)}
+                placeholder="Rechercher une résidence..."
+                className="mb-2 h-9"
+                aria-label="Rechercher une résidence"
+              />
+              <div className="max-h-[200px] space-y-1.5 overflow-y-auto pr-1">
+                {residencesFacet.isLoading ? (
+                  <p className="text-xs text-muted-foreground">Chargement…</p>
+                ) : filteredResidences.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Aucune résidence</p>
+                ) : (
+                  filteredResidences.map((r) => {
+                    const checked = selectedIds.includes(r.id);
+                    return (
+                      <label key={r.id} className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm hover:bg-muted">
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(v) => {
+                            const next = v
+                              ? [...selectedIds, r.id]
+                              : selectedIds.filter((id) => id !== r.id);
+                            setResidenceIds(next);
+                          }}
+                        />
+                        <span className="flex-1 truncate">
+                          {r.nom_fr}
+                          {r.ville && <span className="text-muted-foreground"> ({r.ville})</span>}
+                        </span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-medium">Type de bien</label>
               <select
