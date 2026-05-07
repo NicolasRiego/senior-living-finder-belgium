@@ -26,7 +26,7 @@ export function FontSizeControls({ className }: FontSizeControlsProps) {
       role="group"
       aria-label="Réglage de la taille du texte"
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border border-border bg-background p-1",
+        "inline-flex shrink-0 items-center gap-0.5 rounded-full border border-border bg-background p-0.5",
         className,
       )}
     >
@@ -40,7 +40,7 @@ export function FontSizeControls({ className }: FontSizeControlsProps) {
             aria-label={opt.ariaLabel}
             aria-pressed={active}
             className={cn(
-              "inline-flex h-9 min-w-9 items-center justify-center rounded-full px-2 font-semibold leading-none transition-colors",
+              "inline-flex h-7 min-w-7 items-center justify-center whitespace-nowrap rounded-full px-1.5 font-semibold leading-none transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               opt.textClass,
               active

@@ -25,15 +25,15 @@ export function Header() {
 
   return (
     <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] overflow-x-hidden border-b border-border/50 bg-background/85 backdrop-blur-md">
-      <div className="container flex h-20 items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2.5 font-display text-xl font-semibold">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
-            <Heart className="h-5 w-5" fill="currentColor" />
+      <div className="container flex min-h-20 flex-wrap items-center justify-between gap-3 py-2">
+        <Link to="/" className="flex shrink-0 items-center gap-2 font-display text-lg font-semibold whitespace-nowrap">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
+            <Heart className="h-4 w-4" fill="currentColor" />
           </span>
           <span>{t("brand.name")}</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-1 xl:flex" aria-label="Primary">
           {links.map((l) => (
             <NavLink
               key={l.to}
@@ -41,7 +41,7 @@ export function Header() {
               end={l.end}
               className={({ isActive }) =>
                 cn(
-                  "rounded-full px-4 py-2.5 text-base font-medium transition-colors",
+                  "whitespace-nowrap rounded-full px-3 py-2 text-base font-medium transition-colors",
                   isActive
                     ? "bg-primary-soft text-primary"
                     : "text-foreground/80 hover:bg-muted hover:text-foreground",
@@ -53,12 +53,12 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-2 xl:flex">
           <LocaleSwitcher />
           <FontSizeControls />
           {user ? (
             <>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="whitespace-nowrap">
                 <Link to={myLink}><User className="h-4 w-4 mr-2" /> {myLabel}</Link>
               </Button>
               <Button variant="ghost" size="icon" onClick={signOut} aria-label="Se déconnecter">
@@ -67,10 +67,10 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button asChild variant="ghost">
+              <Button asChild variant="ghost" className="whitespace-nowrap">
                 <Link to="/connexion">{t("nav.login")}</Link>
               </Button>
-              <Button asChild>
+              <Button asChild className="whitespace-nowrap">
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
@@ -78,7 +78,7 @@ export function Header() {
         </div>
 
         <button
-          className="inline-flex h-12 w-12 items-center justify-center rounded-full text-foreground hover:bg-muted lg:hidden"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted xl:hidden"
           onClick={() => setOpen((o) => !o)}
           aria-label="Menu"
           aria-expanded={open}
@@ -88,7 +88,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-border/50 bg-background lg:hidden">
+        <div className="border-t border-border/50 bg-background xl:hidden">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
               <NavLink
