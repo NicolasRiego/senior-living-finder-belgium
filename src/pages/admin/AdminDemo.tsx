@@ -55,6 +55,35 @@ export default function AdminDemo() {
     refresh();
   };
 
+  const seedApartments = async () => {
+    setBusy("seed-apt");
+    const { data, error } = await supabase.rpc("seed_demo_apartments" as any);
+    setBusy(null);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    const d = data as any;
+    toast({
+      title: d?.skipped ? "Déjà présents" : "Appartements créés",
+      description: d?.skipped ? d.message : `${d?.apartments_created ?? 500} appartements ajoutés.`,
+    });
+    refresh();
+  };
+
+  const purgeApartments = async () => {
+    if (!confirm("Supprimer TOUS les appartements démo ?")) return;
+    setBusy("purge-apt");
+    const { data, error } = await supabase.rpc("purge_demo_apartments" as any);
+    setBusy(null);
+    if (error) {
+      toast({ title: "Erreur", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Appartements purgés", description: `${(data as any)?.deleted ?? 0} supprimés.` });
+    refresh();
+  };
+
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
