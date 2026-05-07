@@ -41,21 +41,38 @@ export function Header() {
 
         <nav className="hidden shrink-0 flex-nowrap items-center gap-1 lg:flex" aria-label="Primary">
           {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.end}
-              className={({ isActive }) =>
-                cn(
-                  "whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none transition-colors",
-                  isActive
-                    ? "bg-primary-soft text-primary"
-                    : "text-foreground/80 hover:bg-muted hover:text-foreground",
-                )
-              }
-            >
-              {l.label}
-            </NavLink>
+            <>
+              <NavLink
+                key={l.to}
+                to={l.to}
+                end={l.end}
+                className={({ isActive }) =>
+                  cn(
+                    "whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none transition-colors",
+                    isActive
+                      ? "bg-primary-soft text-primary"
+                      : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                  )
+                }
+              >
+                {l.label}
+              </NavLink>
+              {l.to === "/residences" && (
+                <DropdownMenu key="apt-menu">
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-5 py-3 text-xl font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
+                    Appartements <ChevronDown className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-[260px]">
+                    <DropdownMenuItem asChild>
+                      <Link to="/appartements?type=vente" className="text-base">Appartements à vendre</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/appartements?type=location" className="text-base">Appartements à louer</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </>
           ))}
         </nav>
 
