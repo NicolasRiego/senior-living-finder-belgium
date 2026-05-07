@@ -109,6 +109,7 @@ export type Database = {
           furnished: boolean
           garden: boolean
           id: string
+          is_demo: boolean
           kitchen_equipped: boolean
           parking: boolean
           rent_price: number | null
@@ -135,6 +136,7 @@ export type Database = {
           furnished?: boolean
           garden?: boolean
           id?: string
+          is_demo?: boolean
           kitchen_equipped?: boolean
           parking?: boolean
           rent_price?: number | null
@@ -161,6 +163,7 @@ export type Database = {
           furnished?: boolean
           garden?: boolean
           id?: string
+          is_demo?: boolean
           kitchen_equipped?: boolean
           parking?: boolean
           rent_price?: number | null
@@ -1381,6 +1384,7 @@ export type Database = {
       }
       log_lead_view: { Args: { _lead_id: string }; Returns: undefined }
       promote_email_to_admin: { Args: { _email: string }; Returns: undefined }
+      purge_demo_apartments: { Args: never; Returns: Json }
       purge_demo_data: { Args: never; Returns: Json }
       purge_old_leads: { Args: { _months?: number }; Returns: number }
       reject_residence: {
@@ -1399,6 +1403,7 @@ export type Database = {
         Args: { _version_id: string }
         Returns: undefined
       }
+      seed_demo_apartments: { Args: never; Returns: Json }
       seed_demo_data: { Args: never; Returns: Json }
       snapshot_residence: {
         Args: { _actor: string; _reason: string; _residence_id: string }
