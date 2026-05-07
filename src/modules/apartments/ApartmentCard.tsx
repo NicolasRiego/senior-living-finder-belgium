@@ -87,7 +87,7 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
           )}
           {row.floor != null && (
             <span className="inline-flex items-center gap-1.5">
-              <Layers className="h-4 w-4" /> Étage {row.floor}
+              <Layers className="h-4 w-4" /> {row.floor === 0 ? "Rez-de-chaussée" : `Étage ${row.floor}`}
             </span>
           )}
         </div>
