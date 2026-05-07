@@ -25,15 +25,15 @@ export function Header() {
 
   return (
     <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] [overflow-x:clip] border-b border-border/50 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-[72px] w-full max-w-[1400px] flex-nowrap items-center justify-between gap-4 px-4">
-        <Link to="/" className="flex shrink-0 items-center gap-2 font-display text-lg font-semibold whitespace-nowrap">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
-            <Heart className="h-4 w-4" fill="currentColor" />
+      <div className="mx-auto flex min-h-24 w-full max-w-[1400px] flex-nowrap items-center justify-between gap-3 px-4">
+        <Link to="/" className="flex shrink-0 items-center gap-2.5 font-display text-2xl font-semibold whitespace-nowrap">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
+            <Heart className="h-6 w-6" fill="currentColor" />
           </span>
           <span>{t("brand.name")}</span>
         </Link>
 
-        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 lg:flex" aria-label="Primary">
+        <nav className="hidden shrink-0 flex-nowrap items-center gap-1 lg:flex" aria-label="Primary">
           {links.map((l) => (
             <NavLink
               key={l.to}
@@ -41,7 +41,7 @@ export function Header() {
               end={l.end}
               className={({ isActive }) =>
                 cn(
-                  "whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium leading-none transition-colors",
+                  "whitespace-nowrap rounded-full px-4 py-2.5 text-lg font-medium leading-none transition-colors",
                   isActive
                     ? "bg-primary-soft text-primary"
                     : "text-foreground/80 hover:bg-muted hover:text-foreground",
@@ -53,24 +53,24 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden shrink-0 flex-nowrap items-center gap-1.5 lg:flex">
+        <div className="hidden shrink-0 flex-nowrap items-center gap-2 lg:flex">
           <LocaleSwitcher />
           <FontSizeControls />
           {user ? (
             <>
-              <Button asChild variant="outline" size="sm" className="h-9 whitespace-nowrap px-3 text-sm">
-                <Link to={myLink}><User className="h-4 w-4 mr-1.5" /> {myLabel}</Link>
+              <Button asChild variant="outline" size="sm" className="h-10 whitespace-nowrap px-4 text-base">
+                <Link to={myLink}><User className="h-5 w-5 mr-1.5" /> {myLabel}</Link>
               </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9" onClick={signOut} aria-label="Se déconnecter">
+              <Button variant="ghost" size="icon" className="h-10 w-10" onClick={signOut} aria-label="Se déconnecter">
                 <LogOut className="h-5 w-5" />
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="h-9 whitespace-nowrap px-3 text-sm">
+              <Button asChild variant="ghost" size="sm" className="h-10 whitespace-nowrap px-4 text-base">
                 <Link to="/connexion">{t("nav.login")}</Link>
               </Button>
-              <Button asChild size="sm" className="h-9 whitespace-nowrap px-3 text-sm">
+              <Button asChild size="sm" className="h-10 whitespace-nowrap px-4 text-base">
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
@@ -78,7 +78,7 @@ export function Header() {
         </div>
 
         <button
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted lg:hidden"
+          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted lg:hidden"
           onClick={() => setOpen((o) => !o)}
           aria-label="Menu"
           aria-expanded={open}
