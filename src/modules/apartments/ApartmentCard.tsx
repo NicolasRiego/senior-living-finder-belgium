@@ -94,26 +94,27 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
 
         <div className="mt-auto flex flex-col gap-3 pt-3">
           <div className="space-y-1">
-            {showSale && row.sale_price != null && (
+            {showSale && row.sale_price != null && row.sale_price > 0 && (
               <div>
                 <span className="text-sm text-muted-foreground">Prix : </span>
-                <span className="font-display text-2xl font-semibold text-primary">
+                <span className="font-display text-xl font-semibold text-primary xl:text-2xl">
                   {row.sale_price.toLocaleString("fr-BE")} €
                 </span>
               </div>
             )}
-            {showRent && row.rent_price != null && (
+            {showRent && row.rent_price != null && row.rent_price > 0 && (
               <div>
                 <span className="text-sm text-muted-foreground">Loyer : </span>
-                <span className="font-display text-2xl font-semibold text-primary">
+                <span className="font-display text-xl font-semibold text-primary xl:text-2xl">
                   {row.rent_price.toLocaleString("fr-BE")} €
                 </span>
                 <span className="text-sm text-muted-foreground">/mois</span>
               </div>
             )}
-            {!showSale && !showRent && (
-              <span className="text-sm text-muted-foreground">Prix sur demande</span>
-            )}
+            {(!showSale || !row.sale_price || row.sale_price <= 0) &&
+              (!showRent || !row.rent_price || row.rent_price <= 0) && (
+                <span className="text-sm text-muted-foreground">Prix sur demande</span>
+              )}
           </div>
 
           <div className="flex flex-wrap gap-2">
