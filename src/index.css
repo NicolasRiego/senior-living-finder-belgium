@@ -146,43 +146,33 @@
     height: auto;
   }
 
-  /* Header: never scale with the user font-size choice.
-     Anchor at 16px so all rem-based sizes (icons, paddings) stay constant. */
-  header[data-fixed-size="true"] {
-    font-size: 16px;
-  }
-  header[data-fixed-size="true"] .text-xl { font-size: 1.25rem; }
-  header[data-fixed-size="true"] .text-lg { font-size: 1.125rem; }
-  header[data-fixed-size="true"] .text-base { font-size: 1rem; }
-  header[data-fixed-size="true"] .text-sm { font-size: 0.875rem; }
-
   /* Generous focus ring for accessibility */
   :focus-visible {
     @apply outline-none ring-4 ring-ring/40 ring-offset-2 ring-offset-background rounded-md;
   }
 
-  /* Adaptive grids based on user font size */
-  html[data-fontsize="large"] .grid-3col,
-  html[data-fontsize="large"] .md\:grid-cols-3,
-  html[data-fontsize="large"] .lg\:grid-cols-3,
-  html[data-fontsize="large"] .xl\:grid-cols-3 {
+  /* Adaptive grids based on user font size — scoped to <main> only */
+  main[data-fontsize="large"] .grid-3col,
+  main[data-fontsize="large"] .md\:grid-cols-3,
+  main[data-fontsize="large"] .lg\:grid-cols-3,
+  main[data-fontsize="large"] .xl\:grid-cols-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
-  html[data-fontsize="xlarge"] .grid-3col,
-  html[data-fontsize="xlarge"] .grid-cols-2,
-  html[data-fontsize="xlarge"] .md\:grid-cols-2,
-  html[data-fontsize="xlarge"] .md\:grid-cols-3,
-  html[data-fontsize="xlarge"] .lg\:grid-cols-3,
-  html[data-fontsize="xlarge"] .xl\:grid-cols-3 {
+  main[data-fontsize="xlarge"] .grid-3col,
+  main[data-fontsize="xlarge"] .grid-cols-2,
+  main[data-fontsize="xlarge"] .md\:grid-cols-2,
+  main[data-fontsize="xlarge"] .md\:grid-cols-3,
+  main[data-fontsize="xlarge"] .lg\:grid-cols-3,
+  main[data-fontsize="xlarge"] .xl\:grid-cols-3 {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
   /* Filters sidebar collapses at xlarge */
-  html[data-fontsize="xlarge"] .lg\:grid-cols-\[300px_1fr\] {
+  main[data-fontsize="xlarge"] .lg\:grid-cols-\[300px_1fr\] {
     grid-template-columns: minmax(0, 1fr) !important;
   }
-  html[data-fontsize="xlarge"] aside.lg\:sticky {
+  main[data-fontsize="xlarge"] aside.lg\:sticky {
     position: static !important;
     max-height: none !important;
   }
