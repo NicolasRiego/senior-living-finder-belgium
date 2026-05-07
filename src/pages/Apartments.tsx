@@ -389,6 +389,13 @@ export default function ApartmentsPage() {
           )}
         </div>
       </div>
+
+      <ResidencePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        appliedIds={selectedIds}
+        onApply={(ids) => setResidenceIds(ids)}
+      />
     </div>
   );
 }
