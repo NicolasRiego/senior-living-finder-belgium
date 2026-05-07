@@ -31,6 +31,21 @@ export async function searchApartments(filters: ApartmentFilters) {
     if (filters[f]) q = q.eq(f, true);
   }
 
+  if (filters.residence_ids && filters.residence_ids.length > 0) {
+    q = q.in("residence_id", filters.residence_ids);
+  }
+
+  const sort = filters.sort ?? "price_asc";
+  const priceCol = filters.tx === "sale" ? "sale_price" : "rent_price";
+  if (sort === "price_asc") {
+    q = q.order(priceCol as never, { ascending: true, nullsFirst: false });
+  } else if (sort === "price_desc") {
+    q = q.order(priceCol as never, { ascending: false, nullsFirst: false });
+  } else if (sort === "surface_asc") {
+    q = q.order("surface_m2" as never, { ascending: true, nullsFirst: false });
+  } else {
+    q = q.order("surface_m2" as never, { ascending: false, nullsFirst: false });
+  }
   q = q.order("id" as never, { ascending: false }).range(from, to);
 
   const { data, count, error } = await q;
