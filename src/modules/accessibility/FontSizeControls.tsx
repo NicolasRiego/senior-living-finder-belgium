@@ -40,9 +40,8 @@ export function FontSizeControls({ className }: FontSizeControlsProps) {
             aria-label={opt.ariaLabel}
             aria-pressed={active}
             className={cn(
-              "inline-flex h-10 min-w-10 items-center justify-center whitespace-nowrap rounded-full px-2.5 font-semibold leading-none transition-colors",
+              "inline-flex h-8 min-w-8 items-center justify-center whitespace-nowrap rounded-full px-1.5 text-xs font-semibold leading-none transition-colors",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-              opt.textClass,
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-foreground hover:bg-muted",
