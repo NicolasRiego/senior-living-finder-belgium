@@ -71,19 +71,48 @@ export default function ApartmentsPage() {
 
   const setTx = (tx: TxFilter) => {
     const opt = TX_OPTIONS.find((o) => o.value === tx)!;
-    updateParam({ type: opt.urlValue, saleMax: null, rentMax: null });
+    updateParam({ type: opt.urlValue, saleMax: null, rentMax: null, sort: "price_asc" });
   };
+
+  const setSort = (s: ApartmentSort) => updateParam({ sort: s });
+
+  const setResidenceIds = (ids: string[]) =>
+    updateParam({ residences: ids.length ? ids.join(",") : null });
 
   const search = useQuery({
     queryKey: ["apartments-search", filters],
     queryFn: () => searchApartments(filters),
   });
 
+  const residencesFacet = useQuery({
+    queryKey: ["apartments-residences-facet"],
+    queryFn: listApartmentResidences,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const [residenceQuery, setResidenceQuery] = useState("");
+  const selectedIds = filters.residence_ids ?? [];
+  const filteredResidences = useMemo(() => {
+    const list = residencesFacet.data ?? [];
+    const q = residenceQuery.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(
+      (r) => r.nom_fr.toLowerCase().includes(q) || (r.ville ?? "").toLowerCase().includes(q),
+    );
+  }, [residencesFacet.data, residenceQuery]);
+
   const total = search.data?.total ?? 0;
   const totalPages = search.data?.totalPages ?? 1;
   const page = filters.page ?? 1;
   const showSaleSlider = filters.tx === "sale" || filters.tx === "all";
   const showRentSlider = filters.tx === "rent" || filters.tx === "all";
+  const isSaleMode = filters.tx === "sale";
+  const sortOptions: { value: ApartmentSort; label: string }[] = [
+    { value: "price_asc", label: isSaleMode ? "Prix croissant (achat)" : "Prix croissant (loyer)" },
+    { value: "price_desc", label: isSaleMode ? "Prix décroissant (achat)" : "Prix décroissant (loyer)" },
+    { value: "surface_desc", label: "Surface : grande → petite" },
+    { value: "surface_asc", label: "Surface : petite → grande" },
+  ];
 
   return (
     <div className="container py-12 lg:py-16">
