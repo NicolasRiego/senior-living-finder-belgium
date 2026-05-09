@@ -4,8 +4,9 @@ import { useAuth } from "@/modules/auth/AuthProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Undo2 } from "lucide-react";
+import { Eye, Trash2, Undo2 } from "lucide-react";
 import { toast } from "sonner";
+import { ArchivedResidenceDialog } from "./ArchivedResidenceDialog";
 
 type Row = {
   id: string;
@@ -21,6 +22,7 @@ export default function Trash() {
   const { orgIds } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewId, setViewId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -41,9 +43,9 @@ export default function Trash() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgIds.join(",")]);
 
-  const onRestore = async (r: Row) => {
+  const restoreById = async (id: string) => {
     const { error } = await supabase.rpc("unarchive_residence", {
-      _residence_id: r.id,
+      _residence_id: id,
     });
     if (error) {
       toast.error(error.message);
@@ -93,14 +95,34 @@ export default function Trash() {
                     Données conservées
                   </p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => onRestore(r)}>
-                  <Undo2 className="h-4 w-4 mr-2" /> Restaurer
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setViewId(r.id)}
+                  >
+                    <Eye className="h-4 w-4 mr-2" /> Consulter
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => restoreById(r.id)}
+                  >
+                    <Undo2 className="h-4 w-4 mr-2" /> Restaurer
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
+
+      <ArchivedResidenceDialog
+        residenceId={viewId}
+        open={!!viewId}
+        onClose={() => setViewId(null)}
+        onRestore={restoreById}
+      />
     </div>
   );
 }
