@@ -70,10 +70,10 @@ function defaultsForKind(kind: FreqKind) {
 function unitsPerMonth(kind: FreqKind, s: SelectedState[string]): number {
   switch (kind) {
     case "meals":
-      return (s.mealsPerDay ?? 0) * (s.daysPerWeek ?? 0) * 4.33;
+      return (s.mealsPerDay ?? 0) * (s.daysPerWeek ?? 0) * 4;
     case "perWeek":
     case "sessionsWeek":
-      return (s.perWeek ?? 0) * 4.33;
+      return (s.perWeek ?? 0) * 4;
     case "perMonth":
       return s.perMonth ?? 0;
     case "fixed":
