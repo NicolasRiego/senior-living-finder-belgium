@@ -290,11 +290,34 @@ export default function ResidencePreview() {
         {services.length > 0 && (
           <section>
             <h2 className="font-display text-2xl mb-3">Services</h2>
-            <ul className="grid gap-2 md:grid-cols-2">
-              {services.map((s: any) => (
-                <li key={s.id} className="text-lg">• {s.services_catalog?.label_fr}</li>
-              ))}
-            </ul>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {services.map((s: any) => {
+                const label = s.services_catalog?.label_fr ?? s.services_catalog?.label_nl ?? "Service";
+                const isOptional = s.optional === true;
+                const price = s.price ?? null;
+                return (
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card px-4 py-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                        <Check className="h-4 w-4" />
+                      </span>
+                      <span className="font-medium text-sm">{label}</span>
+                    </div>
+                    {isOptional && (
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                          Optionnel
+                        </span>
+                        {price && <span className="text-sm font-semibold">{price} €</span>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
