@@ -219,12 +219,12 @@ export default function ApartmentEditor() {
           </Field>
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Type de bien" required error={errors.type}>
-              <Select value={form.type} onValueChange={(v) => set("type", v as FormState["type"])}>
+              <Select value={form.type} onValueChange={(v) => set("type", v)}>
                 <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="appartement">Appartement</SelectItem>
-                  <SelectItem value="studio">Studio</SelectItem>
-                  <SelectItem value="chambre">Chambre</SelectItem>
+                  {UNIT_TYPES.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>
