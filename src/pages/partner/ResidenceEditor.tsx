@@ -166,6 +166,10 @@ export default function ResidenceEditor() {
             onChange={onChange}
             reload={load}
             setExternalSaving={setExternal}
+            onStepChange={(key) => {
+              const idx = steps.findIndex((s) => s.key === key);
+              if (idx !== -1) setStepIdx(idx);
+            }}
           />
 
           <div className="flex justify-between">
