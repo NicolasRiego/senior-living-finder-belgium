@@ -212,6 +212,13 @@ export default function ResidenceDetailPage() {
               )}
 
 
+              {/* Coûts */}
+              {charges.length > 0 && unitSummaries.length > 0 && (
+                <Section id="couts" title="Coûts mensuels estimés">
+                  <CostsSection charges={charges} unitSummaries={unitSummaries} />
+                </Section>
+              )}
+
               {/* Services */}
               {services.length > 0 && (
                 <Section id="services" title="Services">
