@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare, ExternalLink } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
-import { getResidenceFullBySlug } from "@/modules/residences/publicApi";
+import { getResidenceFullBySlug, type PublicUnitSummary } from "@/modules/residences/publicApi";
 import { trackResidenceEvent } from "@/modules/analytics/track";
 import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(UNIT_TYPES.map((t) => [t.value, t.label]));
 
 
 export default function ResidenceDetailPage() {
@@ -38,15 +41,15 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  const { residence: r, units, pricing, services, activities, photos } = data;
+  const { residence: r, unitSummaries = [], services, activities, photos } = data as typeof data & { unitSummaries?: PublicUnitSummary[] };
   const cover = photos.find((p) => p.cover) ?? photos[0];
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
   const description = tr(r.description_fr, r.description_nl);
-  const minPrice = pricing
-    .map((p: any) => p.estimated_monthly_min ?? p.rent_min)
-    .filter((v: any) => v != null)
-    .reduce((m: number | null, v: number) => (m == null ? v : Math.min(m, v)), null);
+  const minPrice = unitSummaries
+    .map((s) => s.rentMin)
+    .filter((v): v is number => v != null)
+    .reduce<number | null>((m, v) => (m == null ? v : Math.min(m, v)), null);
 
   return (
     <article className="pb-32">
