@@ -79,8 +79,17 @@ export default function PricingStep({ residence, setExternalSaving }: StepProps)
   }, [residence.id]);
 
   const totalMandatory = useMemo(
-    () => charges.filter((c) => c.is_mandatory).reduce((sum, c) => sum + (c.amount ?? 0), 0),
-    [charges]
+    () =>
+      charges
+        .filter(
+          (c) =>
+            c.is_mandatory &&
+            c.amount > 0 &&
+            c.label !== "Nouveau service" &&
+            !dirtyIds.has(c.id),
+        )
+        .reduce((sum, c) => sum + (c.amount ?? 0), 0),
+    [charges, dirtyIds]
   );
 
   const summary = useMemo<SummaryRow[]>(() => {
@@ -306,12 +315,20 @@ export default function PricingStep({ residence, setExternalSaving }: StepProps)
             Ajouter une charge / un service
           </Button>
 
-          {totalMandatory > 0 && (
-            <div className="rounded-xl bg-muted/50 border border-border/60 px-4 py-3 flex justify-between items-center">
-              <span className="text-sm font-medium">Total charges obligatoires / mois</span>
-              <span className="text-lg font-bold text-primary">
-                {totalMandatory.toLocaleString("fr-BE")} €
-              </span>
+          {(totalMandatory > 0 || dirtyIds.size > 0) && (
+            <div className="rounded-xl bg-muted/50 border border-border/60 px-4 py-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Total charges obligatoires / mois</span>
+                <span className="text-lg font-bold text-primary">
+                  {totalMandatory.toLocaleString("fr-BE")} €
+                </span>
+              </div>
+              {dirtyIds.size > 0 && (
+                <p className="text-xs text-amber-600 mt-1">
+                  ⚠️ {dirtyIds.size} modification{dirtyIds.size > 1 ? "s" : ""} non sauvegardée
+                  {dirtyIds.size > 1 ? "s" : ""} — enregistrez pour mettre à jour la fiche publique.
+                </p>
+              )}
             </div>
           )}
         </CardContent>
