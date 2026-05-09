@@ -24,6 +24,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type Row = {
   id: string;
@@ -55,6 +56,7 @@ export default function MyResidences() {
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
   const [busy, setBusy] = useState(false);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
