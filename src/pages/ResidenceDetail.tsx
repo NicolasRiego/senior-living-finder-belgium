@@ -9,6 +9,7 @@ import { getResidenceFullBySlug, type PublicUnitSummary } from "@/modules/reside
 import { trackResidenceEvent } from "@/modules/analytics/track";
 import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+import CostsSection from "@/modules/residences/CostsSection";
 
 const TYPE_LABEL: Record<string, string> = Object.fromEntries(UNIT_TYPES.map((t) => [t.value, t.label]));
 
