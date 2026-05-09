@@ -96,6 +96,14 @@ const App = () => (
                     }
                   />
                   <Route
+                    path="/partenaire/residences"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><MyResidences /></PartnerLayout>
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
                     path="/partenaire/residences/:id/edition"
                     element={
                       <RequireAuth requireOrg>
