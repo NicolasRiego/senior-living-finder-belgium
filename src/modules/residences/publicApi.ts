@@ -176,6 +176,7 @@ export async function getResidenceFullBySlug(slug: string) {
     services: services.data ?? [],
     activities: activities.data ?? [],
     photos: photoUrls,
+    charges: chargesRes.data ?? [],
   };
 }
 
