@@ -24,6 +24,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 type Row = {
   id: string;
@@ -55,6 +56,7 @@ export default function MyResidences() {
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
   const [busy, setBusy] = useState(false);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -91,6 +93,26 @@ export default function MyResidences() {
     else setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgIds.join(",")]);
+
+  useEffect(() => {
+    if (loading) return;
+    const hash = window.location.hash;
+    if (!hash) return;
+    const id = hash.replace("#", "");
+    const tryScroll = (attempts = 0) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const targetId = id.replace(/^residence-/, "");
+        setHighlightedId(targetId);
+        setTimeout(() => setHighlightedId(null), 2000);
+      } else if (attempts < 10) {
+        setTimeout(() => tryScroll(attempts + 1), 150);
+      }
+    };
+    tryScroll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   const onCreate = async () => {
     if (!orgIds.length) return;
@@ -166,7 +188,15 @@ export default function MyResidences() {
           {active.map((r) => {
             const meta = statusLabel[r.status] ?? statusLabel.draft;
             return (
-              <Card key={r.id}>
+              <Card
+                key={r.id}
+                id={`residence-${r.id}`}
+                className={cn(
+                  "scroll-mt-24",
+                  highlightedId === r.id &&
+                    "ring-2 ring-primary ring-offset-2 transition-all",
+                )}
+              >
                 <CardHeader className="flex flex-row items-start justify-between space-y-0">
                   <div>
                     <CardTitle className="text-xl">
