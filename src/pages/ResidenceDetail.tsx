@@ -222,18 +222,34 @@ export default function ResidenceDetailPage() {
               {/* Services */}
               {services.length > 0 && (
                 <Section id="services" title="Services">
-                  <ul className="grid gap-3 sm:grid-cols-2">
-                    {services.map((s: any) => (
-                      <li key={s.id} className="flex items-center gap-3 rounded-xl bg-muted/40 px-4 py-3 text-base">
-                        <span className={"flex h-8 w-8 items-center justify-center rounded-full " + (s.included ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
-                          <Check className="h-4 w-4" />
-                        </span>
-                        <span className="flex-1">{tr(s.services_catalog?.label_fr, s.services_catalog?.label_nl) || "Service"}</span>
-                        {s.optional && <span className="text-xs text-muted-foreground">Optionnel</span>}
-                        {s.price && <span className="text-sm font-medium">{s.price} €</span>}
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {services.map((s: any) => {
+                      const label = tr(s.services_catalog?.label_fr, s.services_catalog?.label_nl) || "Service";
+                      const isOptional = s.optional === true;
+                      const price = s.price ?? null;
+                      return (
+                        <div
+                          key={s.id}
+                          className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card px-4 py-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                              <Check className="h-4 w-4" />
+                            </span>
+                            <span className="font-medium text-sm">{label}</span>
+                          </div>
+                          {isOptional && (
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                                Optionnel
+                              </span>
+                              {price && <span className="text-sm font-semibold">{price} €</span>}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </Section>
               )}
 

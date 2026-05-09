@@ -123,7 +123,7 @@ export async function getResidenceFullBySlug(slug: string) {
   if (!r) return null;
   const [units, services, activities, photos, apts, chargesRes] = await Promise.all([
     supabase.from("unit_types").select("*").eq("residence_id", r.id),
-    supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", r.id),
+    supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", r.id).eq("included", true),
     supabase.from("residence_activities").select("*, activities_catalog(*)").eq("residence_id", r.id),
     supabase.from("photos").select("*").eq("residence_id", r.id).order("display_order"),
     supabase
