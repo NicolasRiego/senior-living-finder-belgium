@@ -225,6 +225,8 @@ export default function ResidenceDetailPage() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     {services.map((s: any) => {
                       const label = tr(s.services_catalog?.label_fr, s.services_catalog?.label_nl) || "Service";
+                      const isFromCharges = s.from_charges === true;
+                      const isFree = s.is_free === true;
                       const isOptional = s.optional === true;
                       const price = s.price ?? null;
                       return (
@@ -238,14 +240,30 @@ export default function ResidenceDetailPage() {
                             </span>
                             <span className="font-medium text-sm">{label}</span>
                           </div>
-                          {isOptional && (
-                            <div className="flex items-center gap-2 shrink-0">
+                          <div className="shrink-0">
+                            {isFromCharges ? (
+                              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium whitespace-nowrap">
+                                Inclus dans les charges
+                              </span>
+                            ) : isFree ? (
+                              <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs text-green-700 font-medium">
+                                Gratuit
+                              </span>
+                            ) : isOptional && price ? (
+                              <div className="flex items-center gap-1.5">
+                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                                  Optionnel
+                                </span>
+                                <span className="text-sm font-semibold">
+                                  {Number(price).toLocaleString("fr-BE")} €/mois
+                                </span>
+                              </div>
+                            ) : isOptional ? (
                               <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                                 Optionnel
                               </span>
-                              {price && <span className="text-sm font-semibold">{price} €</span>}
-                            </div>
-                          )}
+                            ) : null}
+                          </div>
                         </div>
                       );
                     })}
