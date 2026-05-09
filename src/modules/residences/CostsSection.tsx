@@ -1,5 +1,9 @@
-import { TYPE_LABEL } from "@/modules/apartments/unitTypes";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import type { PublicUnitSummary } from "./publicApi";
+
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(
+  UNIT_TYPES.map((t) => [t.value, t.label]),
+);
 
 export type ResidenceCharge = {
   id: string;
