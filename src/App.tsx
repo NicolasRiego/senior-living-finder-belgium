@@ -34,6 +34,7 @@ import PartnerLeads from "./pages/partner/Leads";
 import ResidenceEditor from "./pages/partner/ResidenceEditor";
 import ResidencePreview from "./pages/partner/ResidencePreview";
 import ApartmentsList from "./pages/partner/ApartmentsList";
+import MyResidences from "./pages/partner/MyResidences";
 import ApartmentEditor from "./pages/partner/ApartmentEditor";
 import AdminValidation from "./pages/admin/AdminValidation";
 import AdminResidences from "./pages/admin/AdminResidences";
@@ -91,6 +92,14 @@ const App = () => (
                     element={
                       <RequireAuth requireOrg>
                         <PartnerLayout><PartnerDashboard /></PartnerLayout>
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="/partenaire/residences"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><MyResidences /></PartnerLayout>
                       </RequireAuth>
                     }
                   />
