@@ -120,7 +120,7 @@ export default function ApartmentEditor() {
   const validate = (): boolean => {
     const schema = z.object({
       title_fr: z.string().trim().min(1, "Titre requis").max(150),
-      type: z.enum(["appartement", "studio", "chambre"], { errorMap: () => ({ message: "Type requis" }) }),
+      type: z.enum(UNIT_TYPES.map((t) => t.value) as [string, ...string[]], { errorMap: () => ({ message: "Type requis" }) }),
       status: z.enum(["available", "reserved", "unavailable"]),
       surface_m2: z.coerce.number().positive("Surface > 0"),
       floor: z.coerce.number().int().min(0, "Étage ≥ 0"),
