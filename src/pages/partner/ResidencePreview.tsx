@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+import CostsSection, { type ResidenceCharge } from "@/modules/residences/CostsSection";
 
 const TYPE_LABEL: Record<string, string> = Object.fromEntries(
   UNIT_TYPES.map((t) => [t.value, t.label])
@@ -30,11 +31,12 @@ export default function ResidencePreview() {
   const [unitSummaries, setUnitSummaries] = useState<UnitSummary[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [photos, setPhotos] = useState<{ url: string; alt: string; cover: boolean }[]>([]);
+  const [charges, setCharges] = useState<ResidenceCharge[]>([]);
 
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const [r, apts, s, ph] = await Promise.all([
+      const [r, apts, s, ph, ch] = await Promise.all([
         supabase.from("residences").select("*").eq("id", id).single(),
         supabase
           .from("apartments")
@@ -49,10 +51,17 @@ export default function ResidencePreview() {
           .select("*, services_catalog(*)")
           .eq("residence_id", id),
         supabase.from("photos").select("*").eq("residence_id", id).order("display_order"),
+        supabase
+          .from("residence_charges")
+          .select("*")
+          .eq("residence_id", id)
+          .eq("is_mandatory", true)
+          .order("sort_order"),
       ]);
 
       setData(r.data);
       setServices(s.data ?? []);
+      setCharges((ch.data ?? []) as ResidenceCharge[]);
 
       // Summaries par type
       const aptList = apts.data ?? [];
@@ -264,6 +273,16 @@ export default function ResidencePreview() {
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {charges.length > 0 && unitSummaries.length > 0 && (
+          <section>
+            <h2 className="font-display text-2xl mb-4">Coûts mensuels estimés</h2>
+            <CostsSection
+              charges={charges}
+              unitSummaries={unitSummaries as unknown as import("@/modules/residences/publicApi").PublicUnitSummary[]}
+            />
           </section>
         )}
 

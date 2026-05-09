@@ -121,7 +121,7 @@ export async function getResidenceFullBySlug(slug: string) {
     .eq("status", "published")
     .maybeSingle();
   if (!r) return null;
-  const [units, services, activities, photos, apts] = await Promise.all([
+  const [units, services, activities, photos, apts, chargesRes] = await Promise.all([
     supabase.from("unit_types").select("*").eq("residence_id", r.id),
     supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", r.id),
     supabase.from("residence_activities").select("*, activities_catalog(*)").eq("residence_id", r.id),
@@ -134,6 +134,12 @@ export async function getResidenceFullBySlug(slug: string) {
       .eq("residence_id", r.id)
       .neq("status", "unavailable")
       .order("type"),
+    supabase
+      .from("residence_charges")
+      .select("*")
+      .eq("residence_id", r.id)
+      .eq("is_mandatory", true)
+      .order("sort_order"),
   ]);
   const unitIds = (units.data ?? []).map((u: any) => u.id);
   let pricing: any[] = [];
@@ -170,6 +176,7 @@ export async function getResidenceFullBySlug(slug: string) {
     services: services.data ?? [],
     activities: activities.data ?? [],
     photos: photoUrls,
+    charges: chargesRes.data ?? [],
   };
 }
 

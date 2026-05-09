@@ -9,6 +9,7 @@ import { getResidenceFullBySlug, type PublicUnitSummary } from "@/modules/reside
 import { trackResidenceEvent } from "@/modules/analytics/track";
 import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+import CostsSection from "@/modules/residences/CostsSection";
 
 const TYPE_LABEL: Record<string, string> = Object.fromEntries(UNIT_TYPES.map((t) => [t.value, t.label]));
 
@@ -41,7 +42,7 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  const { residence: r, unitSummaries = [], services, activities, photos } = data as typeof data & { unitSummaries?: PublicUnitSummary[] };
+  const { residence: r, unitSummaries = [], services, activities, photos, charges = [] } = data as typeof data & { unitSummaries?: PublicUnitSummary[]; charges?: import("@/modules/residences/CostsSection").ResidenceCharge[] };
   const cover = photos.find((p) => p.cover) ?? photos[0];
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
@@ -210,6 +211,13 @@ export default function ResidenceDetailPage() {
                 </Section>
               )}
 
+
+              {/* Coûts */}
+              {charges.length > 0 && unitSummaries.length > 0 && (
+                <Section id="couts" title="Coûts mensuels estimés">
+                  <CostsSection charges={charges} unitSummaries={unitSummaries} />
+                </Section>
+              )}
 
               {/* Services */}
               {services.length > 0 && (
