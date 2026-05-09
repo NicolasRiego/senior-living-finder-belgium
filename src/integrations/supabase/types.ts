@@ -901,11 +901,14 @@ export type Database = {
       }
       residence_services: {
         Row: {
+          charges_label: string | null
           comment_fr: string | null
           comment_nl: string | null
           created_at: string
+          from_charges: boolean
           id: string
           included: boolean
+          is_free: boolean
           optional: boolean
           price: number | null
           residence_id: string
@@ -913,11 +916,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          charges_label?: string | null
           comment_fr?: string | null
           comment_nl?: string | null
           created_at?: string
+          from_charges?: boolean
           id?: string
           included?: boolean
+          is_free?: boolean
           optional?: boolean
           price?: number | null
           residence_id: string
@@ -925,11 +931,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          charges_label?: string | null
           comment_fr?: string | null
           comment_nl?: string | null
           created_at?: string
+          from_charges?: boolean
           id?: string
           included?: boolean
+          is_free?: boolean
           optional?: boolean
           price?: number | null
           residence_id?: string
