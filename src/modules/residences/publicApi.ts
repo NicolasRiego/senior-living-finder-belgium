@@ -139,6 +139,8 @@ export async function getResidenceFullBySlug(slug: string) {
       .select("*")
       .eq("residence_id", r.id)
       .eq("is_mandatory", true)
+      .gt("amount", 0)
+      .neq("label", "Nouveau service")
       .order("sort_order"),
   ]);
   const unitIds = (units.data ?? []).map((u: any) => u.id);
