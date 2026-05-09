@@ -5,13 +5,12 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useFavorites } from "@/modules/favorites/useFavorites";
 import { getCoverUrl } from "./publicApi";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import type { ApartmentSearchRow } from "./types";
 
-const TYPE_LABEL: Record<string, string> = {
-  appartement: "Appartement",
-  chambre: "Chambre",
-  studio: "Studio",
-};
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(
+  UNIT_TYPES.map((t) => [t.value, t.label])
+);
 
 export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
   const { tr } = useI18n();
