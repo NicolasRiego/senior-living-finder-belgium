@@ -44,6 +44,7 @@ export type ResidenceRow = {
   slug: string;
   adresse: string | null;
   code_postal: string | null;
+  commune: string | null;
   ville: string | null;
   province: string | null;
   region: string | null;

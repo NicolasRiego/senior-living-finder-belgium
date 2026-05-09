@@ -276,6 +276,33 @@ export type Database = {
         }
         Relationships: []
       }
+      be_postal_codes: {
+        Row: {
+          code_postal: string
+          commune_fr: string
+          commune_nl: string
+          province: string
+          region: string
+          ville_fr: string
+        }
+        Insert: {
+          code_postal: string
+          commune_fr: string
+          commune_nl: string
+          province: string
+          region: string
+          ville_fr: string
+        }
+        Update: {
+          code_postal?: string
+          commune_fr?: string
+          commune_nl?: string
+          province?: string
+          region?: string
+          ville_fr?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -946,6 +973,7 @@ export type Database = {
           adresse: string | null
           capacity: number | null
           code_postal: string | null
+          commune: string | null
           contact_email: string | null
           contact_phone: string | null
           created_at: string
@@ -981,6 +1009,7 @@ export type Database = {
           adresse?: string | null
           capacity?: number | null
           code_postal?: string | null
+          commune?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
@@ -1016,6 +1045,7 @@ export type Database = {
           adresse?: string | null
           capacity?: number | null
           code_postal?: string | null
+          commune?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
