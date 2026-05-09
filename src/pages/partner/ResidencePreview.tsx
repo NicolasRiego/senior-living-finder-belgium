@@ -31,6 +31,7 @@ export default function ResidencePreview() {
   const [unitSummaries, setUnitSummaries] = useState<UnitSummary[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [photos, setPhotos] = useState<{ url: string; alt: string; cover: boolean }[]>([]);
+  const [charges, setCharges] = useState<ResidenceCharge[]>([]);
 
   useEffect(() => {
     if (!id) return;
