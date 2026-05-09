@@ -950,6 +950,9 @@ export type Database = {
           contact_phone: string | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          deleted_reason: string | null
           description_fr: string | null
           description_nl: string | null
           id: string
@@ -982,6 +985,9 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deleted_reason?: string | null
           description_fr?: string | null
           description_nl?: string | null
           id?: string
@@ -1014,6 +1020,9 @@ export type Database = {
           contact_phone?: string | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          deleted_reason?: string | null
           description_fr?: string | null
           description_nl?: string | null
           id?: string
@@ -1371,7 +1380,7 @@ export type Database = {
       approve_residence: { Args: { _residence_id: string }; Returns: undefined }
       archive_residence: {
         Args: { _reason?: string; _residence_id: string }
-        Returns: undefined
+        Returns: Json
       }
       can_manage_residence: {
         Args: { _residence_id: string; _user_id: string }
@@ -1447,10 +1456,7 @@ export type Database = {
         Returns: string
       }
       submit_residence: { Args: { _residence_id: string }; Returns: undefined }
-      unarchive_residence: {
-        Args: { _residence_id: string }
-        Returns: undefined
-      }
+      unarchive_residence: { Args: { _residence_id: string }; Returns: Json }
       unit_type_residence: { Args: { _unit_type_id: string }; Returns: string }
       update_lead_status: {
         Args: {
