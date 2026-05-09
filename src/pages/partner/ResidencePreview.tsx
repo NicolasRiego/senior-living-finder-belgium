@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+import CostsSection, { type ResidenceCharge } from "@/modules/residences/CostsSection";
 
 const TYPE_LABEL: Record<string, string> = Object.fromEntries(
   UNIT_TYPES.map((t) => [t.value, t.label])
