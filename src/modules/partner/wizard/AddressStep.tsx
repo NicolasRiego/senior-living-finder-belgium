@@ -35,7 +35,7 @@ function usePostalSearch(query: string) {
         )
         .order("code_postal")
         .limit(10);
-      setResults((data ?? []) as BePostalCode[]);
+      setResults(((data ?? []) as unknown) as BePostalCode[]);
     }, 250);
     return () => clearTimeout(timer);
   }, [query]);
