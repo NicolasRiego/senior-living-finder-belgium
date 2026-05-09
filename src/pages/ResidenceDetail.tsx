@@ -41,7 +41,7 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  const { residence: r, unitSummaries = [], services, activities, photos } = data as typeof data & { unitSummaries?: PublicUnitSummary[] };
+  const { residence: r, unitSummaries = [], services, activities, photos, charges = [] } = data as typeof data & { unitSummaries?: PublicUnitSummary[]; charges?: import("@/modules/residences/CostsSection").ResidenceCharge[] };
   const cover = photos.find((p) => p.cover) ?? photos[0];
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
