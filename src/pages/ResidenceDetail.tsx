@@ -114,69 +114,102 @@ export default function ResidenceDetailPage() {
 
               {/* Logements */}
               {unitSummaries.length > 0 && (
-                <Section id="logements" title="Logements">
-                  <div className="grid gap-4 sm:grid-cols-2">
+                <Section id="logements" title="Logements & tarifs">
+                  <div className="grid grid-cols-3 gap-3 mb-6">
+                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+                      <div className="text-3xl font-bold text-primary">
+                        {unitSummaries.reduce((t, s) => t + s.total, 0)}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Total logements</div>
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+                      <div className="text-3xl font-bold text-green-600">
+                        {unitSummaries.reduce((t, s) => t + s.available, 0)}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">Disponibles</div>
+                    </div>
+                    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+                      <div className="text-3xl font-bold">{unitSummaries.length}</div>
+                      <div className="text-xs text-muted-foreground mt-1">Types différents</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
                     {unitSummaries.map((s) => (
-                      <div key={s.type} className="rounded-xl border border-border/60 bg-muted/30 p-5 space-y-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="font-semibold text-lg">{TYPE_LABEL[s.type] ?? s.type}</div>
-                          <div className="flex flex-wrap gap-1.5">
+                      <div key={s.type} className="rounded-xl border border-border/60 bg-card p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-semibold text-lg">{TYPE_LABEL[s.type] ?? s.type}</h3>
+                          <div className="flex gap-1.5">
                             {s.hasRent && (
-                              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">À louer</span>
+                              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium whitespace-nowrap">
+                                À louer
+                              </span>
                             )}
                             {s.hasSale && (
-                              <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">À vendre</span>
+                              <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs text-orange-700 font-medium whitespace-nowrap">
+                                À vendre
+                              </span>
                             )}
                           </div>
                         </div>
-                        <dl className="grid grid-cols-2 gap-2 text-sm">
+
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="rounded-lg bg-muted/50 px-3 py-2">
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Total</div>
+                            <div className="font-semibold">{s.total} logement{s.total > 1 ? "s" : ""}</div>
+                          </div>
+                          <div className="rounded-lg bg-muted/50 px-3 py-2">
+                            <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Disponibles</div>
+                            <div className="font-semibold text-green-600">{s.available} / {s.total}</div>
+                          </div>
                           {(s.surfaceMin || s.surfaceMax) && (
-                            <div>
-                              <dt className="text-xs uppercase text-muted-foreground">Surface</dt>
-                              <dd className="font-medium">
-                                {s.surfaceMin === s.surfaceMax ? `${s.surfaceMin} m²` : `${s.surfaceMin}–${s.surfaceMax} m²`}
-                              </dd>
+                            <div className="rounded-lg bg-muted/50 px-3 py-2">
+                              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Surface</div>
+                              <div className="font-semibold">
+                                {s.surfaceMin === s.surfaceMax
+                                  ? `${s.surfaceMin} m²`
+                                  : `${s.surfaceMin ?? "?"}–${s.surfaceMax ?? "?"} m²`}
+                              </div>
                             </div>
                           )}
-                          <div>
-                            <dt className="text-xs uppercase text-muted-foreground">Disponibles</dt>
-                            <dd className="font-medium">{s.available} / {s.total}</dd>
-                          </div>
                           {s.hasRent && s.rentMin && (
-                            <div>
-                              <dt className="text-xs uppercase text-muted-foreground">Loyer</dt>
-                              <dd className="font-medium">
+                            <div className="rounded-lg bg-muted/50 px-3 py-2">
+                              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Loyer</div>
+                              <div className="font-semibold text-primary">
                                 {s.rentMin === s.rentMax || !s.rentMax
                                   ? `${s.rentMin.toLocaleString("fr-BE")} €/mois`
                                   : `${s.rentMin.toLocaleString("fr-BE")}–${s.rentMax.toLocaleString("fr-BE")} €/mois`}
-                              </dd>
+                              </div>
                             </div>
                           )}
                           {s.hasSale && s.saleMin && (
-                            <div>
-                              <dt className="text-xs uppercase text-muted-foreground">Achat dès</dt>
-                              <dd className="font-medium">{s.saleMin.toLocaleString("fr-BE")} €</dd>
+                            <div className="rounded-lg bg-muted/50 px-3 py-2">
+                              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Achat dès</div>
+                              <div className="font-semibold">{s.saleMin.toLocaleString("fr-BE")} €</div>
                             </div>
                           )}
                           {s.pmr > 0 && (
-                            <div>
-                              <dt className="text-xs uppercase text-muted-foreground">PMR</dt>
-                              <dd className="font-medium">{s.pmr} logement{s.pmr > 1 ? "s" : ""}</dd>
+                            <div className="rounded-lg bg-muted/50 px-3 py-2">
+                              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">Accessibles PMR</div>
+                              <div className="font-semibold">{s.pmr} logement{s.pmr > 1 ? "s" : ""}</div>
                             </div>
                           )}
-                        </dl>
+                        </div>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4">
-                    <Button asChild variant="outline">
-                      <Link to={`/appartements?residences=${r.id}`}>
-                        <ExternalLink className="h-4 w-4 mr-2" /> Voir les appartements
-                      </Link>
-                    </Button>
+
+                  <div className="mt-5 text-center">
+                    <Link
+                      to={`/appartements?residences=${r.id}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+                    >
+                      Voir tous les appartements disponibles →
+                    </Link>
                   </div>
                 </Section>
               )}
+
 
               {/* Services */}
               {services.length > 0 && (
