@@ -79,8 +79,17 @@ export default function PricingStep({ residence, setExternalSaving }: StepProps)
   }, [residence.id]);
 
   const totalMandatory = useMemo(
-    () => charges.filter((c) => c.is_mandatory).reduce((sum, c) => sum + (c.amount ?? 0), 0),
-    [charges]
+    () =>
+      charges
+        .filter(
+          (c) =>
+            c.is_mandatory &&
+            c.amount > 0 &&
+            c.label !== "Nouveau service" &&
+            !dirtyIds.has(c.id),
+        )
+        .reduce((sum, c) => sum + (c.amount ?? 0), 0),
+    [charges, dirtyIds]
   );
 
   const summary = useMemo<SummaryRow[]>(() => {
