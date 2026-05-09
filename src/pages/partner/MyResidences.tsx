@@ -132,22 +132,7 @@ export default function MyResidences() {
     load();
   };
 
-  const onRestore = async (r: Row) => {
-    const { error } = await supabase.rpc("unarchive_residence", {
-      _residence_id: r.id,
-    });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success(
-      "Résidence restaurée en brouillon. Toutes vos données ont été conservées.",
-    );
-    load();
-  };
-
   const active = rows.filter((r) => r.status !== "archived");
-  const archived = rows.filter((r) => r.status === "archived");
 
   return (
     <div className="space-y-6">
@@ -244,61 +229,6 @@ export default function MyResidences() {
             );
           })}
         </div>
-      )}
-
-      {/* Corbeille */}
-      {!loading && (
-        <Collapsible defaultOpen={false}>
-          <CollapsibleTrigger asChild>
-            <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground py-2 group">
-              <Trash2 className="h-4 w-4" />
-              <span>
-                Corbeille ({archived.length} résidence
-                {archived.length > 1 ? "s" : ""} supprimée
-                {archived.length > 1 ? "s" : ""})
-              </span>
-              <ChevronDown className="h-4 w-4 group-data-[state=open]:rotate-180 transition-transform" />
-            </button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="pt-3">
-            {archived.length === 0 ? (
-              <p className="text-sm text-muted-foreground italic">
-                Aucune résidence dans la corbeille.
-              </p>
-            ) : (
-              <div className="grid gap-3">
-                {archived.map((r) => (
-                  <Card key={r.id} className="bg-muted/30">
-                    <CardContent className="py-4 flex items-start justify-between gap-3 flex-wrap">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">{r.nom_fr}</span>
-                          <Badge variant="secondary">Archivée</Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {r.ville ?? "Ville non renseignée"} ·{" "}
-                          {r.type_etablissement.replace(/_/g, " ")}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Supprimée le{" "}
-                          {new Date(r.updated_at).toLocaleDateString("fr-FR")} ·
-                          Données conservées
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onRestore(r)}
-                      >
-                        <Undo2 className="h-4 w-4 mr-2" /> Restaurer
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
       )}
 
       <AlertDialog
