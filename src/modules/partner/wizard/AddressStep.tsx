@@ -181,6 +181,11 @@ export default function AddressStep({ residence, onChange, setExternalSaving }: 
               onChange={(e) => update({ ville: e.target.value })}
               className="h-12"
             />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Pour Bruxelles-Capitale, la ville est toujours
+              "Bruxelles". La commune précise est indiquée
+              dans le champ "Commune".
+            </p>
           </div>
         </div>
 
