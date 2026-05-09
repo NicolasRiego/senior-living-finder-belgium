@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronRight, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 
 const BOOL_FIELDS = [
   ["parking", "Parking"], ["cave", "Cave"],
@@ -27,7 +28,7 @@ type BoolField = (typeof BOOL_FIELDS)[number][0];
 
 type FormState = {
   title_fr: string;
-  type: "appartement" | "studio" | "chambre" | "";
+  type: string;
   status: "available" | "reserved" | "unavailable";
   available_from: string;
   surface_m2: string;
@@ -119,7 +120,7 @@ export default function ApartmentEditor() {
   const validate = (): boolean => {
     const schema = z.object({
       title_fr: z.string().trim().min(1, "Titre requis").max(150),
-      type: z.enum(["appartement", "studio", "chambre"], { errorMap: () => ({ message: "Type requis" }) }),
+      type: z.enum(UNIT_TYPES.map((t) => t.value) as [string, ...string[]], { errorMap: () => ({ message: "Type requis" }) }),
       status: z.enum(["available", "reserved", "unavailable"]),
       surface_m2: z.coerce.number().positive("Surface > 0"),
       floor: z.coerce.number().int().min(0, "Étage ≥ 0"),
@@ -218,12 +219,12 @@ export default function ApartmentEditor() {
           </Field>
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Type de bien" required error={errors.type}>
-              <Select value={form.type} onValueChange={(v) => set("type", v as FormState["type"])}>
+              <Select value={form.type} onValueChange={(v) => set("type", v)}>
                 <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="appartement">Appartement</SelectItem>
-                  <SelectItem value="studio">Studio</SelectItem>
-                  <SelectItem value="chambre">Chambre</SelectItem>
+                  {UNIT_TYPES.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </Field>
