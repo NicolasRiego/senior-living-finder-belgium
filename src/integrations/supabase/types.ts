@@ -19,8 +19,10 @@ export type Database = {
           category: string | null
           code: string
           created_at: string
+          created_by_residence: string | null
           icon: string | null
           id: string
+          is_custom: boolean
           label_fr: string
           label_nl: string | null
         }
@@ -28,8 +30,10 @@ export type Database = {
           category?: string | null
           code: string
           created_at?: string
+          created_by_residence?: string | null
           icon?: string | null
           id?: string
+          is_custom?: boolean
           label_fr: string
           label_nl?: string | null
         }
@@ -37,12 +41,43 @@ export type Database = {
           category?: string | null
           code?: string
           created_at?: string
+          created_by_residence?: string | null
           icon?: string | null
           id?: string
+          is_custom?: boolean
           label_fr?: string
           label_nl?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "activities_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "residence_stats_30d"
+            referencedColumns: ["residence_id"]
+          },
+          {
+            foreignKeyName: "activities_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "v_residence_price_summary"
+            referencedColumns: ["residence_id"]
+          },
+        ]
       }
       admin_notes: {
         Row: {
@@ -1166,8 +1201,10 @@ export type Database = {
           category: string | null
           code: string
           created_at: string
+          created_by_residence: string | null
           icon: string | null
           id: string
+          is_custom: boolean
           label_fr: string
           label_nl: string | null
         }
@@ -1175,8 +1212,10 @@ export type Database = {
           category?: string | null
           code: string
           created_at?: string
+          created_by_residence?: string | null
           icon?: string | null
           id?: string
+          is_custom?: boolean
           label_fr: string
           label_nl?: string | null
         }
@@ -1184,12 +1223,43 @@ export type Database = {
           category?: string | null
           code?: string
           created_at?: string
+          created_by_residence?: string | null
           icon?: string | null
           id?: string
+          is_custom?: boolean
           label_fr?: string
           label_nl?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "services_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "residence_stats_30d"
+            referencedColumns: ["residence_id"]
+          },
+          {
+            foreignKeyName: "services_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_catalog_created_by_residence_fkey"
+            columns: ["created_by_residence"]
+            isOneToOne: false
+            referencedRelation: "v_residence_price_summary"
+            referencedColumns: ["residence_id"]
+          },
+        ]
       }
       unit_types: {
         Row: {
