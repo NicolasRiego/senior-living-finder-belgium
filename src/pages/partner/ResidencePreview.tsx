@@ -36,7 +36,7 @@ export default function ResidencePreview() {
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const [r, apts, s, ph] = await Promise.all([
+      const [r, apts, s, ph, ch] = await Promise.all([
         supabase.from("residences").select("*").eq("id", id).single(),
         supabase
           .from("apartments")
@@ -51,10 +51,17 @@ export default function ResidencePreview() {
           .select("*, services_catalog(*)")
           .eq("residence_id", id),
         supabase.from("photos").select("*").eq("residence_id", id).order("display_order"),
+        supabase
+          .from("residence_charges")
+          .select("*")
+          .eq("residence_id", id)
+          .eq("is_mandatory", true)
+          .order("sort_order"),
       ]);
 
       setData(r.data);
       setServices(s.data ?? []);
+      setCharges((ch.data ?? []) as ResidenceCharge[]);
 
       // Summaries par type
       const aptList = apts.data ?? [];
