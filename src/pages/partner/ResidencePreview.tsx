@@ -2,36 +2,110 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, MapPin } from "lucide-react";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(
+  UNIT_TYPES.map((t) => [t.value, t.label])
+);
+
+type UnitSummary = {
+  type: string;
+  total: number;
+  available: number;
+  availableNow: number;
+  surfaceMin: number | null;
+  surfaceMax: number | null;
+  rentMin: number | null;
+  rentMax: number | null;
+  saleMin: number | null;
+  hasRent: boolean;
+  hasSale: boolean;
+  pmr: number;
+};
 
 export default function ResidencePreview() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<any>(null);
-  const [units, setUnits] = useState<any[]>([]);
-  const [pricing, setPricing] = useState<any[]>([]);
+  const [unitSummaries, setUnitSummaries] = useState<UnitSummary[]>([]);
   const [services, setServices] = useState<any[]>([]);
   const [photos, setPhotos] = useState<{ url: string; alt: string; cover: boolean }[]>([]);
 
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const r = await supabase.from("residences").select("*").eq("id", id).single();
+      const [r, apts, s, ph] = await Promise.all([
+        supabase.from("residences").select("*").eq("id", id).single(),
+        supabase
+          .from("apartments")
+          .select(
+            `type, surface_m2, transaction_type, rent_price, sale_price, status, available_from, wheelchair_accessible`
+          )
+          .eq("residence_id", id)
+          .neq("status", "unavailable")
+          .order("type"),
+        supabase
+          .from("residence_services")
+          .select("*, services_catalog(*)")
+          .eq("residence_id", id),
+        supabase.from("photos").select("*").eq("residence_id", id).order("display_order"),
+      ]);
+
       setData(r.data);
-      const u = await supabase.from("unit_types").select("*").eq("residence_id", id);
-      setUnits(u.data ?? []);
-      const utIds = (u.data ?? []).map((x) => x.id);
-      if (utIds.length) {
-        const p = await supabase.from("pricing").select("*").in("unit_type_id", utIds);
-        setPricing(p.data ?? []);
-      }
-      const s = await supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", id);
       setServices(s.data ?? []);
-      const ph = await supabase.from("photos").select("*").eq("residence_id", id).order("display_order");
+
+      // Summaries par type
+      const aptList = apts.data ?? [];
+      const map: Record<string, UnitSummary> = {};
+      for (const a of aptList as any[]) {
+        if (!a.type) continue;
+        if (!map[a.type]) {
+          map[a.type] = {
+            type: a.type,
+            total: 0,
+            available: 0,
+            availableNow: 0,
+            surfaceMin: null,
+            surfaceMax: null,
+            rentMin: null,
+            rentMax: null,
+            saleMin: null,
+            hasRent: false,
+            hasSale: false,
+            pmr: 0,
+          };
+        }
+        const su = map[a.type];
+        su.total++;
+        if (a.status === "available") {
+          su.available++;
+          if (!a.available_from) su.availableNow++;
+        }
+        if (a.surface_m2) {
+          su.surfaceMin = su.surfaceMin === null ? a.surface_m2 : Math.min(su.surfaceMin, a.surface_m2);
+          su.surfaceMax = su.surfaceMax === null ? a.surface_m2 : Math.max(su.surfaceMax, a.surface_m2);
+        }
+        if (a.rent_price && ["rent", "both"].includes(a.transaction_type)) {
+          su.hasRent = true;
+          su.rentMin = su.rentMin === null ? a.rent_price : Math.min(su.rentMin, a.rent_price);
+          su.rentMax = su.rentMax === null ? a.rent_price : Math.max(su.rentMax, a.rent_price);
+        }
+        if (a.sale_price && ["sale", "both"].includes(a.transaction_type)) {
+          su.hasSale = true;
+          su.saleMin = su.saleMin === null ? a.sale_price : Math.min(su.saleMin, a.sale_price);
+        }
+        if (a.wheelchair_accessible) su.pmr++;
+      }
+      setUnitSummaries(Object.values(map).sort((a, b) => a.type.localeCompare(b.type)));
+
+      // Photos
       const out: { url: string; alt: string; cover: boolean }[] = [];
       for (const p of ph.data ?? []) {
-        const { data: signed } = await supabase.storage.from("residence-photos").createSignedUrl(p.storage_path, 3600);
-        if (signed?.signedUrl) out.push({ url: signed.signedUrl, alt: p.alt_text ?? "", cover: p.category === "cover" });
+        const { data: signed } = await supabase.storage
+          .from("residence-photos")
+          .createSignedUrl(p.storage_path, 3600);
+        if (signed?.signedUrl)
+          out.push({ url: signed.signedUrl, alt: p.alt_text ?? "", cover: p.category === "cover" });
       }
       setPhotos(out);
     })();
@@ -80,24 +154,115 @@ export default function ResidencePreview() {
           </section>
         )}
 
-        {units.length > 0 && (
+        {unitSummaries.length > 0 && (
           <section>
-            <h2 className="font-display text-2xl mb-3">Logements & tarifs</h2>
-            <div className="grid gap-3 md:grid-cols-2">
-              {units.map((u) => {
-                const ps = pricing.filter((p) => p.unit_type_id === u.id);
-                return (
-                  <Card key={u.id}><CardContent className="pt-5">
-                    <p className="font-semibold text-lg">{u.type}</p>
-                    <p className="text-muted-foreground">{u.count_total} unités · {u.available_count} disponibles</p>
-                    {ps.map((p) => (
-                      <p key={p.id} className="mt-2">
-                        {p.estimated_monthly_min && `À partir de ${p.estimated_monthly_min} € / mois`}
-                      </p>
-                    ))}
-                  </CardContent></Card>
-                );
-              })}
+            <h2 className="font-display text-2xl mb-4">Logements & tarifs</h2>
+
+            {/* Stats globales */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+                <div className="text-3xl font-bold text-primary">
+                  {unitSummaries.reduce((t, s) => t + s.total, 0)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Total logements</div>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+                <div className="text-3xl font-bold text-green-600">
+                  {unitSummaries.reduce((t, s) => t + s.available, 0)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Disponibles</div>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+                <div className="text-3xl font-bold">{unitSummaries.length}</div>
+                <div className="text-xs text-muted-foreground mt-1">Types différents</div>
+              </div>
+            </div>
+
+            {/* Cards par type */}
+            <div className="space-y-3">
+              {unitSummaries.map((s) => (
+                <div key={s.type} className="rounded-xl border border-border/60 bg-card p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-lg">
+                      {TYPE_LABEL[s.type] ?? s.type}
+                    </h3>
+                    <div className="flex gap-1.5">
+                      {s.hasRent && (
+                        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium">
+                          À louer
+                        </span>
+                      )}
+                      {s.hasSale && (
+                        <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs text-orange-700 font-medium">
+                          À vendre
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="rounded-lg bg-muted/50 px-3 py-2">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                        Total
+                      </div>
+                      <div className="font-semibold">
+                        {s.total} logement{s.total > 1 ? "s" : ""}
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-muted/50 px-3 py-2">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                        Disponibles
+                      </div>
+                      <div className="font-semibold text-green-600">
+                        {s.available} / {s.total}
+                      </div>
+                    </div>
+                    {(s.surfaceMin || s.surfaceMax) && (
+                      <div className="rounded-lg bg-muted/50 px-3 py-2">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                          Surface
+                        </div>
+                        <div className="font-semibold">
+                          {s.surfaceMin === s.surfaceMax
+                            ? `${s.surfaceMin} m²`
+                            : `${s.surfaceMin}–${s.surfaceMax} m²`}
+                        </div>
+                      </div>
+                    )}
+                    {s.hasRent && s.rentMin && (
+                      <div className="rounded-lg bg-muted/50 px-3 py-2">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                          Loyer
+                        </div>
+                        <div className="font-semibold text-primary">
+                          {s.rentMin === s.rentMax || !s.rentMax
+                            ? `${s.rentMin.toLocaleString("fr-BE")} €/mois`
+                            : `${s.rentMin.toLocaleString("fr-BE")}–${s.rentMax.toLocaleString("fr-BE")} €/mois`}
+                        </div>
+                      </div>
+                    )}
+                    {s.hasSale && s.saleMin && (
+                      <div className="rounded-lg bg-muted/50 px-3 py-2">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                          Achat dès
+                        </div>
+                        <div className="font-semibold">
+                          {s.saleMin.toLocaleString("fr-BE")} €
+                        </div>
+                      </div>
+                    )}
+                    {s.pmr > 0 && (
+                      <div className="rounded-lg bg-muted/50 px-3 py-2">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                          PMR
+                        </div>
+                        <div className="font-semibold">
+                          {s.pmr} logement{s.pmr > 1 ? "s" : ""}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
         )}
