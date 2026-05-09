@@ -17,10 +17,15 @@ type ServiceRow = {
   price: number | null;
   included: boolean;
   optional: boolean;
+  is_free: boolean;
+  from_charges: boolean;
+  charges_label: string | null;
   service: { code: string; label_fr: string; category: string | null } | null;
 };
 
-type FreqKind = "meals" | "perWeek" | "perMonth" | "sessionsWeek";
+type ChargeRow = { id: string; label: string; amount: number };
+
+type FreqKind = "meals" | "perWeek" | "perMonth" | "sessionsWeek" | "fixed";
 
 const FREQ_BY_CODE: Record<string, FreqKind> = {
   repas: "meals",
@@ -29,9 +34,19 @@ const FREQ_BY_CODE: Record<string, FreqKind> = {
   pedicure: "perMonth",
   kine: "sessionsWeek",
   infirmier: "sessionsWeek",
+  soins: "sessionsWeek",
   menage: "perWeek",
   linge: "perWeek",
+  blanchisserie: "perWeek",
   navette: "perWeek",
+  transport: "perWeek",
+  jardinage: "perWeek",
+  parking: "fixed",
+  wifi: "fixed",
+  securite: "fixed",
+  reception: "fixed",
+  piscine: "fixed",
+  salle_sport: "fixed",
 };
 
 type SelectedState = Record<string, {
@@ -48,6 +63,7 @@ function defaultsForKind(kind: FreqKind) {
     case "perWeek": return { perWeek: 1 };
     case "perMonth": return { perMonth: 1 };
     case "sessionsWeek": return { perWeek: 2 };
+    case "fixed": return {};
   }
 }
 
@@ -60,6 +76,8 @@ function unitsPerMonth(kind: FreqKind, s: SelectedState[string]): number {
       return (s.perWeek ?? 0) * 4.33;
     case "perMonth":
       return s.perMonth ?? 0;
+    case "fixed":
+      return 1;
   }
 }
 
@@ -69,6 +87,7 @@ function unitLabel(kind: FreqKind): string {
     case "perWeek":
     case "sessionsWeek": return "/séance";
     case "perMonth": return "/passage";
+    case "fixed": return "/mois";
   }
 }
 
@@ -92,19 +111,31 @@ export function BudgetSimulator({
   );
 
   const [services, setServices] = useState<ServiceRow[]>([]);
+  const [charges, setCharges] = useState<ChargeRow[]>([]);
   const [loadingSvc, setLoadingSvc] = useState(false);
   const [selected, setSelected] = useState<SelectedState>({});
 
   useEffect(() => {
-    if (!apt) { setServices([]); return; }
+    if (!apt) { setServices([]); setCharges([]); return; }
     setLoadingSvc(true);
     setSelected({});
     (async () => {
-      const { data } = await supabase
-        .from("residence_services")
-        .select("id, service_id, price, included, optional, service:services_catalog(code,label_fr,category)")
-        .eq("residence_id", apt.residence_id);
-      setServices((data ?? []) as unknown as ServiceRow[]);
+      const [svcData, chargesData] = await Promise.all([
+        supabase
+          .from("residence_services")
+          .select("id, service_id, price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
+          .eq("residence_id", apt.residence_id)
+          .eq("included", true),
+        supabase
+          .from("residence_charges")
+          .select("id, label, amount")
+          .eq("residence_id", apt.residence_id)
+          .eq("is_mandatory", true)
+          .gt("amount", 0)
+          .neq("label", "Nouveau service"),
+      ]);
+      setServices((svcData.data ?? []) as unknown as ServiceRow[]);
+      setCharges((chargesData.data ?? []) as ChargeRow[]);
       setLoadingSvc(false);
     })();
   }, [apt]);
@@ -115,25 +146,33 @@ export function BudgetSimulator({
     : apt?.sale_price ? "Prix de base" : "Tarif de base";
 
   const lines = useMemo(() => {
-    const items: { key: string; label: string; total: number; detail?: string }[] = [];
+    const items: { key: string; label: string; total: number; detail?: string; isFree?: boolean; isCharge?: boolean }[] = [];
     items.push({ key: "base", label: baseLabel, total: baseAmount });
+    for (const c of charges) {
+      items.push({ key: `charge-${c.id}`, label: c.label, total: c.amount, isCharge: true });
+    }
     for (const s of services) {
       const code = s.service?.code ?? "";
-      const kind = FREQ_BY_CODE[code];
-      if (!kind) continue;
+      const kind = FREQ_BY_CODE[code] ?? "fixed";
       const sel = selected[s.service_id];
       if (!sel?.enabled) continue;
+      const unitPrice = (s.is_free || s.from_charges) ? 0 : (s.price ?? 0);
       const units = unitsPerMonth(kind, sel);
-      const price = s.price ?? 0;
-      const total = Math.round(units * price);
+      const total = Math.round(units * unitPrice);
       let detail = "";
       if (kind === "meals") detail = `${sel.mealsPerDay}×/j × ${sel.daysPerWeek}j/sem`;
       else if (kind === "perWeek" || kind === "sessionsWeek") detail = `${sel.perWeek}×/sem`;
       else if (kind === "perMonth") detail = `${sel.perMonth}×/mois`;
-      items.push({ key: s.id, label: s.service?.label_fr ?? code, total, detail });
+      items.push({
+        key: s.id,
+        label: s.service?.label_fr ?? code,
+        total,
+        detail,
+        isFree: s.is_free || s.from_charges,
+      });
     }
     return items;
-  }, [services, selected, baseAmount, baseLabel]);
+  }, [services, charges, selected, baseAmount, baseLabel]);
 
   const totalMonth = useMemo(() => lines.reduce((acc, l) => acc + l.total, 0), [lines]);
   const totalYear = useMemo(() => totalMonth * 12, [totalMonth]);
@@ -201,9 +240,9 @@ export function BudgetSimulator({
             )}
             {services.map((s) => {
               const code = s.service?.code ?? "";
-              const kind = FREQ_BY_CODE[code];
-              if (!kind) return null;
+              const kind = FREQ_BY_CODE[code] ?? "fixed";
               const sel = selected[s.service_id] ?? { enabled: false };
+              const isFreeOrIncluded = s.is_free || s.from_charges;
               const setSel = (v: Partial<SelectedState[string]>) =>
                 setSelected((m) => ({
                   ...m,
@@ -225,13 +264,21 @@ export function BudgetSimulator({
                         {s.service?.label_fr}
                       </Label>
                     </div>
-                    {s.price != null && (
+                    {isFreeOrIncluded ? (
+                      <span className="text-sm rounded-full bg-green-100 text-green-700 px-2.5 py-1 font-medium whitespace-nowrap">
+                        {s.from_charges ? "Inclus dans les charges" : "Gratuit"}
+                      </span>
+                    ) : s.price != null && s.price > 0 ? (
                       <span className="text-sm text-muted-foreground whitespace-nowrap">
                         {s.price.toLocaleString("fr-BE")} € {unitLabel(kind)}
                       </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground whitespace-nowrap italic">
+                        Prix sur demande
+                      </span>
                     )}
                   </div>
-                  {sel.enabled && (
+                  {sel.enabled && kind !== "fixed" && (
                     <FrequencyControls kind={kind} sel={sel} setSel={setSel} />
                   )}
                 </div>
@@ -251,6 +298,7 @@ export function BudgetSimulator({
                   <div className="min-w-0">
                     <div className="font-medium break-words">{l.label}</div>
                     {l.detail && <div className="text-xs text-muted-foreground">{l.detail}</div>}
+                    {l.isFree && <div className="text-xs text-green-700">Inclus</div>}
                   </div>
                   <div className="whitespace-nowrap font-semibold">
                     {l.total.toLocaleString("fr-BE")} €
@@ -338,7 +386,7 @@ function FrequencyControls({
       </div>
     );
   }
-  // perWeek / sessionsWeek
+  if (kind === "fixed") return null;
   return (
     <div className="space-y-1">
       <Label className="text-xs text-muted-foreground">Fréquence par semaine</Label>
