@@ -121,11 +121,19 @@ export async function getResidenceFullBySlug(slug: string) {
     .eq("status", "published")
     .maybeSingle();
   if (!r) return null;
-  const [units, services, activities, photos] = await Promise.all([
+  const [units, services, activities, photos, apts] = await Promise.all([
     supabase.from("unit_types").select("*").eq("residence_id", r.id),
     supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", r.id),
     supabase.from("residence_activities").select("*, activities_catalog(*)").eq("residence_id", r.id),
     supabase.from("photos").select("*").eq("residence_id", r.id).order("display_order"),
+    supabase
+      .from("apartments")
+      .select(
+        "type, surface_m2, transaction_type, rent_price, sale_price, status, available_from, wheelchair_accessible",
+      )
+      .eq("residence_id", r.id)
+      .neq("status", "unavailable")
+      .order("type"),
   ]);
   const unitIds = (units.data ?? []).map((u: any) => u.id);
   let pricing: any[] = [];
@@ -133,6 +141,7 @@ export async function getResidenceFullBySlug(slug: string) {
     const p = await supabase.from("pricing").select("*").in("unit_type_id", unitIds);
     pricing = p.data ?? [];
   }
+  const unitSummaries = computeUnitSummaries((apts.data ?? []) as any[]);
   // Sign photo URLs (or pass through external/demo URLs)
   const photoUrls: { id: string; url: string; alt: string; category: string; cover: boolean }[] = [];
   for (const ph of photos.data ?? []) {
@@ -156,9 +165,71 @@ export async function getResidenceFullBySlug(slug: string) {
   return {
     residence: r,
     units: units.data ?? [],
+    unitSummaries,
     pricing,
     services: services.data ?? [],
     activities: activities.data ?? [],
     photos: photoUrls,
   };
+}
+
+export type PublicUnitSummary = {
+  type: string;
+  total: number;
+  available: number;
+  availableNow: number;
+  surfaceMin: number | null;
+  surfaceMax: number | null;
+  rentMin: number | null;
+  rentMax: number | null;
+  saleMin: number | null;
+  hasRent: boolean;
+  hasSale: boolean;
+  pmr: number;
+};
+
+function computeUnitSummaries(apts: Array<{
+  type: string;
+  surface_m2: number | null;
+  transaction_type: string | null;
+  rent_price: number | null;
+  sale_price: number | null;
+  status: string;
+  available_from: string | null;
+  wheelchair_accessible: boolean;
+}>): PublicUnitSummary[] {
+  const map: Record<string, PublicUnitSummary> = {};
+  const now = new Date();
+  for (const a of apts) {
+    if (!a.type) continue;
+    if (!map[a.type]) {
+      map[a.type] = {
+        type: a.type, total: 0, available: 0, availableNow: 0,
+        surfaceMin: null, surfaceMax: null,
+        rentMin: null, rentMax: null, saleMin: null,
+        hasRent: false, hasSale: false, pmr: 0,
+      };
+    }
+    const s = map[a.type];
+    s.total++;
+    if (a.status === "available") {
+      s.available++;
+      if (!a.available_from || new Date(a.available_from) <= now) s.availableNow++;
+    }
+    if (a.surface_m2) {
+      s.surfaceMin = s.surfaceMin === null ? a.surface_m2 : Math.min(s.surfaceMin, a.surface_m2);
+      s.surfaceMax = s.surfaceMax === null ? a.surface_m2 : Math.max(s.surfaceMax, a.surface_m2);
+    }
+    if (a.rent_price && a.transaction_type && ["rent", "both"].includes(a.transaction_type)) {
+      s.hasRent = true;
+      s.rentMin = s.rentMin === null ? a.rent_price : Math.min(s.rentMin, a.rent_price);
+      s.rentMax = s.rentMax === null ? a.rent_price : Math.max(s.rentMax, a.rent_price);
+    }
+    if (a.sale_price && a.transaction_type && ["sale", "both"].includes(a.transaction_type)) {
+      s.hasSale = true;
+      s.saleMin = s.saleMin === null ? a.sale_price : Math.min(s.saleMin, a.sale_price);
+    }
+    if (a.wheelchair_accessible) s.pmr++;
+  }
+  return Object.values(map).sort((a, b) => a.type.localeCompare(b.type));
 }

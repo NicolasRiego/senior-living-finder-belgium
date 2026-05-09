@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare, ExternalLink } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
-import { getResidenceFullBySlug } from "@/modules/residences/publicApi";
+import { getResidenceFullBySlug, type PublicUnitSummary } from "@/modules/residences/publicApi";
 import { trackResidenceEvent } from "@/modules/analytics/track";
 import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+
+const TYPE_LABEL: Record<string, string> = Object.fromEntries(UNIT_TYPES.map((t) => [t.value, t.label]));
 
 
 export default function ResidenceDetailPage() {
@@ -38,15 +41,15 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  const { residence: r, units, pricing, services, activities, photos } = data;
+  const { residence: r, unitSummaries = [], services, activities, photos } = data as typeof data & { unitSummaries?: PublicUnitSummary[] };
   const cover = photos.find((p) => p.cover) ?? photos[0];
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
   const description = tr(r.description_fr, r.description_nl);
-  const minPrice = pricing
-    .map((p: any) => p.estimated_monthly_min ?? p.rent_min)
-    .filter((v: any) => v != null)
-    .reduce((m: number | null, v: number) => (m == null ? v : Math.min(m, v)), null);
+  const minPrice = unitSummaries
+    .map((s) => s.rentMin)
+    .filter((v): v is number => v != null)
+    .reduce<number | null>((m, v) => (m == null ? v : Math.min(m, v)), null);
 
   return (
     <article className="pb-32">
@@ -110,65 +113,67 @@ export default function ResidenceDetailPage() {
               )}
 
               {/* Logements */}
-              {units.length > 0 && (
+              {unitSummaries.length > 0 && (
                 <Section id="logements" title="Logements">
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {units.map((u: any) => (
-                      <div key={u.id} className="rounded-xl border border-border/60 bg-muted/30 p-5">
-                        <div className="font-semibold text-lg">{u.type}</div>
-                        <div className="mt-1 text-sm text-muted-foreground">
-                          {u.surface_min ? `${u.surface_min}${u.surface_max ? `–${u.surface_max}` : ""} m²` : null}
-                          {u.surface_min && u.count_total ? " · " : null}
-                          {u.count_total ? `${u.count_total} unités` : null}
+                    {unitSummaries.map((s) => (
+                      <div key={s.type} className="rounded-xl border border-border/60 bg-muted/30 p-5 space-y-3">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="font-semibold text-lg">{TYPE_LABEL[s.type] ?? s.type}</div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {s.hasRent && (
+                              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">À louer</span>
+                            )}
+                            {s.hasSale && (
+                              <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-medium text-accent-foreground">À vendre</span>
+                            )}
+                          </div>
                         </div>
-                        <div className="mt-2 text-sm">
-                          {u.available_now ? (
-                            <span className="inline-flex items-center gap-1 text-primary"><Check className="h-3.5 w-3.5" /> Disponible maintenant</span>
-                          ) : u.waiting_list ? (
-                            <span className="text-muted-foreground">Liste d'attente {u.waiting_delay_days ? `(~${u.waiting_delay_days}j)` : ""}</span>
-                          ) : (
-                            <span className="text-muted-foreground">{u.available_count ?? 0} disponible(s)</span>
+                        <dl className="grid grid-cols-2 gap-2 text-sm">
+                          {(s.surfaceMin || s.surfaceMax) && (
+                            <div>
+                              <dt className="text-xs uppercase text-muted-foreground">Surface</dt>
+                              <dd className="font-medium">
+                                {s.surfaceMin === s.surfaceMax ? `${s.surfaceMin} m²` : `${s.surfaceMin}–${s.surfaceMax} m²`}
+                              </dd>
+                            </div>
                           )}
-                        </div>
+                          <div>
+                            <dt className="text-xs uppercase text-muted-foreground">Disponibles</dt>
+                            <dd className="font-medium">{s.available} / {s.total}</dd>
+                          </div>
+                          {s.hasRent && s.rentMin && (
+                            <div>
+                              <dt className="text-xs uppercase text-muted-foreground">Loyer</dt>
+                              <dd className="font-medium">
+                                {s.rentMin === s.rentMax || !s.rentMax
+                                  ? `${s.rentMin.toLocaleString("fr-BE")} €/mois`
+                                  : `${s.rentMin.toLocaleString("fr-BE")}–${s.rentMax.toLocaleString("fr-BE")} €/mois`}
+                              </dd>
+                            </div>
+                          )}
+                          {s.hasSale && s.saleMin && (
+                            <div>
+                              <dt className="text-xs uppercase text-muted-foreground">Achat dès</dt>
+                              <dd className="font-medium">{s.saleMin.toLocaleString("fr-BE")} €</dd>
+                            </div>
+                          )}
+                          {s.pmr > 0 && (
+                            <div>
+                              <dt className="text-xs uppercase text-muted-foreground">PMR</dt>
+                              <dd className="font-medium">{s.pmr} logement{s.pmr > 1 ? "s" : ""}</dd>
+                            </div>
+                          )}
+                        </dl>
                       </div>
                     ))}
                   </div>
-                </Section>
-              )}
-
-              {/* Coût réel */}
-              {pricing.length > 0 && (
-                <Section id="cout" title="Coût réel">
-                  <div className="overflow-hidden rounded-xl border border-border/60">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/50 text-left">
-                        <tr>
-                          <th className="p-3">Logement</th>
-                          <th className="p-3">Mode</th>
-                          <th className="p-3">Loyer</th>
-                          <th className="p-3">Charges</th>
-                          <th className="p-3">Estimation / mois</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pricing.map((p: any) => {
-                          const u = units.find((u: any) => u.id === p.unit_type_id);
-                          return (
-                            <tr key={p.id} className="border-t border-border/60">
-                              <td className="p-3">{u?.type ?? "—"}</td>
-                              <td className="p-3 capitalize">{p.occupation_mode}</td>
-                              <td className="p-3">{p.rent_min ? `${p.rent_min}${p.rent_max ? `–${p.rent_max}` : ""} €` : "—"}</td>
-                              <td className="p-3">{p.fixed_charges ? `${p.fixed_charges} €` : "—"}</td>
-                              <td className="p-3 font-medium">
-                                {p.estimated_monthly_min
-                                  ? `${p.estimated_monthly_min}${p.estimated_monthly_max ? `–${p.estimated_monthly_max}` : ""} €`
-                                  : "—"}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                  <div className="mt-4">
+                    <Button asChild variant="outline">
+                      <Link to={`/appartements?residences=${r.id}`}>
+                        <ExternalLink className="h-4 w-4 mr-2" /> Voir les appartements
+                      </Link>
+                    </Button>
                   </div>
                 </Section>
               )}
