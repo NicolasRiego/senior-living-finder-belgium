@@ -276,6 +276,16 @@ export default function ResidencePreview() {
           </section>
         )}
 
+        {charges.length > 0 && unitSummaries.length > 0 && (
+          <section>
+            <h2 className="font-display text-2xl mb-4">Coûts mensuels estimés</h2>
+            <CostsSection
+              charges={charges}
+              unitSummaries={unitSummaries as unknown as import("@/modules/residences/publicApi").PublicUnitSummary[]}
+            />
+          </section>
+        )}
+
         {services.length > 0 && (
           <section>
             <h2 className="font-display text-2xl mb-3">Services</h2>
