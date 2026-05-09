@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft, MapPin, Check } from "lucide-react";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import CostsSection, { type ResidenceCharge } from "@/modules/residences/CostsSection";
 
