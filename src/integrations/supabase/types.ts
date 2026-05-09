@@ -772,6 +772,71 @@ export type Database = {
           },
         ]
       }
+      residence_charges: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          is_mandatory: boolean
+          label: string
+          residence_id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mandatory?: boolean
+          label: string
+          residence_id: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mandatory?: boolean
+          label?: string
+          residence_id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "residence_charges_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "residence_charges_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_stats_30d"
+            referencedColumns: ["residence_id"]
+          },
+          {
+            foreignKeyName: "residence_charges_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "residence_charges_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "v_residence_price_summary"
+            referencedColumns: ["residence_id"]
+          },
+        ]
+      }
       residence_events: {
         Row: {
           created_at: string
