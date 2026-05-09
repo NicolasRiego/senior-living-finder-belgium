@@ -223,6 +223,11 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                     className={`flex-1 text-base ${isFromCharges ? "cursor-default" : "cursor-pointer"}`}
                   >
                     {s.label_fr}
+                    {s.is_custom && (
+                      <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
+                        Personnalisé
+                      </span>
+                    )}
                     {isFromCharges && (
                       <span className="ml-2 text-xs text-primary font-normal">
                         (inclus dans les charges)
