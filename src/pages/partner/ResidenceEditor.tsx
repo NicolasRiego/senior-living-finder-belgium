@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -107,8 +106,8 @@ export default function ResidenceEditor() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/partenaire" aria-label="Retour"><ArrowLeft className="h-5 w-5" /></Link>
+          <Button variant="ghost" size="icon" onClick={() => nav(`/partenaire/residences#residence-${residence.id}`)} aria-label="Retour">
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
             <h1 className="font-display text-3xl">{residence.nom_fr}</h1>
