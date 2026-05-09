@@ -3,11 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { StepProps } from "@/pages/partner/ResidenceEditor";
 import { useAutosave } from "../useAutosave";
 
-type Catalog = { id: string; code: string; label_fr: string; category: string | null };
+type Catalog = { id: string; code: string; label_fr: string; category: string | null; is_custom?: boolean };
 type SelectedItem = {
   included: boolean;
   optional: boolean;
