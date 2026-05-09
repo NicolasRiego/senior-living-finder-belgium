@@ -35,6 +35,7 @@ import ResidenceEditor from "./pages/partner/ResidenceEditor";
 import ResidencePreview from "./pages/partner/ResidencePreview";
 import ApartmentsList from "./pages/partner/ApartmentsList";
 import MyResidences from "./pages/partner/MyResidences";
+import Trash from "./pages/partner/Trash";
 import ApartmentEditor from "./pages/partner/ApartmentEditor";
 import AdminValidation from "./pages/admin/AdminValidation";
 import AdminResidences from "./pages/admin/AdminResidences";
@@ -136,6 +137,14 @@ const App = () => (
                     element={
                       <RequireAuth requireOrg>
                         <PartnerLayout><ApartmentEditor /></PartnerLayout>
+                      </RequireAuth>
+                    }
+                  />
+                  <Route
+                    path="/partenaire/corbeille"
+                    element={
+                      <RequireAuth requireOrg>
+                        <PartnerLayout><Trash /></PartnerLayout>
                       </RequireAuth>
                     }
                   />

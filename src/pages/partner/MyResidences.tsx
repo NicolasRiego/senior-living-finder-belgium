@@ -17,18 +17,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
   Plus,
   Building2,
   Home,
   Eye,
   Trash2,
-  Undo2,
-  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 
