@@ -88,7 +88,8 @@ export default function ActivitiesStep({ residence }: StepProps) {
       .select()
       .single();
     if (error || !data) {
-      toast.error(error?.message ?? "Erreur création activité");
+      console.error("Erreur création activité:", error);
+      toast.error(error?.message ? `Erreur: ${error.message}` : "Erreur inconnue lors de la création");
       setCreatingActivity(false);
       return;
     }

@@ -113,7 +113,8 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
       .select()
       .single();
     if (error || !data) {
-      toast.error(error?.message ?? "Erreur création service");
+      console.error("Erreur création service:", error);
+      toast.error(error?.message ? `Erreur: ${error.message}` : "Erreur inconnue lors de la création");
       setCreatingService(false);
       return;
     }
