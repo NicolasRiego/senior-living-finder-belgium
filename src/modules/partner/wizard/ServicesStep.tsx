@@ -27,11 +27,18 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
   const [selected, setSelected] = useState<Selected>({});
   const [charges, setCharges] = useState<Charge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newServiceLabel, setNewServiceLabel] = useState("");
+  const [newServiceCategory, setNewServiceCategory] = useState("Autres");
+  const [creatingService, setCreatingService] = useState(false);
 
   const load = async () => {
     setLoading(true);
     const [cat, sel, ch] = await Promise.all([
-      supabase.from("services_catalog").select("id,code,label_fr,category").order("category"),
+      supabase
+        .from("services_catalog")
+        .select("id,code,label_fr,category,is_custom")
+        .or(`is_custom.eq.false,created_by_residence.eq.${residence.id}`)
+        .order("category"),
       supabase.from("residence_services").select("*").eq("residence_id", residence.id),
       supabase
         .from("residence_charges")
