@@ -97,6 +97,67 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     }));
   };
 
+  const createCustomService = async () => {
+    if (!newServiceLabel.trim()) return;
+    setCreatingService(true);
+    const code = `custom_${residence.id.slice(0, 8)}_${Date.now()}`;
+    const { data, error } = await supabase
+      .from("services_catalog")
+      .insert({
+        code,
+        label_fr: newServiceLabel.trim(),
+        category: newServiceCategory,
+        is_custom: true,
+        created_by_residence: residence.id,
+      } as any)
+      .select()
+      .single();
+    if (error || !data) {
+      toast.error(error?.message ?? "Erreur création service");
+      setCreatingService(false);
+      return;
+    }
+    setCatalog((prev) => [...prev, data as any]);
+    await supabase.from("residence_services").upsert(
+      {
+        residence_id: residence.id,
+        service_id: (data as any).id,
+        included: true,
+        optional: false,
+        price: null,
+        is_free: false,
+        from_charges: false,
+      } as any,
+      { onConflict: "residence_id,service_id" as any },
+    );
+    setSelected((prev) => ({
+      ...prev,
+      [(data as any).id]: {
+        included: true,
+        optional: false,
+        price: null,
+        is_free: false,
+        from_charges: false,
+        charges_label: null,
+      },
+    }));
+    setNewServiceLabel("");
+    setCreatingService(false);
+    toast.success(`Service "${(data as any).label_fr}" créé.`);
+  };
+
+  const deleteCustomService = async (serviceId: string, label: string) => {
+    await supabase.from("residence_services").delete().eq("residence_id", residence.id).eq("service_id", serviceId);
+    await supabase.from("services_catalog").delete().eq("id", serviceId);
+    setCatalog((prev) => prev.filter((c) => c.id !== serviceId));
+    setSelected((prev) => {
+      const next = { ...prev };
+      delete next[serviceId];
+      return next;
+    });
+    toast.success(`Service "${label}" supprimé.`);
+  };
+
   if (loading) return <Card><CardContent className="py-8 text-muted-foreground">Chargement…</CardContent></Card>;
 
   const grouped: Record<string, Catalog[]> = {};
