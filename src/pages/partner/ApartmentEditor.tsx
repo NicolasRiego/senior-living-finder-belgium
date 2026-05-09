@@ -28,7 +28,7 @@ type BoolField = (typeof BOOL_FIELDS)[number][0];
 
 type FormState = {
   title_fr: string;
-  type: "appartement" | "studio" | "chambre" | "";
+  type: string;
   status: "available" | "reserved" | "unavailable";
   available_from: string;
   surface_m2: string;
