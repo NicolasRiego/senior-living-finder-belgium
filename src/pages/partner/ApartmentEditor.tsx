@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ChevronRight, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 
 const BOOL_FIELDS = [
   ["parking", "Parking"], ["cave", "Cave"],
