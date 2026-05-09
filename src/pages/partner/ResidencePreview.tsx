@@ -49,7 +49,8 @@ export default function ResidencePreview() {
         supabase
           .from("residence_services")
           .select("*, services_catalog(*)")
-          .eq("residence_id", id),
+          .eq("residence_id", id)
+          .eq("included", true),
         supabase.from("photos").select("*").eq("residence_id", id).order("display_order"),
         supabase
           .from("residence_charges")
