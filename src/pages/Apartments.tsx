@@ -285,38 +285,43 @@ export default function ApartmentsPage() {
                   <span>Choisir des résidences</span>
                 </button>
               ) : (
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedResidences.slice(0, 2).map((r) => (
-                      <span
-                        key={r.id}
-                        className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-foreground"
+                <div className="space-y-2 mt-1">
+                  {selectedIds.map((id) => {
+                    const res = selectedResidences.find((r) => r.id === id);
+                    if (!res) return null;
+                    return (
+                      <div
+                        key={id}
+                        className="flex items-center justify-between gap-2 rounded-full bg-primary/10 border border-primary/20 px-3 py-1.5"
                       >
-                        <span className="max-w-[120px] truncate">{r.nom_fr}</span>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Home className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span className="text-xs font-medium text-primary truncate">
+                            {res.nom_fr}
+                          </span>
+                          {(res.code_postal || res.ville) && (
+                            <span className="text-xs text-primary/60 shrink-0">
+                              ({res.code_postal ?? res.ville})
+                            </span>
+                          )}
+                        </div>
                         <button
                           type="button"
-                          aria-label={`Retirer ${r.nom_fr}`}
-                          onClick={() =>
-                            setResidenceIds(selectedIds.filter((id) => id !== r.id))
-                          }
-                          className="rounded-full p-0.5 hover:bg-primary/20 hover:text-destructive"
+                          onClick={() => setResidenceIds(selectedIds.filter((x) => x !== id))}
+                          className="shrink-0 h-5 w-5 flex items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-destructive/20 hover:text-destructive transition-colors"
+                          aria-label={`Retirer ${res.nom_fr}`}
                         >
                           <X className="h-3 w-3" />
                         </button>
-                      </span>
-                    ))}
-                    {selectedIds.length > 2 && (
-                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                        +{selectedIds.length - 2}
-                      </span>
-                    )}
-                  </div>
+                      </div>
+                    );
+                  })}
                   <button
                     type="button"
                     onClick={() => setPickerOpen(true)}
-                    className="w-full flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/5 text-xs text-primary hover:bg-primary/10 transition-colors"
+                    className="w-full flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-border bg-muted/50 text-xs text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
                   >
-                    <Pencil className="h-3 w-3" />
+                    <Home className="h-3.5 w-3.5" />
                     Modifier la sélection ({selectedIds.length})
                   </button>
                 </div>
