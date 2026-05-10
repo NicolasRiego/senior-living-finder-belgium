@@ -35,6 +35,12 @@ export default function ComparePage() {
   const { toast } = useToast();
   const { ids, remove, clear, setIds, aptIds, removeApt, clearApt } = useCompare();
   const [sp, setSp] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"residences" | "logements">("residences");
+
+  useEffect(() => {
+    if (ids.length === 0 && aptIds.length > 0) setActiveTab("logements");
+    if (aptIds.length === 0 && ids.length > 0) setActiveTab("residences");
+  }, [ids.length, aptIds.length]);
 
   // Hydrate from URL on first load
   useEffect(() => {
