@@ -90,7 +90,7 @@ export async function listApartmentResidences(): Promise<ResidenceFacet[]> {
   const { data, error } = await supabase
     .from("residence_search_view" as never)
     .select(
-      "id, nom_fr, nom_nl, ville, region, type_etablissement, capacity, price_from, cover_path, included_service_codes",
+      "id, nom_fr, nom_nl, ville, code_postal, region, type_etablissement, capacity, price_from, cover_path, included_service_codes",
     )
     .in("id", ids);
   if (error) throw error;
