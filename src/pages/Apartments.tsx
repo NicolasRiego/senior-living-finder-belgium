@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Home, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, MapPin, Pencil, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listApartmentResidences, searchApartments } from "@/modules/apartments/publicApi";
+import { usePostalSearch } from "@/modules/apartments/usePostalSearch";
 import {
   APT_BOOL_FIELDS,
   APT_BOOL_LABELS,
