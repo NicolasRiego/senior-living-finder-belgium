@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, type ReactNode } from "react";
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -35,6 +35,12 @@ export default function ComparePage() {
   const { toast } = useToast();
   const { ids, remove, clear, setIds, aptIds, removeApt, clearApt } = useCompare();
   const [sp, setSp] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<"residences" | "logements">("residences");
+
+  useEffect(() => {
+    if (ids.length === 0 && aptIds.length > 0) setActiveTab("logements");
+    if (aptIds.length === 0 && ids.length > 0) setActiveTab("residences");
+  }, [ids.length, aptIds.length]);
 
   // Hydrate from URL on first load
   useEffect(() => {
@@ -140,30 +146,101 @@ export default function ComparePage() {
 
   return (
     <div className="container py-12 lg:py-16">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl font-semibold md:text-4xl">Comparateur</h1>
-          <p className="mt-2 text-lg text-muted-foreground">
-            Comparez des résidences et des logements côte à côte
-          </p>
+      <div className="mb-6">
+        <h1 className="font-display text-3xl font-semibold md:text-4xl">Comparateur</h1>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab("residences")}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all border ${
+                activeTab === "residences"
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+              }`}
+            >
+              <Building2 className="h-4 w-4" />
+              Résidences
+              {ids.length > 0 && (
+                <span
+                  className={`ml-1 h-5 w-5 rounded-full text-xs flex items-center justify-center font-bold ${
+                    activeTab === "residences" ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {ids.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("logements")}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all border ${
+                activeTab === "logements"
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+              }`}
+            >
+              <Home className="h-4 w-4" />
+              Logements
+              {aptIds.length > 0 && (
+                <span
+                  className={`ml-1 h-5 w-5 rounded-full text-xs flex items-center justify-center font-bold ${
+                    activeTab === "logements" ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
+                  }`}
+                >
+                  {aptIds.length}
+                </span>
+              )}
+            </button>
+          </div>
+          <div className="flex gap-2">
+            {activeTab === "residences" ? (
+              <>
+                {ids.length < 4 && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/residences">
+                      <Plus className="h-4 w-4" /> Ajouter
+                    </Link>
+                  </Button>
+                )}
+                {ids.length > 0 && (
+                  <Button variant="ghost" size="sm" onClick={clear}>
+                    Vider
+                  </Button>
+                )}
+              </>
+            ) : (
+              <>
+                {aptIds.length < 4 && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/appartements">
+                      <Plus className="h-4 w-4" /> Ajouter
+                    </Link>
+                  </Button>
+                )}
+                {aptIds.length > 0 && (
+                  <Button variant="ghost" size="sm" onClick={clearApt}>
+                    Vider
+                  </Button>
+                )}
+              </>
+            )}
+            <Button variant="outline" size="sm" onClick={share}>
+              <Share2 className="h-4 w-4" /> Partager
+            </Button>
+          </div>
         </div>
-        <Button variant="outline" onClick={share}>
-          <Share2 className="h-4 w-4" /> Partager
-        </Button>
       </div>
 
       {/* ═══ SECTION RÉSIDENCES ═══ */}
-      {ids.length > 0 && (
-        <section className="mb-16">
-          <SubHeader
-            title="Comparateur de résidences"
-            count={ids.length}
-            unit="résidence"
-            canAdd={ids.length < 4}
-            addTo="/residences"
-            onClear={clear}
-          />
-
+      {activeTab === "residences" && (
+        ids.length === 0 ? (
+          <div className="rounded-xl border-2 border-dashed border-border p-10 text-center mt-8">
+            <p className="text-muted-foreground mb-4">Aucune résidence dans le comparateur.</p>
+            <Button asChild variant="outline">
+              <Link to="/residences">Parcourir les résidences</Link>
+            </Button>
+          </div>
+        ) : (
+        <section className="mt-8">
           {items.length < 2 && items.length > 0 && (
             <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
               Sélectionnez au moins 2 résidences pour activer la comparaison complète.
@@ -319,21 +396,20 @@ export default function ComparePage() {
             </div>
           </div>
         </section>
+        )
       )}
 
-      {ids.length > 0 && aptIds.length > 0 && <hr className="my-8 border-border/60" />}
-
       {/* ═══ SECTION APPARTEMENTS ═══ */}
-      {aptIds.length > 0 && (
-        <section>
-          <SubHeader
-            title="Comparateur de logements"
-            count={aptIds.length}
-            unit="logement"
-            canAdd={aptIds.length < 4}
-            addTo="/appartements"
-            onClear={clearApt}
-          />
+      {activeTab === "logements" && (
+        aptIds.length === 0 ? (
+          <div className="rounded-xl border-2 border-dashed border-border p-10 text-center mt-8">
+            <p className="text-muted-foreground mb-4">Aucun logement dans le comparateur.</p>
+            <Button asChild variant="outline">
+              <Link to="/appartements">Parcourir les logements</Link>
+            </Button>
+          </div>
+        ) : (
+        <section className="mt-8">
 
           <div className="overflow-x-auto pb-2">
             <div className="min-w-fit">
@@ -464,6 +540,7 @@ export default function ComparePage() {
             </div>
           </div>
         </section>
+        )
       )}
     </div>
   );
