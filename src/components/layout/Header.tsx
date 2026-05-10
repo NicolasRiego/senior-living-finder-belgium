@@ -31,10 +31,10 @@ export function Header() {
 
   return (
     <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] [overflow-x:clip] border-b border-border/50 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex min-h-20 w-full max-w-[1400px] flex-nowrap items-center justify-between gap-2 px-4">
-        <Link to="/" className="flex shrink-0 items-center gap-1.5 font-display text-xl font-semibold whitespace-nowrap">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
-            <Heart className="h-5 w-5" fill="currentColor" />
+      <div className="mx-auto flex min-h-[84px] w-full max-w-[1400px] flex-nowrap items-center justify-between gap-2 px-4">
+        <Link to="/" className="flex shrink-0 items-center gap-1.5 font-display text-[1.31rem] font-semibold whitespace-nowrap">
+          <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
+            <Heart className="h-[21px] w-[21px]" fill="currentColor" />
           </span>
           <span>{t("brand.name")}</span>
         </Link>
@@ -47,7 +47,7 @@ export function Header() {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "whitespace-nowrap rounded-full px-3 py-2 text-[0.9rem] font-medium leading-none transition-colors",
+                    "whitespace-nowrap rounded-full px-[13px] py-[9px] text-[0.945rem] font-medium leading-none transition-colors",
                     isActive
                       ? "bg-primary-soft text-primary"
                       : "text-foreground/80 hover:bg-muted hover:text-foreground",
@@ -58,8 +58,8 @@ export function Header() {
               </NavLink>
               {l.to === "/residences" && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-2 text-[0.9rem] font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
-                    Appartements <ChevronDown className="h-3.5 w-3.5" />
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[13px] py-[9px] text-[0.945rem] font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
+                    Appartements <ChevronDown className="h-[15px] w-[15px]" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="min-w-[240px]">
                     <DropdownMenuItem asChild>
@@ -80,22 +80,22 @@ export function Header() {
           <FontSizeControls />
           {user ? (
             <>
-              <Button asChild variant="outline" size="sm" className="h-8 whitespace-nowrap px-3 py-1.5 text-sm">
+              <Button asChild variant="outline" size="sm" className="h-[34px] whitespace-nowrap px-[13px] py-[7px] text-[0.945rem]">
                 <Link to={myLink} aria-label={myLabel}>
-                  <User className="h-4 w-4 mr-1.5" />
+                  <User className="h-[17px] w-[17px] mr-1.5" />
                   <span className="hidden xl:inline">{myLabel}</span>
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={signOut} aria-label="Se déconnecter">
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-[34px] w-[34px]" onClick={signOut} aria-label="Se déconnecter">
+                <LogOut className="h-[17px] w-[17px]" />
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="h-8 whitespace-nowrap px-3 text-sm">
+              <Button asChild variant="ghost" size="sm" className="h-[34px] whitespace-nowrap px-[13px] text-[0.945rem]">
                 <Link to="/connexion">{t("nav.login")}</Link>
               </Button>
-              <Button asChild size="sm" className="h-8 whitespace-nowrap px-3 text-sm">
+              <Button asChild size="sm" className="h-[34px] whitespace-nowrap px-[13px] text-[0.945rem]">
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
