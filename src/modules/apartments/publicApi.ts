@@ -209,8 +209,10 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
     }
   }
 
+  const extra = (extraRow ?? {}) as Partial<ApartmentExtraFields>;
+  const merged = { ...a, ...extra } as ApartmentSearchRow & ApartmentExtraFields;
   return {
-    apartment: { ...a, title_fr: titleRow?.title_fr ?? null, title_nl: titleRow?.title_nl ?? null },
+    apartment: merged,
     residence: r,
     photos: photoUrls,
   };
