@@ -237,24 +237,30 @@ export default function ApartmentsPage() {
                   </button>
                 )}
                 {postalOpen && postalResults.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-xl border border-border bg-popover shadow-lg overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[280px] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
                     {postalResults.map((r) => (
                       <button
                         type="button"
-                        key={`${r.code_postal}-${r.commune_fr}`}
+                        key={r.code_postal + r.commune_fr}
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
-                          setPostalQuery(`${r.code_postal} – ${r.commune_fr}`);
+                          setPostalQuery(r.code_postal);
                           setPostalOpen(false);
                           updateParam({ cp: r.code_postal });
                         }}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted flex items-center justify-between gap-2 border-b border-border/40 last:border-0"
+                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-3"
                       >
-                        <span className="flex items-center gap-2 min-w-0">
-                          <span className="font-semibold text-primary">{r.code_postal}</span>
-                          <span className="truncate">{r.commune_fr}</span>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <span className="font-bold text-foreground text-sm shrink-0 w-12">
+                            {r.code_postal}
+                          </span>
+                          <span className="text-sm text-foreground truncate">
+                            {r.commune_fr}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground shrink-0 bg-muted rounded-full px-2 py-0.5">
+                          {r.province}
                         </span>
-                        <span className="shrink-0 text-xs text-muted-foreground">{r.province}</span>
                       </button>
                     ))}
                   </div>
