@@ -110,27 +110,62 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden shrink-0 flex-nowrap items-center gap-2 min-[1100px]:flex">
+        <div
+          className={cn(
+            "hidden shrink-0 flex-nowrap items-center gap-2 min-[1100px]:flex",
+            isTransparent &&
+              "[&_[role=group]]:!border-white/40 [&_[role=group]]:!bg-white/10 [&_[role=group]]:!backdrop-blur-sm [&_[role=group]_button]:!text-white",
+          )}
+        >
           <LocaleSwitcher />
           <FontSizeControls />
           {user ? (
             <>
-              <Button asChild variant="outline" size="sm" className="h-[34px] whitespace-nowrap px-[11px] py-[7px] text-[1.091rem]">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "h-[34px] whitespace-nowrap px-[11px] py-[7px] text-[1.091rem]",
+                  isTransparent && "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm",
+                )}
+              >
                 <Link to={myLink} aria-label={myLabel}>
                   <User className="h-[17px] w-[17px] mr-1.5" />
                   <span className="hidden xl:inline">{myLabel}</span>
                 </Link>
               </Button>
-              <Button variant="ghost" size="icon" className="h-[34px] w-[34px]" onClick={signOut} aria-label="Se déconnecter">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn("h-[34px] w-[34px]", isTransparent && "text-white hover:bg-white/15 hover:text-white")}
+                onClick={signOut}
+                aria-label="Se déconnecter"
+              >
                 <LogOut className="h-[17px] w-[17px]" />
               </Button>
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="h-[34px] whitespace-nowrap px-[11px] text-[1.091rem]">
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className={cn(
+                  "h-[34px] whitespace-nowrap px-[11px] text-[1.091rem]",
+                  isTransparent && "text-white hover:bg-white/15 hover:text-white",
+                )}
+              >
                 <Link to="/connexion">{t("nav.login")}</Link>
               </Button>
-              <Button asChild size="sm" className="h-[34px] whitespace-nowrap px-[11px] text-[1.091rem]">
+              <Button
+                asChild
+                size="sm"
+                className={cn(
+                  "h-[34px] whitespace-nowrap px-[11px] text-[1.091rem]",
+                  isTransparent && "bg-white text-primary hover:bg-white/90",
+                )}
+              >
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
@@ -138,7 +173,10 @@ export function Header() {
         </div>
 
         <button
-          className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted min-[1100px]:hidden"
+          className={cn(
+            "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-muted min-[1100px]:hidden",
+            isTransparent ? "text-white hover:bg-white/15" : "text-foreground",
+          )}
           onClick={() => setOpen((o) => !o)}
           aria-label="Menu"
           aria-expanded={open}
