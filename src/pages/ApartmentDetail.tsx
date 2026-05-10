@@ -8,6 +8,10 @@ import { useI18n } from "@/modules/i18n/I18nProvider";
 import { getApartmentById } from "@/modules/apartments/publicApi";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
 import { APT_BOOL_FIELDS, APT_BOOL_LABELS } from "@/modules/apartments/types";
+import {
+  OverviewBadges, GeneralInfo, InteriorInfo, ExteriorInfo,
+  InstallationsInfo, EnergyInfo, FinancesInfo,
+} from "@/modules/apartments/detail/InfoSections";
 
 const TYPE_LABEL: Record<string, string> = {
   appartement: "Appartement",
@@ -165,7 +169,10 @@ export default function ApartmentDetailPage() {
             )}
           </div>
 
-          {/* 4 — Description */}
+          {/* Aperçu */}
+          <OverviewBadges a={a} />
+
+          {/* Description */}
           {description && (
             <section>
               <h2 className="mb-3 font-display font-semibold">Description</h2>
@@ -173,7 +180,15 @@ export default function ApartmentDetailPage() {
             </section>
           )}
 
-          {/* 5 — Équipements */}
+          {/* Sections détaillées */}
+          <GeneralInfo a={a} />
+          <InteriorInfo a={a} />
+          <ExteriorInfo a={a} />
+          <InstallationsInfo a={a} />
+          <EnergyInfo a={a} />
+          <FinancesInfo a={a} />
+
+          {/* Équipements */}
           <section>
             <h2 className="mb-3 font-display font-semibold">Équipements</h2>
             <div className="flex flex-wrap gap-2">

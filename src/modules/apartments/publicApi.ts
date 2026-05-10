@@ -113,8 +113,50 @@ export async function getCoverUrl(path: string | null): Promise<string | null> {
   return data?.signedUrl ?? null;
 }
 
+export type ApartmentExtraFields = {
+  title_fr: string | null;
+  title_nl: string | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  toilets: number | null;
+  living_room_m2: number | null;
+  kitchen_type: string | null;
+  build_year: number | null;
+  building_floors: number | null;
+  building_state: string | null;
+  flooring: string | null;
+  has_storage: boolean | null;
+  storage_m2: number | null;
+  has_laundry: boolean | null;
+  has_dressing: boolean | null;
+  has_office: boolean | null;
+  terrace_m2: number | null;
+  garden_m2: number | null;
+  has_balcony: boolean | null;
+  balcony_m2: number | null;
+  orientation: string | null;
+  parking_type: string | null;
+  parking_count: number | null;
+  has_lift: boolean | null;
+  has_interphone: boolean | null;
+  has_videophone: boolean | null;
+  has_alarm: boolean | null;
+  has_digicode: boolean | null;
+  heating_type: string | null;
+  hot_water: string | null;
+  internet: string | null;
+  energy_class: string | null;
+  primary_energy: number | null;
+  double_glazing: boolean | null;
+  co2_emission: string | null;
+  agency_fee: number | null;
+  property_tax: number | null;
+  co_ownership_fee: number | null;
+  charges_monthly: number | null;
+};
+
 export type ApartmentDetail = {
-  apartment: ApartmentSearchRow & { title_fr: string | null; title_nl: string | null };
+  apartment: ApartmentSearchRow & ApartmentExtraFields;
   residence: {
     id: string;
     slug: string;
@@ -135,9 +177,9 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
   if (!apt) return null;
   const a = apt as unknown as ApartmentSearchRow;
 
-  const { data: titleRow } = await supabase
+  const { data: extraRow } = await supabase
     .from("apartments")
-    .select("title_fr, title_nl")
+    .select("*")
     .eq("id", id)
     .maybeSingle();
 
@@ -167,8 +209,10 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
     }
   }
 
+  const extra = (extraRow ?? {}) as Partial<ApartmentExtraFields>;
+  const merged = { ...a, ...extra } as ApartmentSearchRow & ApartmentExtraFields;
   return {
-    apartment: { ...a, title_fr: titleRow?.title_fr ?? null, title_nl: titleRow?.title_nl ?? null },
+    apartment: merged,
     residence: r,
     photos: photoUrls,
   };
