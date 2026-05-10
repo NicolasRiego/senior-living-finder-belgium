@@ -209,25 +209,6 @@ export default function ApartmentsPage() {
               </select>
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium">Code postal ou commune</label>
-              <div className="relative">
-                <Input
-                  value={postalQuery}
-                  onChange={(e) => {
-                    setPostalQuery(e.target.value);
-                    setPostalOpen(true);
-                    if (!e.target.value) {
-                      updateParam({ cp: null });
-                    }
-                  }}
-                  onFocus={() => postalQuery && setPostalOpen(true)}
-                  onBlur={() => setTimeout(() => setPostalOpen(false), 200)}
-                  placeholder="ex: 1180 ou Uccle…"
-                  className="h-11 pr-9"
-                  autoComplete="off"
-                />
-                {postalQuery && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium block">Code postal ou commune</label>
               <div className="relative">
