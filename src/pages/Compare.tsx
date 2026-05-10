@@ -535,8 +535,8 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
     <div className="flex gap-4 items-start">
       <div className={LABEL_COL} />
       {items.map((item, idx) => (
-        <>
-          <div key={item.id} className="flex-1 min-w-[220px]">
+        <Fragment key={item.id}>
+          <div className="flex-1 min-w-[220px]">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-muted mb-4 shadow-md">
               {item.cover_url ? (
                 <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" />
@@ -569,15 +569,13 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
             </div>
           </div>
           {showVs && idx === 0 && (
-            <div key="vs" className="shrink-0 flex items-center" style={{ height: "calc((100% / 1) * 0)" }}>
-              <div className="flex items-center" style={{ marginTop: "20%" }}>
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-md">
-                  VS
-                </span>
-              </div>
+            <div className="shrink-0 flex items-center justify-center" style={{ alignSelf: "flex-start", marginTop: "calc(min(220px, 25vw) * 0.75 / 2 - 20px)" }}>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-md">
+                VS
+              </span>
             </div>
           )}
-        </>
+        </Fragment>
       ))}
     </div>
   );
