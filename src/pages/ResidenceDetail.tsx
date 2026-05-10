@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare, ExternalLink } from "lucide-react";
@@ -47,10 +47,17 @@ export default function ResidenceDetailPage() {
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
   const description = tr(r.description_fr, r.description_nl);
-  const minPrice = unitSummaries
-    .map((s) => s.rentMin)
-    .filter((v): v is number => v != null)
-    .reduce<number | null>((m, v) => (m == null ? v : Math.min(m, v)), null);
+  const totalMandatoryCharges = charges.reduce(
+    (sum, c) => sum + (c.amount ?? 0),
+    0,
+  );
+  const priceFromWithCharges = useMemo(() => {
+    const allRentMins = unitSummaries
+      .filter((s) => s.hasRent && s.rentMin)
+      .map((s) => s.rentMin as number);
+    if (allRentMins.length === 0) return null;
+    return Math.min(...allRentMins) + totalMandatoryCharges;
+  }, [unitSummaries, totalMandatoryCharges]);
 
   return (
     <article className="pb-32">
@@ -92,12 +99,17 @@ export default function ResidenceDetailPage() {
             </div>
 
             <div className="text-right space-y-3">
-              {minPrice != null && (
+              {priceFromWithCharges != null && (
                 <div>
                   <div className="text-sm text-muted-foreground">{t("common.from")}</div>
-                  <div className="font-display text-3xl font-semibold text-primary">
-                    {Number(minPrice).toLocaleString("fr-BE")}€<span className="text-base font-normal text-muted-foreground">{t("common.perMonth")}</span>
+                  <div className="font-display text-3xl font-bold text-primary">
+                    {priceFromWithCharges.toLocaleString("fr-BE")}€<span className="text-base font-normal text-muted-foreground">{t("common.perMonth")}</span>
                   </div>
+                  {totalMandatoryCharges > 0 && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Loyer + charges obligatoires incluses
+                    </div>
+                  )}
                 </div>
               )}
               <CompareToggle id={r.id} />
