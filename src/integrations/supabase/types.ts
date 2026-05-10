@@ -1632,6 +1632,7 @@ export type Database = {
       submit_residence: { Args: { _residence_id: string }; Returns: undefined }
       unarchive_residence: { Args: { _residence_id: string }; Returns: Json }
       unit_type_residence: { Args: { _unit_type_id: string }; Returns: string }
+      update_demo_photos_unsplash: { Args: never; Returns: number }
       update_lead_status: {
         Args: {
           _lead_id: string
