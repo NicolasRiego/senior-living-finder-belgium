@@ -254,18 +254,13 @@ export default function ApartmentsPage() {
                             setPostalOpen(false);
                             updateParam({ cp: updated.map((p) => p.code).join(",") });
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-2"
+                          className="w-full px-3 py-1.5 text-left hover:bg-muted transition-colors border-b border-border/20 last:border-0"
                         >
-                          <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <span className="text-xs font-semibold text-foreground shrink-0 w-10 tabular-nums">
-                              {r.code_postal}
-                            </span>
-                            <span className="text-xs text-muted-foreground truncate">
-                              {r.commune_fr}
-                            </span>
-                          </div>
-                          <span className="text-[10px] text-muted-foreground/70 shrink-0 hidden sm:block">
-                            {r.province}
+                          <span className="text-[11px] text-foreground leading-none">
+                            {r.code_postal}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground ml-1.5 leading-none">
+                            {r.commune_fr}
                           </span>
                         </button>
                       ))}
