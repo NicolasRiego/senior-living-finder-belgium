@@ -4,7 +4,7 @@ import { I18nProvider, useI18n } from "@/modules/i18n/I18nProvider";
 
 function wrap({ children }: { children: React.ReactNode }) {
   // Reset stored locale to keep tests deterministic
-  if (typeof window !== "undefined") window.localStorage.removeItem("serenia.locale");
+  if (typeof window !== "undefined") window.localStorage.removeItem("houseofLiving.locale");
   return <I18nProvider>{children}</I18nProvider>;
 }
 
