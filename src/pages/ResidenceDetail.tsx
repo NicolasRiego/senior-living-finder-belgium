@@ -28,6 +28,20 @@ export default function ResidenceDetailPage() {
     if (data?.residence?.id) trackResidenceEvent(data.residence.id, "view");
   }, [data?.residence?.id]);
 
+  const unitSummariesForPrice = (data?.unitSummaries ?? []) as PublicUnitSummary[];
+  const chargesForPrice = (data?.charges ?? []) as import("@/modules/residences/CostsSection").ResidenceCharge[];
+  const totalMandatoryCharges = chargesForPrice.reduce(
+    (sum, c) => sum + (c.amount ?? 0),
+    0,
+  );
+  const priceFromWithCharges = useMemo(() => {
+    const allRentMins = unitSummariesForPrice
+      .filter((s) => s.hasRent && s.rentMin)
+      .map((s) => s.rentMin as number);
+    if (allRentMins.length === 0) return null;
+    return Math.min(...allRentMins) + totalMandatoryCharges;
+  }, [unitSummariesForPrice, totalMandatoryCharges]);
+
   if (isLoading) {
     return <div className="container py-24 text-center text-muted-foreground">Chargement…</div>;
   }
