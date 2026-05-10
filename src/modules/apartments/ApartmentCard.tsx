@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Heart, Building2, Maximize, Layers } from "lucide-react";
+import { MapPin, Heart, Building2, Maximize, Layers, GitCompare, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useFavorites } from "@/modules/favorites/useFavorites";
+import { useCompare } from "@/modules/compare/CompareProvider";
 import { getCoverUrl } from "./publicApi";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import type { ApartmentSearchRow } from "./types";
@@ -16,7 +17,9 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
   const { tr } = useI18n();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const { has, toggle } = useFavorites();
+  const { hasApt, toggleApt, isAptFull } = useCompare();
   const isFav = has(row.residence_id);
+  const inCompare = hasApt(row.id);
   const name = tr(row.residence_nom_fr, row.residence_nom_nl);
 
   useEffect(() => {
@@ -130,6 +133,28 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
               className="px-3"
             >
               <Heart className={"h-4 w-4 " + (isFav ? "fill-current" : "")} />
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleApt(row.id);
+              }}
+              disabled={!inCompare && isAptFull}
+              aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+              title={
+                inCompare
+                  ? "Retirer du comparateur"
+                  : isAptFull
+                  ? "Comparateur plein (max 4)"
+                  : "Ajouter au comparateur"
+              }
+              className={"px-3 " + (inCompare ? "border-primary text-primary" : "")}
+            >
+              {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
             </Button>
             <Button asChild size="sm" variant="outline" className="w-auto whitespace-nowrap px-4">
               <Link to={`/residences/${row.residence_slug}`}>Voir la résidence</Link>
