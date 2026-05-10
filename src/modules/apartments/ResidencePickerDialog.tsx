@@ -175,7 +175,7 @@ export function ResidencePickerDialog({ open, onOpenChange, appliedIds, onApply 
                           <span className="min-w-0 flex-1">
                             <span className="block truncate text-sm font-medium">{r.nom_fr}</span>
                             <span className="block truncate text-xs text-muted-foreground">
-                              {[r.ville, r.region].filter(Boolean).join(" · ") || "—"}
+                              {[r.ville, r.code_postal].filter(Boolean).join(" · ") || "—"}
                             </span>
                           </span>
                         </button>
