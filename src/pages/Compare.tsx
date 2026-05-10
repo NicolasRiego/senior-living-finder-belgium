@@ -1,7 +1,17 @@
-import { useEffect, useMemo } from "react";
+import { Fragment, useEffect, useMemo, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { X, Check, MapPin, GitCompare, Mail, Phone, Share2, Plus } from "lucide-react";
+import {
+  X,
+  Check,
+  MapPin,
+  GitCompare,
+  Mail,
+  Share2,
+  Plus,
+  Building2,
+  Home,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -11,11 +21,14 @@ import {
   fetchCompareItems,
   fetchServicesLabels,
   fetchActivitiesLabels,
-  type CompareItem,
 } from "@/modules/residences/compareApi";
-import { fetchCompareApartments } from "@/modules/apartments/compareApartmentsApi";
+import {
+  fetchCompareApartments,
+  type CompareAptItem,
+} from "@/modules/apartments/compareApartmentsApi";
 
 const TYPE_LABEL_KEY = (t: string) => `residenceTypes.${t}`;
+const LABEL_COL = "w-44 shrink-0";
 
 export default function ComparePage() {
   const { t } = useI18n();
@@ -23,7 +36,7 @@ export default function ComparePage() {
   const { ids, remove, clear, setIds, aptIds, removeApt, clearApt } = useCompare();
   const [sp, setSp] = useSearchParams();
 
-  // Hydrate from URL on first load (URL wins if present)
+  // Hydrate from URL on first load
   useEffect(() => {
     const fromUrl = (sp.get("ids") ?? "").split(",").map((s) => s.trim()).filter(Boolean);
     if (fromUrl.length > 0) {
@@ -65,11 +78,6 @@ export default function ComparePage() {
     () => Array.from(new Set(items.flatMap((i) => Array.from(i.activity_codes)))),
     [items],
   );
-  const allProximityKeys = useMemo(() => {
-    const set = new Set<string>();
-    for (const i of items) Object.keys(i.proximity ?? {}).forEach((k) => set.add(k));
-    return Array.from(set);
-  }, [items]);
 
   const serviceLabels = useQuery({
     queryKey: ["service-labels", allServiceCodes],
@@ -95,26 +103,37 @@ export default function ComparePage() {
   if (ids.length === 0 && aptIds.length === 0) {
     return (
       <div className="container py-20">
-        <div className="mx-auto max-w-xl rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-soft">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary-soft text-primary">
-            <GitCompare className="h-8 w-8" />
-          </div>
-          <h1 className="font-display text-3xl font-semibold">{t("compare.title")}</h1>
-          <p className="mt-3 text-lg text-muted-foreground">{t("compare.empty")}</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button asChild variant="hero" size="lg">
-              <Link to="/residences">Comparer des résidences</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link to="/appartements">Comparer des appartements</Link>
-            </Button>
+        <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-soft">
+          <GitCompare className="mx-auto h-12 w-12 text-primary mb-6" />
+          <h1 className="font-display text-3xl font-semibold">Comparateur</h1>
+          <p className="mt-3 text-muted-foreground text-lg">
+            Ajoutez des résidences ou des logements à comparer côte à côte.
+          </p>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 text-center space-y-3">
+              <Building2 className="mx-auto h-8 w-8 text-primary" />
+              <p className="font-semibold">Résidences</p>
+              <p className="text-sm text-muted-foreground">Comparez jusqu'à 4 résidences</p>
+              <Button asChild variant="hero" className="w-full">
+                <Link to="/residences">Parcourir les résidences</Link>
+              </Button>
+            </div>
+            <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 text-center space-y-3">
+              <Home className="mx-auto h-8 w-8 text-primary" />
+              <p className="font-semibold">Logements</p>
+              <p className="text-sm text-muted-foreground">Comparez jusqu'à 4 appartements</p>
+              <Button asChild variant="hero" className="w-full">
+                <Link to="/appartements">Parcourir les logements</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  const isLoading = (ids.length > 0 && query.isLoading) || (aptIds.length > 0 && aptQuery.isLoading);
+  const isLoading =
+    (ids.length > 0 && query.isLoading) || (aptIds.length > 0 && aptQuery.isLoading);
   if (isLoading) {
     return <div className="container py-20 text-center text-muted-foreground">Chargement…</div>;
   }
@@ -134,441 +153,501 @@ export default function ComparePage() {
       </div>
 
       {/* ═══ SECTION RÉSIDENCES ═══ */}
-      <div className="mb-12">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="font-display text-2xl font-semibold">Comparateur de résidences</h2>
-            <p className="mt-1 text-muted-foreground">
-              {ids.length} résidence{ids.length > 1 ? "s" : ""} sélectionnée
-              {ids.length > 1 ? "s" : ""}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {ids.length < 4 && (
-              <Button asChild variant="outline" size="sm">
-                <Link to="/residences">
-                  <Plus className="h-4 w-4" /> Ajouter
-                </Link>
-              </Button>
-            )}
-            {ids.length > 0 && (
-              <Button variant="ghost" size="sm" onClick={clear}>
-                Vider
-              </Button>
-            )}
-          </div>
-        </div>
+      {ids.length > 0 && (
+        <section className="mb-16">
+          <SubHeader
+            title="Comparateur de résidences"
+            count={ids.length}
+            unit="résidence"
+            canAdd={ids.length < 4}
+            addTo="/residences"
+            onClear={clear}
+          />
 
-        {ids.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-border p-8 text-center text-muted-foreground">
-            <p className="mb-3">Aucune résidence dans le comparateur.</p>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/residences">Parcourir les résidences</Link>
-            </Button>
-          </div>
-        ) : (
-          <>
-            {items.length < 2 && (
-              <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                Sélectionnez au moins 2 résidences pour activer la comparaison complète.
-              </div>
-            )}
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[820px] border-separate border-spacing-x-4">
-                <thead>
-                  <tr>
-                    <th className="w-48 pb-2 text-left align-bottom text-sm font-semibold text-muted-foreground">
-                      {t("compare.criterion")}
-                    </th>
-                    {items.map((r) => (
-                      <th key={r.id} className="text-left align-bottom">
-                        <ColumnHeader item={r} onRemove={() => remove(r.id)} />
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="text-base">
-                  <SectionHeader label="Général" colSpan={items.length + 1} />
-                  <Row label={t("common.type")}>
-                    {items.map((r) => (
-                      <span key={r.id}>{t(TYPE_LABEL_KEY(r.type_etablissement))}</span>
-                    ))}
-                  </Row>
-                  <Row label="Localisation">
-                    {items.map((r) => (
-                      <span key={r.id} className="inline-flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        {[r.ville, r.region].filter(Boolean).join(" · ") || "—"}
-                      </span>
-                    ))}
-                  </Row>
-                  <Row label="Capacité">
-                    {items.map((r) => <span key={r.id}>{r.capacity ?? "—"}</span>)}
-                  </Row>
-
-                  <SectionHeader label="Prix & coûts" colSpan={items.length + 1} />
-                  <Row label={t("common.from")}>
-                    {items.map((r) => (
-                      <span key={r.id} className="font-semibold text-primary">
-                        {r.price_from != null
-                          ? <>{Number(r.price_from).toLocaleString("fr-BE")}€<span className="text-sm font-normal text-muted-foreground">{t("common.perMonth")}</span></>
-                          : "—"}
-                      </span>
-                    ))}
-                  </Row>
-                  <Row label="Loyer min">
-                    {items.map((r) => (
-                      <span key={r.id}>{r.rent_from != null ? `${Number(r.rent_from).toLocaleString("fr-BE")} €` : "—"}</span>
-                    ))}
-                  </Row>
-                  <Row label="Coût estimé / mois">
-                    {items.map((r) => {
-                      const mins = r.pricing.map((p) => p.estimated_monthly_min).filter((v): v is number => v != null);
-                      const maxs = r.pricing.map((p) => p.estimated_monthly_max).filter((v): v is number => v != null);
-                      if (!mins.length) return <span key={r.id}>—</span>;
-                      const min = Math.min(...mins);
-                      const max = maxs.length ? Math.max(...maxs) : null;
-                      return (
-                        <span key={r.id}>
-                          {min.toLocaleString("fr-BE")}{max ? ` – ${max.toLocaleString("fr-BE")}` : ""} €
-                        </span>
-                      );
-                    })}
-                  </Row>
-
-                  <SectionHeader label="Surfaces" colSpan={items.length + 1} />
-                  <Row label="Surface min">
-                    {items.map((r) => {
-                      const v = r.units.map((u) => u.surface_min).filter((x): x is number => x != null);
-                      return <span key={r.id}>{v.length ? `${Math.min(...v)} m²` : "—"}</span>;
-                    })}
-                  </Row>
-                  <Row label="Surface max">
-                    {items.map((r) => {
-                      const v = r.units.map((u) => u.surface_max).filter((x): x is number => x != null);
-                      return <span key={r.id}>{v.length ? `${Math.max(...v)} m²` : "—"}</span>;
-                    })}
-                  </Row>
-                  <Row label="Types de logements">
-                    {items.map((r) => (
-                      <span key={r.id} className="text-sm">
-                        {r.units.length ? Array.from(new Set(r.units.map((u) => u.type))).join(", ") : "—"}
-                      </span>
-                    ))}
-                  </Row>
-
-                  <SectionHeader label="Accessibilité & disponibilité" colSpan={items.length + 1} />
-                  <Row label="Accessibilité PMR">
-                    {items.map((r) => <BoolCell key={r.id} value={r.is_pmr} />)}
-                  </Row>
-                  <Row label="Disponibilité">
-                    {items.map((r) => <BoolCell key={r.id} value={r.has_availability} />)}
-                  </Row>
-
-                  {allServiceCodes.length > 0 && (
-                    <>
-                      <SectionHeader label="Services" colSpan={items.length + 1} />
-                      {allServiceCodes.map((code) => (
-                        <Row key={code} label={serviceLabels.data?.get(code) ?? code}>
-                          {items.map((r) => <BoolCell key={r.id} value={r.service_codes.has(code)} />)}
-                        </Row>
-                      ))}
-                    </>
-                  )}
-
-                  {allActivityCodes.length > 0 && (
-                    <>
-                      <SectionHeader label="Activités" colSpan={items.length + 1} />
-                      {allActivityCodes.map((code) => (
-                        <Row key={code} label={activityLabels.data?.get(code) ?? code}>
-                          {items.map((r) => <BoolCell key={r.id} value={r.activity_codes.has(code)} />)}
-                        </Row>
-                      ))}
-                    </>
-                  )}
-
-                  {allProximityKeys.length > 0 && (
-                    <>
-                      <SectionHeader label="Proximité" colSpan={items.length + 1} />
-                      {allProximityKeys.map((key) => (
-                        <Row key={key} label={key}>
-                          {items.map((r) => {
-                            const v = r.proximity?.[key];
-                            if (typeof v === "boolean") return <BoolCell key={r.id} value={v} />;
-                            return <span key={r.id} className="text-sm">{v != null ? String(v) : "—"}</span>;
-                          })}
-                        </Row>
-                      ))}
-                    </>
-                  )}
-
-                  <SectionHeader label="Action" colSpan={items.length + 1} />
-                  <tr>
-                    <td className="py-4 text-sm font-medium text-muted-foreground">Contact</td>
-                    {items.map((r) => (
-                      <td key={r.id} className="py-4 align-top">
-                        <Button asChild size="sm" variant="hero">
-                          <Link to={`/residences/${r.slug}#contact`}>Contacter</Link>
-                        </Button>
-                        <div className="mt-2 flex flex-col gap-1 text-xs text-muted-foreground">
-                          {r.contact_phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" /> {r.contact_phone}</span>}
-                          {r.contact_email && <span className="inline-flex items-center gap-1"><Mail className="h-3 w-3" /> {r.contact_email}</span>}
-                        </div>
-                      </td>
-                    ))}
-                  </tr>
-                </tbody>
-              </table>
+          {items.length < 2 && items.length > 0 && (
+            <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              Sélectionnez au moins 2 résidences pour activer la comparaison complète.
             </div>
-          </>
-        )}
-      </div>
+          )}
 
-      <hr className="my-8 border-border/60" />
+          <div className="overflow-x-auto pb-2">
+            <div className="min-w-fit">
+              {/* En-tête : photos + noms (avec VS si 2 items) */}
+              <ColumnHeaders
+                items={items.map((r) => ({
+                  id: r.id,
+                  cover_url: r.cover_url,
+                  title: r.nom_fr,
+                  subtitle: [r.ville, r.region].filter(Boolean).join(" · "),
+                  href: `/residences/${r.slug}`,
+                  onRemove: () => remove(r.id),
+                }))}
+              />
+
+              {/* Sections */}
+              <SectionTitle label="Général" count={items.length} />
+              <DataRow label={t("common.type")} count={items.length} index={0}>
+                {items.map((r) => (
+                  <CellText key={r.id}>{t(TYPE_LABEL_KEY(r.type_etablissement))}</CellText>
+                ))}
+              </DataRow>
+              <DataRow label="Localisation" count={items.length} index={1}>
+                {items.map((r) => (
+                  <CellText key={r.id}>
+                    {[r.ville, r.region].filter(Boolean).join(" · ") || <Dash />}
+                  </CellText>
+                ))}
+              </DataRow>
+              <DataRow label="Capacité" count={items.length} index={2}>
+                {items.map((r) => (
+                  <CellText key={r.id}>{r.capacity ?? <Dash />}</CellText>
+                ))}
+              </DataRow>
+
+              <SectionTitle label="Prix & coûts" count={items.length} />
+              <DataRow label={t("common.from")} count={items.length} index={0}>
+                {items.map((r) => (
+                  <div key={r.id} className="text-center">
+                    {r.price_from != null ? (
+                      <PriceStrong value={`${Number(r.price_from).toLocaleString("fr-BE")} €/mois`} />
+                    ) : (
+                      <Dash />
+                    )}
+                  </div>
+                ))}
+              </DataRow>
+              <DataRow label="Loyer min" count={items.length} index={1}>
+                {items.map((r) => (
+                  <CellText key={r.id}>
+                    {r.rent_from != null ? `${Number(r.rent_from).toLocaleString("fr-BE")} €` : <Dash />}
+                  </CellText>
+                ))}
+              </DataRow>
+              <DataRow label="Coût estimé / mois" count={items.length} index={2}>
+                {items.map((r) => {
+                  const mins = r.pricing.map((p) => p.estimated_monthly_min).filter((v): v is number => v != null);
+                  const maxs = r.pricing.map((p) => p.estimated_monthly_max).filter((v): v is number => v != null);
+                  if (!mins.length) return <CellText key={r.id}><Dash /></CellText>;
+                  const min = Math.min(...mins);
+                  const max = maxs.length ? Math.max(...maxs) : null;
+                  return (
+                    <CellText key={r.id}>
+                      {min.toLocaleString("fr-BE")}
+                      {max ? ` – ${max.toLocaleString("fr-BE")}` : ""} €
+                    </CellText>
+                  );
+                })}
+              </DataRow>
+
+              <SectionTitle label="Surfaces & logements" count={items.length} />
+              <DataRow label="Surface min" count={items.length} index={0}>
+                {items.map((r) => {
+                  const v = r.units.map((u) => u.surface_min).filter((x): x is number => x != null);
+                  return <CellText key={r.id}>{v.length ? `${Math.min(...v)} m²` : <Dash />}</CellText>;
+                })}
+              </DataRow>
+              <DataRow label="Surface max" count={items.length} index={1}>
+                {items.map((r) => {
+                  const v = r.units.map((u) => u.surface_max).filter((x): x is number => x != null);
+                  return <CellText key={r.id}>{v.length ? `${Math.max(...v)} m²` : <Dash />}</CellText>;
+                })}
+              </DataRow>
+              <DataRow label="Types de logements" count={items.length} index={2}>
+                {items.map((r) => (
+                  <CellText key={r.id}>
+                    {r.units.length ? Array.from(new Set(r.units.map((u) => u.type))).join(", ") : <Dash />}
+                  </CellText>
+                ))}
+              </DataRow>
+
+              <SectionTitle label="Accessibilité" count={items.length} />
+              <DataRow label="Accessibilité PMR" count={items.length} index={0}>
+                {items.map((r) => <BoolCell key={r.id} value={r.is_pmr} />)}
+              </DataRow>
+              <DataRow label="Disponibilité" count={items.length} index={1}>
+                {items.map((r) => <BoolCell key={r.id} value={r.has_availability} />)}
+              </DataRow>
+
+              {allServiceCodes.length > 0 && (
+                <>
+                  <SectionTitle label="Services" count={items.length} />
+                  {allServiceCodes.map((code, idx) => (
+                    <DataRow
+                      key={code}
+                      label={serviceLabels.data?.get(code) ?? code}
+                      count={items.length}
+                      index={idx}
+                    >
+                      {items.map((r) => <BoolCell key={r.id} value={r.service_codes.has(code)} />)}
+                    </DataRow>
+                  ))}
+                </>
+              )}
+
+              {allActivityCodes.length > 0 && (
+                <>
+                  <SectionTitle label="Activités" count={items.length} />
+                  {allActivityCodes.map((code, idx) => (
+                    <DataRow
+                      key={code}
+                      label={activityLabels.data?.get(code) ?? code}
+                      count={items.length}
+                      index={idx}
+                    >
+                      {items.map((r) => <BoolCell key={r.id} value={r.activity_codes.has(code)} />)}
+                    </DataRow>
+                  ))}
+                </>
+              )}
+
+              <SectionTitle label="Actions" count={items.length} />
+              <div className="flex gap-4 mt-4">
+                <div className={LABEL_COL} />
+                {items.map((r) => (
+                  <div key={r.id} className="flex-1 min-w-[220px] flex flex-col gap-2">
+                    <Button asChild variant="hero" size="lg" className="w-full">
+                      <Link to={`/residences/${r.slug}`}>Voir la résidence</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm" className="w-full">
+                      <Link to={`/residences/${r.slug}#contact`}>
+                        <Mail className="h-4 w-4" /> Contacter
+                      </Link>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {ids.length > 0 && aptIds.length > 0 && <hr className="my-8 border-border/60" />}
 
       {/* ═══ SECTION APPARTEMENTS ═══ */}
-      <div>
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h2 className="font-display text-2xl font-semibold">Comparateur de logements</h2>
-            <p className="mt-1 text-muted-foreground">
-              {aptIds.length} logement{aptIds.length > 1 ? "s" : ""} sélectionné
-              {aptIds.length > 1 ? "s" : ""}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            {aptIds.length < 4 && (
-              <Button asChild variant="outline" size="sm">
-                <Link to="/appartements">
-                  <Plus className="h-4 w-4" /> Ajouter
-                </Link>
-              </Button>
-            )}
-            {aptIds.length > 0 && (
-              <Button variant="ghost" size="sm" onClick={clearApt}>
-                Vider
-              </Button>
-            )}
-          </div>
-        </div>
+      {aptIds.length > 0 && (
+        <section>
+          <SubHeader
+            title="Comparateur de logements"
+            count={aptIds.length}
+            unit="logement"
+            canAdd={aptIds.length < 4}
+            addTo="/appartements"
+            onClear={clearApt}
+          />
 
-        {aptIds.length === 0 ? (
-          <div className="rounded-xl border-2 border-dashed border-border p-8 text-center text-muted-foreground">
-            <p className="mb-3">Aucun logement dans le comparateur.</p>
-            <Button asChild variant="outline" size="sm">
-              <Link to="/appartements">Parcourir les appartements</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] border-separate border-spacing-x-4">
-              <thead>
-                <tr>
-                  <th className="w-48 pb-2 text-left align-bottom text-sm font-semibold text-muted-foreground">
-                    Critère
-                  </th>
-                  {aptItems.map((a) => (
-                    <th key={a.id} className="text-left align-bottom">
-                      <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft min-w-[200px]">
-                        <div className="p-4">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <p className="font-display text-base font-semibold leading-tight capitalize">
-                                {a.type === "appartement"
-                                  ? "Appartement"
-                                  : a.type === "studio"
-                                  ? "Studio"
-                                  : a.type === "chambre"
-                                  ? "Chambre"
-                                  : a.type}
-                              </p>
-                              <Link
-                                to={`/residences/${a.residence_slug}`}
-                                className="mt-0.5 block text-sm text-muted-foreground hover:text-primary"
-                              >
-                                {a.residence_nom_fr}
-                              </Link>
-                              <p className="text-xs text-muted-foreground">{a.residence_ville}</p>
-                            </div>
-                            <button
-                              onClick={() => removeApt(a.id)}
-                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted hover:bg-destructive hover:text-destructive-foreground"
-                              aria-label="Retirer"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="text-base">
-                <SectionHeader label="Identification" colSpan={aptItems.length + 1} />
-                <Row label="Type">
-                  {aptItems.map((a) => <span key={a.id} className="capitalize">{a.type}</span>)}
-                </Row>
-                <Row label="Résidence">
-                  {aptItems.map((a) => (
-                    <Link key={a.id} to={`/residences/${a.residence_slug}`} className="text-sm text-primary hover:underline">
+          <div className="overflow-x-auto pb-2">
+            <div className="min-w-fit">
+              <ColumnHeaders
+                items={aptItems.map((a) => ({
+                  id: a.id,
+                  cover_url: a.cover_url,
+                  title: aptTypeLabel(a),
+                  subtitle: [a.residence_nom_fr, a.residence_ville].filter(Boolean).join(" · "),
+                  href: `/residences/${a.residence_slug}`,
+                  onRemove: () => removeApt(a.id),
+                }))}
+              />
+
+              <SectionTitle label="Identification" count={aptItems.length} />
+              <DataRow label="Type" count={aptItems.length} index={0}>
+                {aptItems.map((a) => <CellText key={a.id} className="capitalize">{a.type}</CellText>)}
+              </DataRow>
+              <DataRow label="Résidence" count={aptItems.length} index={1}>
+                {aptItems.map((a) => (
+                  <div key={a.id} className="text-center">
+                    <Link to={`/residences/${a.residence_slug}`} className="text-sm font-medium text-primary hover:underline">
                       {a.residence_nom_fr}
                     </Link>
-                  ))}
-                </Row>
-                <Row label="Ville">
-                  {aptItems.map((a) => <span key={a.id}>{a.residence_ville || "—"}</span>)}
-                </Row>
+                  </div>
+                ))}
+              </DataRow>
+              <DataRow label="Ville" count={aptItems.length} index={2}>
+                {aptItems.map((a) => <CellText key={a.id}>{a.residence_ville || <Dash />}</CellText>)}
+              </DataRow>
 
-                <SectionHeader label="Surface & disposition" colSpan={aptItems.length + 1} />
-                <Row label="Surface">
-                  {aptItems.map((a) => <span key={a.id}>{a.surface_m2 ? `${a.surface_m2} m²` : "—"}</span>)}
-                </Row>
-                <Row label="Étage">
-                  {aptItems.map((a) => (
-                    <span key={a.id}>
-                      {a.floor === 0 ? "Rez-de-chaussée" : a.floor != null ? `${a.floor}e étage` : "—"}
-                    </span>
-                  ))}
-                </Row>
+              <SectionTitle label="Surface & disposition" count={aptItems.length} />
+              <DataRow label="Surface" count={aptItems.length} index={0}>
+                {aptItems.map((a) => <CellText key={a.id}>{a.surface_m2 ? `${a.surface_m2} m²` : <Dash />}</CellText>)}
+              </DataRow>
+              <DataRow label="Étage" count={aptItems.length} index={1}>
+                {aptItems.map((a) => (
+                  <CellText key={a.id}>
+                    {a.floor === 0 ? "Rez-de-chaussée" : a.floor != null ? `${a.floor}e étage` : <Dash />}
+                  </CellText>
+                ))}
+              </DataRow>
 
-                <SectionHeader label="Transaction & prix" colSpan={aptItems.length + 1} />
-                <Row label="Type de transaction">
-                  {aptItems.map((a) => (
-                    <span key={a.id}>
-                      {a.transaction_type === "rent" ? "À louer" : a.transaction_type === "sale" ? "À vendre" : "Les deux"}
-                    </span>
-                  ))}
-                </Row>
-                <Row label="Loyer mensuel">
-                  {aptItems.map((a) => (
-                    <span key={a.id} className="font-semibold text-primary">
-                      {a.rent_price ? `${a.rent_price.toLocaleString("fr-BE")} €/mois` : "—"}
-                    </span>
-                  ))}
-                </Row>
-                <Row label="Charges mensuelles">
-                  {aptItems.map((a) => (
-                    <span key={a.id}>
-                      {a.charges_monthly ? `${a.charges_monthly.toLocaleString("fr-BE")} €` : "—"}
-                    </span>
-                  ))}
-                </Row>
-                <Row label="Prix d'achat">
-                  {aptItems.map((a) => (
-                    <span key={a.id} className="font-semibold">
-                      {a.sale_price ? `${a.sale_price.toLocaleString("fr-BE")} €` : "—"}
-                    </span>
-                  ))}
-                </Row>
+              <SectionTitle label="Transaction & prix" count={aptItems.length} />
+              <DataRow label="Type de transaction" count={aptItems.length} index={0}>
+                {aptItems.map((a) => (
+                  <CellText key={a.id}>
+                    {a.transaction_type === "rent" ? "À louer" : a.transaction_type === "sale" ? "À vendre" : "Les deux"}
+                  </CellText>
+                ))}
+              </DataRow>
+              <DataRow label="Loyer mensuel" count={aptItems.length} index={1}>
+                {aptItems.map((a) => (
+                  <div key={a.id} className="text-center">
+                    {a.rent_price ? (
+                      <PriceStrong value={`${a.rent_price.toLocaleString("fr-BE")} €/mois`} />
+                    ) : (
+                      <Dash />
+                    )}
+                  </div>
+                ))}
+              </DataRow>
+              <DataRow label="Charges mensuelles" count={aptItems.length} index={2}>
+                {aptItems.map((a) => (
+                  <CellText key={a.id}>
+                    {a.charges_monthly ? `${a.charges_monthly.toLocaleString("fr-BE")} €` : <Dash />}
+                  </CellText>
+                ))}
+              </DataRow>
+              <DataRow label="Prix d'achat" count={aptItems.length} index={3}>
+                {aptItems.map((a) => (
+                  <div key={a.id} className="text-center">
+                    {a.sale_price ? (
+                      <PriceStrong value={`${a.sale_price.toLocaleString("fr-BE")} €`} />
+                    ) : (
+                      <Dash />
+                    )}
+                  </div>
+                ))}
+              </DataRow>
 
-                <SectionHeader label="Équipements" colSpan={aptItems.length + 1} />
-                <Row label="Parking">{aptItems.map((a) => <BoolCell key={a.id} value={a.parking} />)}</Row>
-                <Row label="Cave">{aptItems.map((a) => <BoolCell key={a.id} value={a.cave} />)}</Row>
-                <Row label="Terrasse">{aptItems.map((a) => <BoolCell key={a.id} value={a.terrace} />)}</Row>
-                <Row label="Jardin">{aptItems.map((a) => <BoolCell key={a.id} value={a.garden} />)}</Row>
-                <Row label="Meublé">{aptItems.map((a) => <BoolCell key={a.id} value={a.furnished} />)}</Row>
-                <Row label="Cuisine équipée">{aptItems.map((a) => <BoolCell key={a.id} value={a.kitchen_equipped} />)}</Row>
-                <Row label="Ascenseur">{aptItems.map((a) => <BoolCell key={a.id} value={a.elevator} />)}</Row>
-                <Row label="Accessible PMR">{aptItems.map((a) => <BoolCell key={a.id} value={a.wheelchair_accessible} />)}</Row>
+              <SectionTitle label="Équipements" count={aptItems.length} />
+              {([
+                ["Parking", "parking"],
+                ["Cave", "cave"],
+                ["Terrasse", "terrace"],
+                ["Jardin", "garden"],
+                ["Meublé", "furnished"],
+                ["Cuisine équipée", "kitchen_equipped"],
+                ["Ascenseur", "elevator"],
+                ["Accessible PMR", "wheelchair_accessible"],
+              ] as [string, keyof CompareAptItem][]).map(([label, key], idx) => (
+                <DataRow key={key} label={label} count={aptItems.length} index={idx}>
+                  {aptItems.map((a) => <BoolCell key={a.id} value={Boolean(a[key])} />)}
+                </DataRow>
+              ))}
 
-                <SectionHeader label="Disponibilité" colSpan={aptItems.length + 1} />
-                <Row label="Statut">
-                  {aptItems.map((a) => (
-                    <span key={a.id}>
-                      {a.status === "available" ? "✓ Disponible" : a.status === "reserved" ? "Réservé" : "Indisponible"}
-                    </span>
-                  ))}
-                </Row>
-                <Row label="Disponible à partir du">
-                  {aptItems.map((a) => (
-                    <span key={a.id}>
-                      {a.available_from ? new Date(a.available_from).toLocaleDateString("fr-BE") : "Immédiatement"}
-                    </span>
-                  ))}
-                </Row>
+              <SectionTitle label="Disponibilité" count={aptItems.length} />
+              <DataRow label="Statut" count={aptItems.length} index={0}>
+                {aptItems.map((a) => (
+                  <CellText key={a.id}>
+                    {a.status === "available" ? "Disponible" : a.status === "reserved" ? "Réservé" : "Indisponible"}
+                  </CellText>
+                ))}
+              </DataRow>
+              <DataRow label="Disponible à partir du" count={aptItems.length} index={1}>
+                {aptItems.map((a) => (
+                  <CellText key={a.id}>
+                    {a.available_from ? new Date(a.available_from).toLocaleDateString("fr-BE") : "Immédiatement"}
+                  </CellText>
+                ))}
+              </DataRow>
 
-                <SectionHeader label="Actions" colSpan={aptItems.length + 1} />
-                <tr>
-                  <td className="py-4 text-sm font-medium text-muted-foreground">Voir la fiche</td>
-                  {aptItems.map((a) => (
-                    <td key={a.id} className="py-4 align-top">
-                      <div className="flex flex-col gap-2">
-                        <Button asChild size="sm" variant="hero">
-                          <Link to={`/appartements/${a.id}`}>Voir l'appartement</Link>
-                        </Button>
-                        <Button asChild size="sm" variant="outline">
-                          <Link to={`/residences/${a.residence_slug}`}>Voir la résidence</Link>
-                        </Button>
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
+              <SectionTitle label="Actions" count={aptItems.length} />
+              <div className="flex gap-4 mt-4">
+                <div className={LABEL_COL} />
+                {aptItems.map((a) => (
+                  <div key={a.id} className="flex-1 min-w-[220px] flex flex-col gap-2">
+                    <Button asChild variant="hero" size="lg" className="w-full">
+                      <Link to={`/appartements/${a.id}`}>Voir le logement</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm" className="w-full">
+                      <Link to={`/residences/${a.residence_slug}`}>Voir la résidence</Link>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+/* ═══ Helpers ═══ */
+
+function aptTypeLabel(a: CompareAptItem) {
+  if (a.type === "appartement") return "Appartement";
+  if (a.type === "studio") return "Studio";
+  if (a.type === "chambre") return "Chambre";
+  return a.title_fr ?? a.type;
+}
+
+function SubHeader({
+  title,
+  count,
+  unit,
+  canAdd,
+  addTo,
+  onClear,
+}: {
+  title: string;
+  count: number;
+  unit: string;
+  canAdd: boolean;
+  addTo: string;
+  onClear: () => void;
+}) {
+  return (
+    <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h2 className="font-display text-2xl font-semibold">{title}</h2>
+        <p className="mt-1 text-muted-foreground">
+          {count} {unit}
+          {count > 1 ? "s sélectionnés" : " sélectionné"}
+        </p>
+      </div>
+      <div className="flex gap-2">
+        {canAdd && (
+          <Button asChild variant="outline" size="sm">
+            <Link to={addTo}>
+              <Plus className="h-4 w-4" /> Ajouter
+            </Link>
+          </Button>
+        )}
+        {count > 0 && (
+          <Button variant="ghost" size="sm" onClick={onClear}>
+            Vider
+          </Button>
         )}
       </div>
     </div>
   );
 }
 
-function ColumnHeader({ item, onRemove }: { item: CompareItem; onRemove: () => void }) {
+type HeaderItem = {
+  id: string;
+  cover_url: string | null;
+  title: string;
+  subtitle: string;
+  href: string;
+  onRemove: () => void;
+};
+
+function ColumnHeaders({ items }: { items: HeaderItem[] }) {
+  const showVs = items.length === 2;
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft min-w-[200px]">
-      <div className="relative aspect-[4/3] bg-muted">
-        {item.cover_url ? (
-          <img src={item.cover_url} alt={item.nom_fr} className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground"><MapPin className="h-8 w-8" /></div>
-        )}
-        <button
-          onClick={onRemove}
-          className="absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow-soft hover:bg-destructive hover:text-destructive-foreground"
-          aria-label="Retirer"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="p-4">
-        <Link to={`/residences/${item.slug}`} className="block font-display text-lg font-semibold leading-tight hover:text-primary">
-          {item.nom_fr}
-        </Link>
-        {(item.ville || item.region) && (
-          <div className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5" /> {[item.ville, item.region].filter(Boolean).join(" · ")}
+    <div className="flex gap-4 items-start">
+      <div className={LABEL_COL} />
+      {items.map((item, idx) => (
+        <Fragment key={item.id}>
+          <div className="flex-1 min-w-[220px]">
+            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-muted mb-4 shadow-md">
+              {item.cover_url ? (
+                <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="flex h-full items-center justify-center text-muted-foreground">
+                  <MapPin className="h-8 w-8" />
+                </div>
+              )}
+              <button
+                onClick={item.onRemove}
+                className="absolute top-2 right-2 h-8 w-8 flex items-center justify-center rounded-full bg-background/90 shadow hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                aria-label="Retirer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="text-center px-2 mb-4">
+              <Link
+                to={item.href}
+                className="font-display text-lg font-semibold hover:text-primary leading-tight block"
+              >
+                {item.title}
+              </Link>
+              {item.subtitle && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  <MapPin className="inline h-3.5 w-3.5 mr-1" />
+                  {item.subtitle}
+                </p>
+              )}
+            </div>
           </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SectionHeader({ label, colSpan }: { label: string; colSpan: number }) {
-  return (
-    <tr>
-      <td colSpan={colSpan} className="pt-6 pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
-      </td>
-    </tr>
-  );
-}
-
-function Row({ label, children }: { label: string; children: React.ReactNode[] }) {
-  return (
-    <tr className="border-b border-border/40">
-      <td className="py-3 align-top text-sm font-medium text-muted-foreground">{label}</td>
-      {children.map((c, i) => (
-        <td key={i} className="py-3 align-top">{c}</td>
+          {showVs && idx === 0 && (
+            <div className="shrink-0 flex items-center justify-center" style={{ alignSelf: "flex-start", marginTop: "calc(min(220px, 25vw) * 0.75 / 2 - 20px)" }}>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-md">
+                VS
+              </span>
+            </div>
+          )}
+        </Fragment>
       ))}
-    </tr>
+    </div>
   );
+}
+
+function SectionTitle({ label, count }: { label: string; count: number }) {
+  if (count === 0) return null;
+  return (
+    <div className="flex gap-4 mt-6 mb-1">
+      <div className={LABEL_COL} />
+      <div className="flex-1">
+        <div className="text-center font-bold text-sm uppercase tracking-wider text-foreground bg-muted/60 rounded-lg py-2 px-4">
+          {label}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DataRow({
+  label,
+  count,
+  index,
+  children,
+}: {
+  label: string;
+  count: number;
+  index: number;
+  children: ReactNode;
+}) {
+  if (count === 0) return null;
+  const zebra = index % 2 === 1 ? "bg-muted/20" : "bg-transparent";
+  return (
+    <div className={`flex gap-4 py-3 border-b border-border/30 rounded-md ${zebra}`}>
+      <div className={`${LABEL_COL} text-sm text-muted-foreground self-center pl-2`}>{label}</div>
+      {Array.isArray(children)
+        ? children.map((c, i) => (
+            <div key={i} className="flex-1 min-w-[220px] text-sm text-center self-center">
+              {c}
+            </div>
+          ))
+        : <div className="flex-1 min-w-[220px] text-sm text-center self-center">{children}</div>}
+    </div>
+  );
+}
+
+function CellText({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <span className={`text-foreground font-medium ${className}`}>{children}</span>;
+}
+
+function PriceStrong({ value }: { value: string }) {
+  return <span className="font-bold text-primary text-base">{value}</span>;
+}
+
+function Dash() {
+  return <span className="text-muted-foreground/50">—</span>;
 }
 
 function BoolCell({ value }: { value: boolean }) {
   return value ? (
-    <Check className="h-5 w-5 text-primary" aria-label="Oui" />
+    <span
+      className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-green-100 text-green-700"
+      aria-label="Oui"
+    >
+      <Check className="h-4 w-4" />
+    </span>
   ) : (
-    <X className="h-5 w-5 text-muted-foreground/40" aria-label="Non" />
+    <span
+      className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-muted text-muted-foreground/50"
+      aria-label="Non"
+    >
+      <X className="h-4 w-4" />
+    </span>
   );
 }
