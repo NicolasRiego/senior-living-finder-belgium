@@ -540,6 +540,7 @@ export default function ComparePage() {
             </div>
           </div>
         </section>
+        )
       )}
     </div>
   );
