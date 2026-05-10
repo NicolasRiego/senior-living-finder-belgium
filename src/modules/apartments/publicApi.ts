@@ -64,6 +64,7 @@ export type ResidenceFacet = {
   nom_fr: string;
   nom_nl: string | null;
   ville: string | null;
+  code_postal: string | null;
   region: string | null;
   type_etablissement: string | null;
   capacity: number | null;
