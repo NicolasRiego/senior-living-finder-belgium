@@ -1,58 +1,108 @@
 import { Link } from "react-router-dom";
-import { Search, GitCompare, MapPin, ArrowRight, Sparkles, ShieldCheck, HeartHandshake, Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, GitCompare, MapPin, ArrowRight, ShieldCheck, HeartHandshake, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { ResidenceCard } from "@/modules/residences/ResidenceCard";
 import { residences } from "@/modules/residences/data";
-import heroImg from "@/assets/hero-residence.jpg";
+
+const HERO_SLIDES = [
+  { src: "/images/hero/hall-accueil.jpg", label: "Un accueil chaleureux" },
+  { src: "/images/hero/batiment-chic-2.png", label: "Des résidences d'exception" },
+  { src: "/images/hero/batiment-chic.png", label: "Un cadre de vie prestigieux" },
+  { src: "/images/hero/jardin.jpg", label: "Des espaces verts soignés" },
+  { src: "/images/hero/restaurant.jpg", label: "Une restauration de qualité" },
+  { src: "/images/hero/activites.jpg", label: "Une vie sociale épanouissante" },
+];
 
 export default function HomePage() {
   const { t } = useI18n();
   const featured = residences.filter((r) => r.featured).slice(0, 3);
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImg} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/30" />
-        </div>
+      {/* HERO SLIDER */}
+      <section className="relative -mt-[84px] h-screen min-h-[650px] w-full overflow-hidden">
+        {HERO_SLIDES.map((slide, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 transition-opacity ease-in-out ${i === current ? "opacity-100" : "opacity-0"}`}
+            style={{ transitionDuration: "1500ms" }}
+          >
+            <img src={slide.src} alt={slide.label} className="h-full w-full object-cover object-center" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60" />
+          </div>
+        ))}
 
-        <div className="container relative grid min-h-[640px] items-center py-20 lg:py-28">
-          <div className="max-w-2xl animate-fade-in-up">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-soft px-4 py-1.5 text-sm font-medium text-primary">
-              <Sparkles className="h-4 w-4" /> {t("home.trustLine")}
-            </span>
-            <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.05] text-balance md:text-5xl lg:text-[3.75rem]">
-              {t("home.heroTitle")}
-            </h1>
-            <p className="mt-6 max-w-xl text-lg text-muted-foreground md:text-xl">
-              {t("home.heroSubtitle")}
-            </p>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button asChild variant="hero" size="xl">
-                <Link to="/residences"><Search /> {t("home.ctaSearch")}</Link>
-              </Button>
-              <Button asChild variant="outline" size="xl">
-                <Link to="/comparateur"><GitCompare /> {t("home.ctaCompare")}</Link>
-              </Button>
-            </div>
+        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-6 mt-16">
+          <p className="text-sm font-medium tracking-widest uppercase text-white/80 mb-4">
+            {HERO_SLIDES[current].label}
+          </p>
+          <h1 className="font-display text-5xl font-bold md:text-6xl lg:text-7xl drop-shadow-lg max-w-4xl leading-tight">
+            Une nouvelle étape,<br />en toute sérénité
+          </h1>
+          <p className="mt-6 text-xl md:text-2xl text-white/85 max-w-2xl drop-shadow">
+            Comparez les résidences-services, seigneuries et maisons de repos partout en Belgique.
+          </p>
+          <div className="mt-10 flex flex-wrap gap-4 justify-center">
+            <Button asChild size="lg" className="text-lg px-8 py-4 bg-white text-primary font-semibold hover:bg-white/90 shadow-lg rounded-full">
+              <Link to="/residences">
+                <Search className="h-5 w-5 mr-2" />
+                Trouver une résidence
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="text-lg px-8 py-4 bg-transparent border-2 border-white text-white font-semibold hover:bg-white/15 backdrop-blur-sm rounded-full">
+              <Link to="/comparateur">Utiliser le comparateur</Link>
+            </Button>
+          </div>
 
-            <div className="mt-10 grid grid-cols-3 gap-6 max-w-md">
-              {[
-                { v: "1 200+", l: "Résidences" },
-                { v: "10", l: "Provinces" },
-                { v: "4.7★", l: "Avis moyen" },
-              ].map((s) => (
-                <div key={s.l}>
-                  <div className="font-display text-2xl font-semibold text-primary">{s.v}</div>
-                  <div className="text-sm text-muted-foreground">{s.l}</div>
-                </div>
-              ))}
-            </div>
+          <div className="mt-16 flex gap-12">
+            {[
+              { val: "1 200+", label: "Résidences" },
+              { val: "10", label: "Provinces" },
+              { val: "4.7★", label: "Avis moyen" },
+            ].map((s) => (
+              <div key={s.label} className="text-center">
+                <div className="text-3xl font-bold drop-shadow">{s.val}</div>
+                <div className="text-sm mt-1 text-white/70">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
+
+        <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center gap-2">
+          {HERO_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${i === current ? "w-8 bg-white" : "w-2 bg-white/50 hover:bg-white/75"}`}
+              aria-label={`Slide ${i + 1}`}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => setCurrent((p) => (p - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)}
+          className="absolute left-4 top-1/2 z-10 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/35 transition-colors"
+          aria-label="Slide précédent"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={() => setCurrent((p) => (p + 1) % HERO_SLIDES.length)}
+          className="absolute right-4 top-1/2 z-10 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/35 transition-colors"
+          aria-label="Slide suivant"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
       </section>
 
       {/* HOW */}
