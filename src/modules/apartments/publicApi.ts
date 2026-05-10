@@ -20,7 +20,14 @@ export async function searchApartments(filters: ApartmentFilters) {
     q = q.in("transaction_type", ["rent", "both"]);
   }
 
-  if (filters.code_postal) q = q.ilike("code_postal", `${filters.code_postal}%`);
+  if (filters.code_postal) {
+    const codes = filters.code_postal
+      .split(",")
+      .map((c) => c.trim())
+      .filter(Boolean);
+    if (codes.length === 1) q = q.ilike("code_postal", `${codes[0]}%`);
+    else if (codes.length > 1) q = q.in("code_postal", codes);
+  }
   if (filters.type) q = q.eq("type", filters.type);
   if (filters.surface_min) q = q.gte("surface_m2", filters.surface_min);
 
