@@ -396,21 +396,20 @@ export default function ComparePage() {
             </div>
           </div>
         </section>
+        )
       )}
 
-      {ids.length > 0 && aptIds.length > 0 && <hr className="my-8 border-border/60" />}
-
       {/* ═══ SECTION APPARTEMENTS ═══ */}
-      {aptIds.length > 0 && (
-        <section>
-          <SubHeader
-            title="Comparateur de logements"
-            count={aptIds.length}
-            unit="logement"
-            canAdd={aptIds.length < 4}
-            addTo="/appartements"
-            onClear={clearApt}
-          />
+      {activeTab === "logements" && (
+        aptIds.length === 0 ? (
+          <div className="rounded-xl border-2 border-dashed border-border p-10 text-center mt-8">
+            <p className="text-muted-foreground mb-4">Aucun logement dans le comparateur.</p>
+            <Button asChild variant="outline">
+              <Link to="/appartements">Parcourir les logements</Link>
+            </Button>
+          </div>
+        ) : (
+        <section className="mt-8">
 
           <div className="overflow-x-auto pb-2">
             <div className="min-w-fit">
