@@ -8,6 +8,10 @@ import { useI18n } from "@/modules/i18n/I18nProvider";
 import { getApartmentById } from "@/modules/apartments/publicApi";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
 import { APT_BOOL_FIELDS, APT_BOOL_LABELS } from "@/modules/apartments/types";
+import {
+  OverviewBadges, GeneralInfo, InteriorInfo, ExteriorInfo,
+  InstallationsInfo, EnergyInfo, FinancesInfo,
+} from "@/modules/apartments/detail/InfoSections";
 
 const TYPE_LABEL: Record<string, string> = {
   appartement: "Appartement",
