@@ -101,6 +101,11 @@ export default function ApartmentsPage() {
   }, [residencesFacet.data, selectedIds]);
 
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [postalQuery, setPostalQuery] = useState(
+    filters.code_postal ? filters.code_postal : ""
+  );
+  const [postalOpen, setPostalOpen] = useState(false);
+  const { results: postalResults } = usePostalSearch(postalQuery);
 
   const total = search.data?.total ?? 0;
   const totalPages = search.data?.totalPages ?? 1;
