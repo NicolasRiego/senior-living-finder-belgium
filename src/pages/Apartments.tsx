@@ -238,7 +238,7 @@ export default function ApartmentsPage() {
                   </button>
                 )}
                 {postalOpen && postalResults.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[220px] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
+                  <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[200px] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
                     {postalResults
                       .filter((r) => !selectedPostals.some((p) => p.code === r.code_postal))
                       .map((r) => (
@@ -254,17 +254,17 @@ export default function ApartmentsPage() {
                             setPostalOpen(false);
                             updateParam({ cp: updated.map((p) => p.code).join(",") });
                           }}
-                          className="w-full px-3 py-2 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-3"
+                          className="w-full px-3 py-2 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-2"
                         >
                           <div className="flex items-center gap-2 min-w-0 flex-1">
-                            <span className="font-semibold text-foreground text-sm shrink-0 w-11">
+                            <span className="text-xs font-semibold text-foreground shrink-0 w-10 tabular-nums">
                               {r.code_postal}
                             </span>
-                            <span className="text-sm text-foreground truncate">
+                            <span className="text-xs text-muted-foreground truncate">
                               {r.commune_fr}
                             </span>
                           </div>
-                          <span className="text-xs text-muted-foreground shrink-0">
+                          <span className="text-[10px] text-muted-foreground/70 shrink-0 hidden sm:block">
                             {r.province}
                           </span>
                         </button>
