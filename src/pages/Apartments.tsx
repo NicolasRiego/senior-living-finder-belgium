@@ -324,17 +324,12 @@ export default function ApartmentsPage() {
                         key={id}
                         className="flex items-center justify-between gap-2 rounded-full bg-primary/10 border border-primary/20 px-3 py-1.5"
                       >
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <Home className="h-3.5 w-3.5 text-primary shrink-0" />
-                          <span className="text-xs font-medium text-primary truncate">
-                            {res.nom_fr}
-                          </span>
-                          {(res.code_postal || res.ville) && (
-                            <span className="text-xs text-primary/60 shrink-0">
-                              ({res.code_postal ?? res.ville})
-                            </span>
+                        <span className="text-xs font-medium text-primary leading-tight flex-1">
+                          {res.nom_fr}
+                          {res.code_postal && (
+                            <span className="text-primary/60 ml-1.5">({res.code_postal})</span>
                           )}
-                        </div>
+                        </span>
                         <button
                           type="button"
                           onClick={() => setResidenceIds(selectedIds.filter((x) => x !== id))}
