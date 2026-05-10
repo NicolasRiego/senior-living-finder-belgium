@@ -18,6 +18,18 @@ export function Header() {
   const { t } = useI18n();
   const { user, isPartner, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const isTransparent = isHome && !scrolled && !open;
   const myLink = isPartner ? "/partenaire" : "/mon-espace";
   const myLabel = isPartner ? "Espace partenaire" : "Mon espace";
 
@@ -30,9 +42,23 @@ export function Header() {
   ];
 
   return (
-    <header data-fixed-size="true" className="sticky top-0 z-50 w-full max-w-[100vw] [overflow-x:clip] border-b border-border/50 bg-background/85 backdrop-blur-md">
+    <header
+      data-fixed-size="true"
+      className={cn(
+        "sticky top-0 z-50 w-full max-w-[100vw] [overflow-x:clip] transition-all duration-300",
+        isTransparent
+          ? "bg-transparent border-b border-transparent"
+          : "border-b border-border/50 bg-background/85 backdrop-blur-md",
+      )}
+    >
       <div className="mx-auto flex min-h-[84px] w-full max-w-[1400px] flex-nowrap items-center justify-between gap-2 px-4">
-        <Link to="/" className="flex shrink-0 items-center gap-1.5 font-display text-[1.31rem] font-semibold whitespace-nowrap">
+        <Link
+          to="/"
+          className={cn(
+            "flex shrink-0 items-center gap-1.5 font-display text-[1.31rem] font-semibold whitespace-nowrap transition-colors",
+            isTransparent ? "text-white drop-shadow" : "text-foreground",
+          )}
+        >
           <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
             <Heart className="h-[21px] w-[21px]" fill="currentColor" />
           </span>
