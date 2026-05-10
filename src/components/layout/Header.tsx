@@ -47,7 +47,7 @@ export function Header() {
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "whitespace-nowrap rounded-full px-[13px] py-[9px] text-[0.945rem] font-medium leading-none transition-colors",
+                    "whitespace-nowrap rounded-full px-[13px] py-[9px] text-[0.992rem] font-medium leading-none transition-colors",
                     isActive
                       ? "bg-primary-soft text-primary"
                       : "text-foreground/80 hover:bg-muted hover:text-foreground",
@@ -58,15 +58,15 @@ export function Header() {
               </NavLink>
               {l.to === "/residences" && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[13px] py-[9px] text-[0.945rem] font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[13px] py-[9px] text-[0.992rem] font-medium leading-none text-foreground/80 transition-colors hover:bg-muted hover:text-foreground">
                     Appartements <ChevronDown className="h-[15px] w-[15px]" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="min-w-[240px]">
                     <DropdownMenuItem asChild>
-                      <Link to="/appartements?type=vente" className="text-base">Appartements à vendre</Link>
+                      <Link to="/appartements?type=vente" className="text-[16.8px]">Appartements à vendre</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/appartements?type=location" className="text-base">Appartements à louer</Link>
+                      <Link to="/appartements?type=location" className="text-[16.8px]">Appartements à louer</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -80,7 +80,7 @@ export function Header() {
           <FontSizeControls />
           {user ? (
             <>
-              <Button asChild variant="outline" size="sm" className="h-[34px] whitespace-nowrap px-[13px] py-[7px] text-[0.945rem]">
+              <Button asChild variant="outline" size="sm" className="h-[34px] whitespace-nowrap px-[13px] py-[7px] text-[0.992rem]">
                 <Link to={myLink} aria-label={myLabel}>
                   <User className="h-[17px] w-[17px] mr-1.5" />
                   <span className="hidden xl:inline">{myLabel}</span>
@@ -92,10 +92,10 @@ export function Header() {
             </>
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm" className="h-[34px] whitespace-nowrap px-[13px] text-[0.945rem]">
+              <Button asChild variant="ghost" size="sm" className="h-[34px] whitespace-nowrap px-[13px] text-[0.992rem]">
                 <Link to="/connexion">{t("nav.login")}</Link>
               </Button>
-              <Button asChild size="sm" className="h-[34px] whitespace-nowrap px-[13px] text-[0.945rem]">
+              <Button asChild size="sm" className="h-[34px] whitespace-nowrap px-[13px] text-[0.992rem]">
                 <Link to="/inscription">Créer un compte</Link>
               </Button>
             </>
