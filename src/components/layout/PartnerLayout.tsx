@@ -41,7 +41,7 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
       <header className="border-b bg-card">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/partenaire" className="font-display text-2xl">
-            SereniaCare <span className="text-base text-muted-foreground">· Espace partenaire</span>
+            House of Living <span className="text-base text-muted-foreground">· Espace partenaire</span>
           </Link>
           <div className="flex items-center gap-3">
             <Button variant="ghost" asChild>

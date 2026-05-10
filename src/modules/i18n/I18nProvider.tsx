@@ -5,7 +5,7 @@ import { nl } from "./locales/nl";
 export type Locale = "fr" | "nl";
 
 const dictionaries: Record<Locale, Dict> = { fr, nl };
-const STORAGE_KEY = "serenia.locale";
+const STORAGE_KEY = "houseofLiving.locale";
 
 type Ctx = {
   locale: Locale;
