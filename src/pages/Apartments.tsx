@@ -228,53 +228,97 @@ export default function ApartmentsPage() {
                   autoComplete="off"
                 />
                 {postalQuery && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium block">Code postal ou commune</label>
+              <div className="relative">
+                <Input
+                  value={postalQuery}
+                  onChange={(e) => {
+                    setPostalQuery(e.target.value);
+                    setPostalOpen(true);
+                  }}
+                  onFocus={() => setPostalOpen(true)}
+                  onBlur={() => setTimeout(() => setPostalOpen(false), 200)}
+                  placeholder="ex: 1180 ou Uccle…"
+                  className="h-10 text-sm pr-9"
+                  autoComplete="off"
+                />
+                {postalQuery && (
                   <button
                     type="button"
                     aria-label="Effacer"
                     onClick={() => {
                       setPostalQuery("");
                       setPostalOpen(false);
-                      updateParam({ cp: null });
                     }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 )}
                 {postalOpen && postalResults.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[280px] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
-                    {postalResults.map((r) => (
-                      <button
-                        type="button"
-                        key={r.code_postal + r.commune_fr}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => {
-                          setPostalQuery(r.code_postal);
-                          setPostalOpen(false);
-                          updateParam({ cp: r.code_postal });
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-3"
-                      >
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <span className="font-bold text-foreground text-sm shrink-0 w-12">
-                            {r.code_postal}
+                  <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[220px] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
+                    {postalResults
+                      .filter((r) => !selectedPostals.some((p) => p.code === r.code_postal))
+                      .map((r) => (
+                        <button
+                          type="button"
+                          key={r.code_postal + r.commune_fr}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => {
+                            const newPostal = { code: r.code_postal, commune: r.commune_fr };
+                            const updated = [...selectedPostals, newPostal];
+                            setSelectedPostals(updated);
+                            setPostalQuery("");
+                            setPostalOpen(false);
+                            updateParam({ cp: updated.map((p) => p.code).join(",") });
+                          }}
+                          className="w-full px-3 py-2 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-3"
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="font-semibold text-foreground text-sm shrink-0 w-11">
+                              {r.code_postal}
+                            </span>
+                            <span className="text-sm text-foreground truncate">
+                              {r.commune_fr}
+                            </span>
+                          </div>
+                          <span className="text-xs text-muted-foreground shrink-0">
+                            {r.province}
                           </span>
-                          <span className="text-sm text-foreground truncate">
-                            {r.commune_fr}
-                          </span>
-                        </div>
-                        <span className="text-xs text-muted-foreground shrink-0 bg-muted rounded-full px-2 py-0.5">
-                          {r.province}
-                        </span>
-                      </button>
-                    ))}
+                        </button>
+                      ))}
                   </div>
                 )}
               </div>
-              {filters.code_postal && (
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  Filtre actif : <span className="font-medium text-foreground">{postalQuery}</span>
-                </p>
+              {selectedPostals.length > 0 && (
+                <div className="space-y-1.5 mt-1">
+                  {selectedPostals.map((p) => (
+                    <div
+                      key={p.code}
+                      className="flex items-center justify-between gap-2 rounded-full bg-primary/10 border border-primary/20 px-3 py-1.5"
+                    >
+                      <span className="text-xs font-medium text-primary truncate">
+                        {p.code}
+                        {p.commune ? ` · ${p.commune}` : ""}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={`Retirer ${p.code}`}
+                        onClick={() => {
+                          const updated = selectedPostals.filter((x) => x.code !== p.code);
+                          setSelectedPostals(updated);
+                          updateParam({
+                            cp: updated.length > 0 ? updated.map((x) => x.code).join(",") : null,
+                          });
+                        }}
+                        className="shrink-0 h-5 w-5 flex items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-destructive/20 hover:text-destructive transition-colors"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
 
