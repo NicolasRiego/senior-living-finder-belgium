@@ -2,7 +2,7 @@ export type DeepStringDict = { [k: string]: string | DeepStringDict };
 
 export const fr = {
   brand: {
-    name: "SereniaCare",
+    name: "House of Living",
     tagline: "Trouvez la résidence senior idéale en Belgique",
   },
   nav: {

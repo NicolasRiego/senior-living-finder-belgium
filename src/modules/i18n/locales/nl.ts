@@ -2,7 +2,7 @@ import type { Dict } from "./fr";
 
 export const nl: Dict = {
   brand: {
-    name: "SereniaCare",
+    name: "House of Living",
     tagline: "Vind de ideale seniorenresidentie in België",
   },
   nav: {
