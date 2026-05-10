@@ -237,24 +237,30 @@ export default function ApartmentsPage() {
                   </button>
                 )}
                 {postalOpen && postalResults.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-xl border border-border bg-popover shadow-lg overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 z-50 mt-1 max-h-[280px] overflow-y-auto rounded-xl border border-border bg-card shadow-lg">
                     {postalResults.map((r) => (
                       <button
                         type="button"
-                        key={`${r.code_postal}-${r.commune_fr}`}
+                        key={r.code_postal + r.commune_fr}
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => {
-                          setPostalQuery(`${r.code_postal} – ${r.commune_fr}`);
+                          setPostalQuery(r.code_postal);
                           setPostalOpen(false);
                           updateParam({ cp: r.code_postal });
                         }}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted flex items-center justify-between gap-2 border-b border-border/40 last:border-0"
+                        className="w-full px-4 py-3 text-left hover:bg-muted transition-colors border-b border-border/30 last:border-0 flex items-center justify-between gap-3"
                       >
-                        <span className="flex items-center gap-2 min-w-0">
-                          <span className="font-semibold text-primary">{r.code_postal}</span>
-                          <span className="truncate">{r.commune_fr}</span>
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <span className="font-bold text-foreground text-sm shrink-0 w-12">
+                            {r.code_postal}
+                          </span>
+                          <span className="text-sm text-foreground truncate">
+                            {r.commune_fr}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground shrink-0 bg-muted rounded-full px-2 py-0.5">
+                          {r.province}
                         </span>
-                        <span className="shrink-0 text-xs text-muted-foreground">{r.province}</span>
                       </button>
                     ))}
                   </div>
@@ -279,38 +285,43 @@ export default function ApartmentsPage() {
                   <span>Choisir des résidences</span>
                 </button>
               ) : (
-                <div className="space-y-2">
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedResidences.slice(0, 2).map((r) => (
-                      <span
-                        key={r.id}
-                        className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-foreground"
+                <div className="space-y-2 mt-1">
+                  {selectedIds.map((id) => {
+                    const res = selectedResidences.find((r) => r.id === id);
+                    if (!res) return null;
+                    return (
+                      <div
+                        key={id}
+                        className="flex items-center justify-between gap-2 rounded-full bg-primary/10 border border-primary/20 px-3 py-1.5"
                       >
-                        <span className="max-w-[120px] truncate">{r.nom_fr}</span>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Home className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span className="text-xs font-medium text-primary truncate">
+                            {res.nom_fr}
+                          </span>
+                          {(res.code_postal || res.ville) && (
+                            <span className="text-xs text-primary/60 shrink-0">
+                              ({res.code_postal ?? res.ville})
+                            </span>
+                          )}
+                        </div>
                         <button
                           type="button"
-                          aria-label={`Retirer ${r.nom_fr}`}
-                          onClick={() =>
-                            setResidenceIds(selectedIds.filter((id) => id !== r.id))
-                          }
-                          className="rounded-full p-0.5 hover:bg-primary/20 hover:text-destructive"
+                          onClick={() => setResidenceIds(selectedIds.filter((x) => x !== id))}
+                          className="shrink-0 h-5 w-5 flex items-center justify-center rounded-full bg-primary/20 text-primary hover:bg-destructive/20 hover:text-destructive transition-colors"
+                          aria-label={`Retirer ${res.nom_fr}`}
                         >
                           <X className="h-3 w-3" />
                         </button>
-                      </span>
-                    ))}
-                    {selectedIds.length > 2 && (
-                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                        +{selectedIds.length - 2}
-                      </span>
-                    )}
-                  </div>
+                      </div>
+                    );
+                  })}
                   <button
                     type="button"
                     onClick={() => setPickerOpen(true)}
-                    className="w-full flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/5 text-xs text-primary hover:bg-primary/10 transition-colors"
+                    className="w-full flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-border bg-muted/50 text-xs text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
                   >
-                    <Pencil className="h-3 w-3" />
+                    <Home className="h-3.5 w-3.5" />
                     Modifier la sélection ({selectedIds.length})
                   </button>
                 </div>
