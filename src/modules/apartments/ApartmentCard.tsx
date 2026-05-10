@@ -134,6 +134,28 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             >
               <Heart className={"h-4 w-4 " + (isFav ? "fill-current" : "")} />
             </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleApt(row.id);
+              }}
+              disabled={!inCompare && isAptFull}
+              aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+              title={
+                inCompare
+                  ? "Retirer du comparateur"
+                  : isAptFull
+                  ? "Comparateur plein (max 4)"
+                  : "Ajouter au comparateur"
+              }
+              className={"px-3 " + (inCompare ? "border-primary text-primary" : "")}
+            >
+              {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
+            </Button>
             <Button asChild size="sm" variant="outline" className="w-auto whitespace-nowrap px-4">
               <Link to={`/residences/${row.residence_slug}`}>Voir la résidence</Link>
             </Button>
