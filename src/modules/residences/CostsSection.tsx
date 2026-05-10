@@ -70,12 +70,17 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
                 <th className="px-4 py-3 text-right font-medium text-primary">
                   Total min / mois
                 </th>
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                  Total max / mois
+                </th>
               </tr>
             </thead>
             <tbody>
               {rentRows.map((s, i) => {
                 const rentMin = s.rentMin ?? 0;
-                const total = rentMin + mandatory;
+                const totalMin = rentMin + mandatory;
+                const totalMax = s.rentMax ? s.rentMax + mandatory : null;
+                const hasRange = totalMax && totalMax > totalMin;
                 return (
                   <tr key={s.type} className={i % 2 === 0 ? "" : "bg-muted/20"}>
                     <td className="px-4 py-3 font-medium">{TYPE_LABEL[s.type] ?? s.type}</td>
@@ -88,7 +93,10 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
                       {mandatory > 0 ? `${mandatory.toLocaleString("fr-BE")} €` : "—"}
                     </td>
                     <td className="px-4 py-3 text-right font-bold text-primary">
-                      {total.toLocaleString("fr-BE")} €
+                      {totalMin.toLocaleString("fr-BE")} €
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                      {hasRange ? `${totalMax!.toLocaleString("fr-BE")} €` : "—"}
                     </td>
                   </tr>
                 );
@@ -97,8 +105,9 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
           </table>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Estimation indicative basée sur le loyer minimum de chaque type de logement + charges
-          obligatoires. À confirmer avec la résidence.
+          Le total minimum est calculé sur la base du loyer le moins cher + charges obligatoires.
+          Le total maximum correspond au loyer le plus élevé du même type + charges obligatoires.
+          Estimation indicative, à confirmer avec la résidence.
         </p>
       </div>
     </div>

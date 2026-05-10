@@ -357,12 +357,17 @@ export default function PricingStep({ residence, setExternalSaving }: StepProps)
                     <th className="px-4 py-3 text-right font-medium text-primary">
                       Coût total min / mois
                     </th>
+                    <th className="px-4 py-3 text-right font-medium text-muted-foreground">
+                      Total max / mois
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {summary.map((s, i) => {
                     const rentMin = s.rentMin ?? 0;
-                    const total = rentMin + totalMandatory;
+                    const totalMin = rentMin + totalMandatory;
+                    const totalMax = s.rentMax ? s.rentMax + totalMandatory : null;
+                    const hasRange = totalMax && totalMax > totalMin;
                     return (
                       <tr
                         key={s.type}
@@ -382,7 +387,10 @@ export default function PricingStep({ residence, setExternalSaving }: StepProps)
                             : "—"}
                         </td>
                         <td className="px-4 py-3 text-right font-bold text-primary">
-                          {total.toLocaleString("fr-BE")} €
+                          {totalMin.toLocaleString("fr-BE")} €
+                        </td>
+                        <td className="px-4 py-3 text-right font-semibold text-muted-foreground">
+                          {hasRange ? `${totalMax!.toLocaleString("fr-BE")} €` : "—"}
                         </td>
                       </tr>
                     );
@@ -391,8 +399,9 @@ export default function PricingStep({ residence, setExternalSaving }: StepProps)
               </table>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              * Le coût total minimum est calculé sur la base du loyer le moins cher de chaque type
-              + toutes les charges obligatoires. À titre indicatif, non contractuel.
+              Le total minimum est calculé sur la base du loyer le moins cher + charges obligatoires.
+              Le total maximum correspond au loyer le plus élevé du même type + charges obligatoires.
+              Estimation indicative, à confirmer avec la résidence.
             </p>
           </CardContent>
         </Card>
