@@ -101,9 +101,14 @@ export default function ApartmentsPage() {
   }, [residencesFacet.data, selectedIds]);
 
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [postalQuery, setPostalQuery] = useState(
-    filters.code_postal ? filters.code_postal : ""
+  const [selectedPostals, setSelectedPostals] = useState<Array<{ code: string; commune: string }>>(
+    () => {
+      const cp = sp.get("cp");
+      if (!cp) return [];
+      return cp.split(",").filter(Boolean).map((c) => ({ code: c, commune: "" }));
+    },
   );
+  const [postalQuery, setPostalQuery] = useState("");
   const [postalOpen, setPostalOpen] = useState(false);
   const { results: postalResults } = usePostalSearch(postalQuery);
 
