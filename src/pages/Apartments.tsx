@@ -205,74 +205,114 @@ export default function ApartmentsPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">Code postal</label>
-              <Input
-                defaultValue={filters.code_postal ?? ""}
-                onChange={(e) => updateParam({ cp: e.target.value || null })}
-                placeholder="1000, 4000…"
-                className="h-10"
-              />
+              <label className="mb-2 block text-sm font-medium">Code postal ou commune</label>
+              <div className="relative">
+                <Input
+                  value={postalQuery}
+                  onChange={(e) => {
+                    setPostalQuery(e.target.value);
+                    setPostalOpen(true);
+                    if (!e.target.value) {
+                      updateParam({ cp: null });
+                    }
+                  }}
+                  onFocus={() => postalQuery && setPostalOpen(true)}
+                  onBlur={() => setTimeout(() => setPostalOpen(false), 200)}
+                  placeholder="ex: 1180 ou Uccle…"
+                  className="h-11 pr-9"
+                  autoComplete="off"
+                />
+                {postalQuery && (
+                  <button
+                    type="button"
+                    aria-label="Effacer"
+                    onClick={() => {
+                      setPostalQuery("");
+                      setPostalOpen(false);
+                      updateParam({ cp: null });
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+                {postalOpen && postalResults.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-xl border border-border bg-popover shadow-lg overflow-hidden">
+                    {postalResults.map((r) => (
+                      <button
+                        type="button"
+                        key={`${r.code_postal}-${r.commune_fr}`}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setPostalQuery(`${r.code_postal} – ${r.commune_fr}`);
+                          setPostalOpen(false);
+                          updateParam({ cp: r.code_postal });
+                        }}
+                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted flex items-center justify-between gap-2 border-b border-border/40 last:border-0"
+                      >
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span className="font-semibold text-primary">{r.code_postal}</span>
+                          <span className="truncate">{r.commune_fr}</span>
+                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground">{r.province}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {filters.code_postal && (
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Filtre actif : <span className="font-medium text-foreground">{postalQuery}</span>
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">
-                Résidence{selectedIds.length > 0 ? ` (${selectedIds.length})` : ""}
-              </label>
+              <label className="mb-2 block text-sm font-medium">Résidence</label>
               {selectedIds.length === 0 ? (
-                <Button
+                <button
                   type="button"
-                  variant="outline"
-                  className="w-full justify-start rounded-xl overflow-hidden"
                   onClick={() => setPickerOpen(true)}
+                  className="w-full flex items-center gap-2 h-11 px-3 rounded-xl border border-input bg-background text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors"
                 >
-                  <Home className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="truncate">Choisir des résidences</span>
-                </Button>
+                  <Home className="h-4 w-4 shrink-0" />
+                  <span>Choisir des résidences</span>
+                </button>
               ) : (
                 <div className="space-y-2">
                   <div className="flex flex-wrap gap-1.5">
-                    {selectedResidences.map((r) => (
+                    {selectedResidences.slice(0, 2).map((r) => (
                       <span
                         key={r.id}
                         className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-foreground"
                       >
-                        <span className="max-w-[140px] truncate">{r.nom_fr}</span>
+                        <span className="max-w-[120px] truncate">{r.nom_fr}</span>
                         <button
                           type="button"
                           aria-label={`Retirer ${r.nom_fr}`}
                           onClick={() =>
                             setResidenceIds(selectedIds.filter((id) => id !== r.id))
                           }
-                          className="rounded-full p-0.5 hover:bg-primary/20"
+                          className="rounded-full p-0.5 hover:bg-primary/20 hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
                         </button>
                       </span>
                     ))}
-                    {selectedIds.length > selectedResidences.length && (
+                    {selectedIds.length > 2 && (
                       <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-                        +{selectedIds.length - selectedResidences.length}
+                        +{selectedIds.length - 2}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 rounded-xl"
-                      onClick={() => setPickerOpen(true)}
-                    >
-                      Modifier la sélection
-                    </Button>
-                    <button
-                      type="button"
-                      onClick={() => setResidenceIds([])}
-                      className="text-xs font-medium text-muted-foreground hover:text-destructive hover:underline"
-                    >
-                      Tout effacer
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPickerOpen(true)}
+                    className="w-full flex items-center justify-center gap-1.5 h-8 px-3 rounded-lg border border-primary/30 bg-primary/5 text-xs text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <Pencil className="h-3 w-3" />
+                    Modifier la sélection ({selectedIds.length})
+                  </button>
                 </div>
               )}
             </div>
