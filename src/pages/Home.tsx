@@ -38,41 +38,51 @@ export default function HomePage() {
             style={{ transitionDuration: "1500ms" }}
           >
             <img src={slide.src} alt={slide.label} className="h-full w-full object-cover object-center" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/60" />
           </div>
         ))}
 
-        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-6 mt-16">
-          <p className="text-sm font-medium tracking-widest uppercase text-white/80 mb-4">
+        {/* Overlay sombre modéré uniforme */}
+        <div className="absolute inset-0 bg-black/45" />
+        {/* Dégradé supplémentaire centré sur le texte */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/40" />
+
+        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6 mt-16">
+          <p className="text-sm font-medium tracking-widest uppercase text-white/90 mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             {HERO_SLIDES[current].label}
           </p>
-          <h1 className="font-display text-5xl font-bold md:text-6xl lg:text-7xl drop-shadow-lg max-w-4xl leading-tight">
+          <h1
+            className="font-display text-5xl font-bold md:text-6xl lg:text-7xl max-w-4xl leading-tight text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]"
+            style={{ textShadow: "0 2px 4px rgba(0,0,0,0.8), 0 4px 16px rgba(0,0,0,0.6)" }}
+          >
             Une nouvelle étape,<br />en toute sérénité
           </h1>
-          <p className="mt-6 text-xl md:text-2xl text-white/85 max-w-2xl drop-shadow">
+          <p className="mt-6 text-xl md:text-2xl text-white/90 max-w-2xl drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
             Comparez les résidences-services, seigneuries et maisons de repos partout en Belgique.
           </p>
           <div className="mt-10 flex flex-wrap gap-4 justify-center">
-            <Button asChild size="lg" className="text-lg px-8 py-4 bg-white text-primary font-semibold hover:bg-white/90 shadow-lg rounded-full">
+            <Button asChild size="lg" className="text-lg px-8 py-4 bg-white text-primary font-semibold hover:bg-white/95 shadow-xl shadow-black/30 rounded-full">
               <Link to="/residences">
                 <Search className="h-5 w-5 mr-2" />
                 Trouver une résidence
               </Link>
             </Button>
-            <Button asChild size="lg" className="text-lg px-8 py-4 bg-transparent border-2 border-white text-white font-semibold hover:bg-white/15 backdrop-blur-sm rounded-full">
+            <Button asChild size="lg" className="text-lg px-8 py-4 bg-white/15 border-2 border-white text-white font-semibold hover:bg-white/25 backdrop-blur-sm rounded-full shadow-lg shadow-black/20">
               <Link to="/comparateur">Utiliser le comparateur</Link>
             </Button>
           </div>
 
-          <div className="mt-16 flex gap-12">
+          <div className="mt-14 flex gap-10 items-center justify-center">
             {[
               { val: "1 200+", label: "Résidences" },
               { val: "10", label: "Provinces" },
               { val: "4.7★", label: "Avis moyen" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-3xl font-bold drop-shadow">{s.val}</div>
-                <div className="text-sm mt-1 text-white/70">{s.label}</div>
+            ].map((s, i) => (
+              <div key={s.label} className="flex items-center gap-10">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{s.val}</div>
+                  <div className="text-sm mt-1 text-white/80 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">{s.label}</div>
+                </div>
+                {i < 2 && <div className="h-8 w-px bg-white/30" />}
               </div>
             ))}
           </div>
