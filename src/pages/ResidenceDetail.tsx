@@ -56,7 +56,7 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  const { residence: r, unitSummaries = [], services, activities, photos, charges = [] } = data as typeof data & { unitSummaries?: PublicUnitSummary[]; charges?: import("@/modules/residences/CostsSection").ResidenceCharge[] };
+  const { residence: r, unitSummaries = [], services, activities, photos, charges = [], apartmentCount = 0 } = data as typeof data & { unitSummaries?: PublicUnitSummary[]; charges?: import("@/modules/residences/CostsSection").ResidenceCharge[]; apartmentCount?: number };
   const cover = photos.find((p) => p.cover) ?? photos[0];
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
@@ -93,9 +93,9 @@ export default function ResidenceDetailPage() {
                     <MapPin className="h-4 w-4" /> {[r.ville, r.region].filter(Boolean).join(" · ")}
                   </span>
                 )}
-                {r.capacity && (
+                {apartmentCount > 0 && (
                   <span className="inline-flex items-center gap-1.5">
-                    <Users className="h-4 w-4" /> {r.capacity} {t("detail.units")}
+                    <Users className="h-4 w-4" /> {apartmentCount} {t("detail.units")}
                   </span>
                 )}
               </div>

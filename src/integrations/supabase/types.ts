@@ -1565,7 +1565,7 @@ export type Database = {
         }
         Insert: {
           adresse?: string | null
-          capacity?: number | null
+          capacity?: never
           code_postal?: string | null
           completeness?: never
           cover_path?: never
@@ -1592,7 +1592,7 @@ export type Database = {
         }
         Update: {
           adresse?: string | null
-          capacity?: number | null
+          capacity?: never
           code_postal?: string | null
           completeness?: never
           cover_path?: never

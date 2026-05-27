@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,19 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
     description_nl: residence.description_nl ?? "",
     type_etablissement: residence.type_etablissement,
   });
+
+  const { data: apartmentCount = 0 } = useQuery({
+    queryKey: ["apartment-count", residence.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("apartments")
+        .select("id", { count: "exact", head: true })
+        .eq("residence_id", residence.id);
+      return count ?? 0;
+    },
+    enabled: !!residence.id,
+  });
+
 
   useAutosave(local, async (v) => {
     setExternalSaving("saving");
@@ -91,7 +105,7 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
             </Label>
             <div className="mt-1 flex items-center gap-3 rounded-xl border border-border/40 bg-muted/50 px-4 py-3 text-muted-foreground cursor-not-allowed">
               <span className="text-xl font-semibold text-foreground">
-                {residence.capacity ?? 0}
+                {apartmentCount}
               </span>
               <span className="text-sm">logements définis</span>
             </div>
