@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SpaceSwitcher } from "./SpaceSwitcher";
 
 export function Header() {
   const { t } = useI18n();
