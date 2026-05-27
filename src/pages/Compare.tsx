@@ -330,7 +330,7 @@ export default function ComparePage() {
               <DataRow label="Types de logements" count={items.length} index={2}>
                 {items.map((r) => (
                   <CellText key={r.id} className="capitalize">
-                    {r.apartment_types.length ? r.apartment_types.join(", ") : <Dash />}
+                    {r.apartment_types?.length ? r.apartment_types.join(", ") : <Dash />}
                   </CellText>
                 ))}
               </DataRow>
