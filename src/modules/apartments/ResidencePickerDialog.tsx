@@ -29,18 +29,21 @@ type Props = {
 };
 
 function CardCover({ path }: { path: string | null }) {
+  const FALLBACK =
+    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80";
   const { data } = useQuery({
     queryKey: ["cover-url", path],
     queryFn: () => getCoverUrl(path),
     enabled: !!path,
     staleTime: 30 * 60 * 1000,
   });
-  if (!path || !data) {
+  const src = path ? (data ?? null) : FALLBACK;
+  if (!src) {
     return <div className="aspect-[4/3] w-full bg-muted" aria-hidden />;
   }
   return (
     <img
-      src={data}
+      src={src}
       alt=""
       loading="lazy"
       className="aspect-[4/3] w-full object-cover"
