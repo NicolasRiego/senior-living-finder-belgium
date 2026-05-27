@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { APP_VERSION } from "@/lib/version";
+import { SpaceSwitcher } from "./SpaceSwitcher";
 
 const items = [
   { to: "/admin/validation", label: "Validation", icon: ListChecks },
