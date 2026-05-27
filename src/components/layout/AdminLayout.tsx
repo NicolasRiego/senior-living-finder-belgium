@@ -41,14 +41,13 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               </NavLink>
             ))}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" asChild>
               <Link to="/">
                 <Home className="h-4 w-4 mr-2" /> Site public
               </Link>
             </Button>
             <SpaceSwitcher />
-            <span className="hidden lg:inline text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" /> Déconnexion
             </Button>
