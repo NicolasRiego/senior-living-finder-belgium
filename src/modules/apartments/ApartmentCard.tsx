@@ -24,18 +24,22 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
 
   useEffect(() => {
     let active = true;
+    const FALLBACKS: Record<string, string> = {
+      studio: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+      chambre: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80",
+      appartement: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
+      duplex: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
+      penthouse: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      loft: "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=800&q=80",
+      villa: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80",
+    };
+    const fb = (row.type && FALLBACKS[row.type]) ?? FALLBACKS.appartement;
     if (row.cover_path) {
-      getCoverUrl(row.cover_path).then((u) => { if (active) setCoverUrl(u); });
+      getCoverUrl(row.cover_path).then((u) => {
+        if (active) setCoverUrl(u ?? fb);
+      });
     } else {
-      const fallbacks: Record<string, string> = {
-        studio: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
-        chambre: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80",
-        appartement: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
-        duplex: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
-        penthouse: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
-      };
-      const fallback = (row.type && fallbacks[row.type]) ?? fallbacks.appartement;
-      if (active) setCoverUrl(fallback);
+      if (active) setCoverUrl(fb);
     }
     return () => { active = false; };
   }, [row.cover_path, row.type]);
