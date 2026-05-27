@@ -1468,56 +1468,21 @@ export type Database = {
     Views: {
       apartment_search_view: {
         Row: {
-          address_complement: string | null
-          agency_fee: number | null
           available_from: string | null
-          balcony_m2: number | null
-          bathrooms: number | null
-          bedrooms: number | null
-          build_year: number | null
-          building_floors: number | null
-          building_state: string | null
           cave: boolean | null
           charges_monthly: number | null
-          co_ownership_fee: number | null
-          co2_emission: string | null
           code_postal: string | null
           cover_path: string | null
-          created_at: string | null
           description_fr: string | null
           description_nl: string | null
-          double_glazing: boolean | null
           elevator: boolean | null
-          energy_class: string | null
           floor: number | null
-          flooring: string | null
           furnished: boolean | null
           garden: boolean | null
-          garden_m2: number | null
-          has_alarm: boolean | null
-          has_balcony: boolean | null
-          has_digicode: boolean | null
-          has_dressing: boolean | null
-          has_interphone: boolean | null
-          has_laundry: boolean | null
-          has_lift: boolean | null
-          has_office: boolean | null
-          has_storage: boolean | null
-          has_videophone: boolean | null
-          heating_type: string | null
-          hot_water: string | null
           id: string | null
-          internet: string | null
           is_demo: boolean | null
           kitchen_equipped: boolean | null
-          kitchen_type: string | null
-          living_room_m2: number | null
-          orientation: string | null
           parking: boolean | null
-          parking_count: number | null
-          parking_type: string | null
-          primary_energy: number | null
-          property_tax: number | null
           province: string | null
           region: string | null
           rent_price: number | null
@@ -1530,16 +1495,12 @@ export type Database = {
             | null
           sale_price: number | null
           status: string | null
-          storage_m2: number | null
           surface_m2: number | null
           terrace: boolean | null
-          terrace_m2: number | null
           title_fr: string | null
           title_nl: string | null
-          toilets: number | null
           transaction_type: string | null
           type: string | null
-          updated_at: string | null
           ville: string | null
           wheelchair_accessible: boolean | null
         }

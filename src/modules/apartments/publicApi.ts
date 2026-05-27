@@ -109,7 +109,10 @@ export async function listApartmentResidences(): Promise<ResidenceFacet[]> {
 export async function getCoverUrl(path: string | null): Promise<string | null> {
   if (!path) return null;
   if (/^https?:\/\//i.test(path)) return path;
-  const { data } = await supabase.storage.from("residence-photos").createSignedUrl(path, 3600);
+  const { data, error } = await supabase.storage.from("residence-photos").createSignedUrl(path, 3600);
+  if (error) {
+    console.warn("getCoverUrl error:", path, error);
+  }
   return data?.signedUrl ?? null;
 }
 
