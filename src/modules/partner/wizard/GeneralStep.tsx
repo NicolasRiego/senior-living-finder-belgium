@@ -29,6 +29,19 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
     type_etablissement: residence.type_etablissement,
   });
 
+  const { data: apartmentCount = 0 } = useQuery({
+    queryKey: ["apartment-count", residence.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("apartments")
+        .select("id", { count: "exact", head: true })
+        .eq("residence_id", residence.id);
+      return count ?? 0;
+    },
+    enabled: !!residence.id,
+  });
+
+
   useAutosave(local, async (v) => {
     setExternalSaving("saving");
     const { error } = await supabase
