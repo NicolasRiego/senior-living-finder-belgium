@@ -84,7 +84,7 @@ export default function LoginPage() {
             <p className="text-center text-base">
               Pas encore de compte ?{" "}
               <Link to="/inscription" className="font-semibold text-primary underline">
-                Créer un compte
+                S'inscrire
               </Link>
             </p>
             <p className="text-center text-sm text-muted-foreground">
