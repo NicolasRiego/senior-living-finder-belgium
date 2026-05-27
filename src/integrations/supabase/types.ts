@@ -1208,6 +1208,7 @@ export type Database = {
           nom_nl: string | null
           org_id: string
           pays: string
+          pmr_accessible: boolean
           province: string | null
           proximity: Json
           published_at: string | null
@@ -1244,6 +1245,7 @@ export type Database = {
           nom_nl?: string | null
           org_id: string
           pays?: string
+          pmr_accessible?: boolean
           province?: string | null
           proximity?: Json
           published_at?: string | null
@@ -1280,6 +1282,7 @@ export type Database = {
           nom_nl?: string | null
           org_id?: string
           pays?: string
+          pmr_accessible?: boolean
           province?: string | null
           proximity?: Json
           published_at?: string | null
@@ -1538,6 +1541,7 @@ export type Database = {
       residence_search_view: {
         Row: {
           adresse: string | null
+          apartment_types: string[] | null
           capacity: number | null
           code_postal: string | null
           completeness: number | null
@@ -1556,6 +1560,8 @@ export type Database = {
           rent_from: number | null
           slug: string | null
           status: Database["public"]["Enums"]["publication_status"] | null
+          surface_max: number | null
+          surface_min: number | null
           tagline_fr: string | null
           tagline_nl: string | null
           type_etablissement:
@@ -1565,6 +1571,7 @@ export type Database = {
         }
         Insert: {
           adresse?: string | null
+          apartment_types?: never
           capacity?: never
           code_postal?: string | null
           completeness?: never
@@ -1583,6 +1590,8 @@ export type Database = {
           rent_from?: never
           slug?: string | null
           status?: Database["public"]["Enums"]["publication_status"] | null
+          surface_max?: never
+          surface_min?: never
           tagline_fr?: string | null
           tagline_nl?: string | null
           type_etablissement?:
@@ -1592,6 +1601,7 @@ export type Database = {
         }
         Update: {
           adresse?: string | null
+          apartment_types?: never
           capacity?: never
           code_postal?: string | null
           completeness?: never
@@ -1610,6 +1620,8 @@ export type Database = {
           rent_from?: never
           slug?: string | null
           status?: Database["public"]["Enums"]["publication_status"] | null
+          surface_max?: never
+          surface_min?: never
           tagline_fr?: string | null
           tagline_nl?: string | null
           type_etablissement?:
