@@ -6,6 +6,7 @@ import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket, Database } f
 import { cn } from "@/lib/utils";
 import { APP_VERSION } from "@/lib/version";
 import { SpaceSwitcher } from "./SpaceSwitcher";
+import { ConstructionBanner } from "./ConstructionBanner";
 
 const items = [
   { to: "/admin/validation", label: "Validation", icon: ListChecks },
@@ -19,6 +20,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
   return (
     <div className="min-h-screen bg-background">
+      <ConstructionBanner />
       <header className="border-b bg-card">
         <div className="container flex h-16 items-center justify-between gap-6">
           <Link to="/admin/validation" className="flex items-center gap-2 font-display text-xl">

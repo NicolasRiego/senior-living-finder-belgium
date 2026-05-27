@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { SpaceSwitcher } from "./SpaceSwitcher";
+import { ConstructionBanner } from "./ConstructionBanner";
 
 const navItems = [
   { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, end: true },
@@ -39,6 +40,7 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
+      <ConstructionBanner />
       <header className="border-b bg-card">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/partenaire" className="font-display text-2xl">
