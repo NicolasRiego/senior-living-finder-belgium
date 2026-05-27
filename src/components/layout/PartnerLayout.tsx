@@ -50,15 +50,7 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
                 <Eye className="h-4 w-4 mr-2" /> Voir le site
               </Link>
             </Button>
-            {isAdmin ? (
-              <SpaceSwitcher />
-            ) : (
-              <Button variant="ghost" asChild>
-                <Link to="/" target="_blank" rel="noopener">
-                  <Eye className="h-4 w-4 mr-2" /> Voir le site
-                </Link>
-              </Button>
-            )}
+            {isAdmin && <SpaceSwitcher />}
             <span className="text-sm text-muted-foreground hidden md:inline">{user?.email}</span>
             <Button variant="ghost" size="icon" onClick={signOut} aria-label="Se déconnecter">
               <LogOut className="h-5 w-5" />
