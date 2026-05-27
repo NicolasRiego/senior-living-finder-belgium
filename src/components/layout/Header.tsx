@@ -19,6 +19,7 @@ export function Header() {
   const { t } = useI18n();
   const { user, isPartner, isAdmin, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
   const [scrolled, setScrolled] = useState(false);
@@ -30,7 +31,7 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const isTransparent = isHome && !scrolled && !open;
+  const isTransparent = isHome && !scrolled && !open && !dropdownOpen;
   const myLink = isPartner ? "/partenaire" : "/mon-espace";
   const myLabel = isPartner ? "Espace partenaire" : "Mon espace";
 
@@ -86,7 +87,7 @@ export function Header() {
                 {l.label}
               </NavLink>
               {l.to === "/residences" && (
-                <DropdownMenu>
+                <DropdownMenu modal={false} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger
                     className={cn(
                       "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
