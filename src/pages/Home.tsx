@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { Search, GitCompare, MapPin, ArrowRight, ShieldCheck, HeartHandshake, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
-import { ResidenceCard } from "@/modules/residences/ResidenceCard";
-import { residences } from "@/modules/residences/data";
+import { FeaturedResidences } from "@/modules/residences/FeaturedResidences";
 
 const HERO_SLIDES = [
   { src: "/images/hero/hall-accueil.jpg", label: "Un accueil chaleureux" },
@@ -17,8 +16,8 @@ const HERO_SLIDES = [
 
 export default function HomePage() {
   const { t } = useI18n();
-  const featured = residences.filter((r) => r.featured).slice(0, 3);
   const [current, setCurrent] = useState(0);
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -154,11 +153,8 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featured.map((r) => (
-              <ResidenceCard key={r.id} residence={r} />
-            ))}
-          </div>
+          <FeaturedResidences />
+
         </div>
       </section>
 
