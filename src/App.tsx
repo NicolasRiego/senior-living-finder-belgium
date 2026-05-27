@@ -190,6 +190,7 @@ const App = () => (
                 </Routes>
               )}
             </BrowserRouter>
+            </PasswordGate>
           </TooltipProvider>
         </CompareProvider>
        </AuthProvider>
