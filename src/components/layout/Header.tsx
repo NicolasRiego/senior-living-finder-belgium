@@ -87,7 +87,7 @@ export function Header() {
                 {l.label}
               </NavLink>
               {l.to === "/residences" && (
-                <DropdownMenu>
+                <DropdownMenu modal={false} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger
                     className={cn(
                       "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
