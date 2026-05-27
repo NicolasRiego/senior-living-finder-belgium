@@ -56,7 +56,7 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  const { residence: r, unitSummaries = [], services, activities, photos, charges = [] } = data as typeof data & { unitSummaries?: PublicUnitSummary[]; charges?: import("@/modules/residences/CostsSection").ResidenceCharge[] };
+  const { residence: r, unitSummaries = [], services, activities, photos, charges = [], apartmentCount = 0 } = data as typeof data & { unitSummaries?: PublicUnitSummary[]; charges?: import("@/modules/residences/CostsSection").ResidenceCharge[]; apartmentCount?: number };
   const cover = photos.find((p) => p.cover) ?? photos[0];
   const name = tr(r.nom_fr, r.nom_nl);
   const tagline = tr(r.tagline_fr, r.tagline_nl);
