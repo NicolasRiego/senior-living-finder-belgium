@@ -105,7 +105,7 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
             </Label>
             <div className="mt-1 flex items-center gap-3 rounded-xl border border-border/40 bg-muted/50 px-4 py-3 text-muted-foreground cursor-not-allowed">
               <span className="text-xl font-semibold text-foreground">
-                {residence.capacity ?? 0}
+                {apartmentCount}
               </span>
               <span className="text-sm">logements définis</span>
             </div>
