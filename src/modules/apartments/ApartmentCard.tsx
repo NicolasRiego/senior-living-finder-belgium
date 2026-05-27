@@ -55,6 +55,18 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             src={coverUrl}
             alt={name}
             loading="lazy"
+            onError={(e) => {
+              const target = e.currentTarget;
+              target.onerror = null;
+              const fallbacks: Record<string, string> = {
+                studio: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800",
+                chambre: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800",
+                appartement: "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800",
+                duplex: "https://images.pexels.com/photos/2029731/pexels-photo-2029731.jpeg?auto=compress&cs=tinysrgb&w=800",
+                penthouse: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
+              };
+              target.src = fallbacks[row.type] ?? "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800";
+            }}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
