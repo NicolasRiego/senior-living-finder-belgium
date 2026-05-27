@@ -26,9 +26,19 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
     let active = true;
     if (row.cover_path) {
       getCoverUrl(row.cover_path).then((u) => { if (active) setCoverUrl(u); });
+    } else {
+      const fallbacks: Record<string, string> = {
+        studio: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+        chambre: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80",
+        appartement: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80",
+        duplex: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
+        penthouse: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      };
+      const fallback = (row.type && fallbacks[row.type]) ?? fallbacks.appartement;
+      if (active) setCoverUrl(fallback);
     }
     return () => { active = false; };
-  }, [row.cover_path]);
+  }, [row.cover_path, row.type]);
 
   const showSale = row.transaction_type === "sale" || row.transaction_type === "both";
   const showRent = row.transaction_type === "rent" || row.transaction_type === "both";
