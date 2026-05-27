@@ -329,6 +329,10 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
       getCoverUrl(row.cover_path).then((u) => {
         if (active) setCoverUrl(u);
       });
+    } else {
+      setCoverUrl(
+        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80"
+      );
     }
     return () => { active = false; };
   }, [row.cover_path]);
