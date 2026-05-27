@@ -121,7 +121,7 @@ export async function getResidenceFullBySlug(slug: string) {
     .eq("status", "published")
     .maybeSingle();
   if (!r) return null;
-  const [units, services, activities, photos, apts, chargesRes] = await Promise.all([
+  const [units, services, activities, photos, apts, chargesRes, apartmentCountRes] = await Promise.all([
     supabase.from("unit_types").select("*").eq("residence_id", r.id),
     supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", r.id).eq("included", true),
     supabase.from("residence_activities").select("*, activities_catalog(*)").eq("residence_id", r.id),
@@ -142,6 +142,10 @@ export async function getResidenceFullBySlug(slug: string) {
       .gt("amount", 0)
       .neq("label", "Nouveau service")
       .order("sort_order"),
+    supabase
+      .from("apartments")
+      .select("id", { count: "exact", head: true })
+      .eq("residence_id", r.id),
   ]);
   const unitIds = (units.data ?? []).map((u: any) => u.id);
   let pricing: any[] = [];
