@@ -1,4 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getCoverUrl } from "@/modules/residences/publicApi";
+
+const PEXELS_FALLBACK =
+  "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800";
+
 
 export type CompareAptItem = {
   id: string;
