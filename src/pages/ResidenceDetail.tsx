@@ -67,7 +67,7 @@ export default function ResidenceDetailPage() {
       {/* Hero */}
       <div className="relative h-[420px] w-full overflow-hidden md:h-[520px] bg-muted">
         {cover ? (
-          <img src={cover.url} alt={cover.alt || name} className="h-full w-full object-cover" />
+          <img src={cover.url} alt={cover.alt || name} className="h-full w-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200"; }} />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
       </div>
