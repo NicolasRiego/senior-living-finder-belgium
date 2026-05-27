@@ -50,9 +50,13 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
                 <Eye className="h-4 w-4 mr-2" /> Voir le site
               </Link>
             </Button>
-            {isAdmin && (
-              <Button variant="outline" asChild>
-                <Link to="/admin/validation">Admin</Link>
+            {isAdmin ? (
+              <SpaceSwitcher />
+            ) : (
+              <Button variant="ghost" asChild>
+                <Link to="/" target="_blank" rel="noopener">
+                  <Eye className="h-4 w-4 mr-2" /> Voir le site
+                </Link>
               </Button>
             )}
             <span className="text-sm text-muted-foreground hidden md:inline">{user?.email}</span>
