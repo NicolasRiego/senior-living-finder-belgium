@@ -16,7 +16,7 @@ import {
 
 export function Header() {
   const { t } = useI18n();
-  const { user, isPartner, signOut } = useAuth();
+  const { user, isPartner, isAdmin, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
