@@ -65,7 +65,8 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
         .maybeSingle(),
     ]);
 
-    const cover_url = await getCoverUrl(v.cover_path);
+    const resolved = await getCoverUrl(v.cover_path);
+    const cover_url = resolved ?? "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80";
     const serviceCodes = new Set<string>(
       (services.data ?? [])
         .map((s: any) => s.services_catalog?.code)
