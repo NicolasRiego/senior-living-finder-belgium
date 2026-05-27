@@ -122,20 +122,30 @@ export function Header() {
           <FontSizeControls />
           {user ? (
             <>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "h-[34px] whitespace-nowrap px-[11px] py-[7px] text-[1.091rem]",
-                  isTransparent && "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm",
-                )}
-              >
-                <Link to={myLink} aria-label={myLabel}>
-                  <User className="h-[17px] w-[17px] mr-1.5" />
-                  <span className="hidden xl:inline">{myLabel}</span>
-                </Link>
-              </Button>
+              {isAdmin ? (
+                <SpaceSwitcher
+                  variant={isTransparent ? "outline" : "outline"}
+                  triggerClassName={cn(
+                    "h-[34px] text-[1.091rem]",
+                    isTransparent && "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm",
+                  )}
+                />
+              ) : (
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    "h-[34px] whitespace-nowrap px-[11px] py-[7px] text-[1.091rem]",
+                    isTransparent && "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm",
+                  )}
+                >
+                  <Link to={myLink} aria-label={myLabel}>
+                    <User className="h-[17px] w-[17px] mr-1.5" />
+                    <span className="hidden xl:inline">{myLabel}</span>
+                  </Link>
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
