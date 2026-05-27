@@ -177,7 +177,7 @@ export function Header() {
                   isTransparent && "bg-white text-primary hover:bg-white/90",
                 )}
               >
-                <Link to="/inscription">Créer un compte</Link>
+                <Link to="/inscription">S'inscrire</Link>
               </Button>
             </>
           )}
@@ -257,7 +257,7 @@ export function Header() {
                     <Link to="/connexion" onClick={() => setOpen(false)}>{t("nav.login")}</Link>
                   </Button>
                   <Button asChild className="flex-1">
-                    <Link to="/inscription" onClick={() => setOpen(false)}>Créer un compte</Link>
+                    <Link to="/inscription" onClick={() => setOpen(false)}>S'inscrire</Link>
                   </Button>
                 </>
               )}
