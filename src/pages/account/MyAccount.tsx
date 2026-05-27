@@ -62,14 +62,7 @@ export default function MyAccountPage() {
               <Shield className="h-4 w-4 mr-2" /> Mes données (RGPD)
             </Link>
           </Button>
-          {isAdmin && (
-            <Button asChild>
-              <Link to="/admin/validation">
-                <ShieldCheck className="h-4 w-4 mr-2" /> Espace admin
-              </Link>
-            </Button>
-          )}
-          {isPartner && (
+          {!isAdmin && isPartner && (
             <Button asChild variant="outline">
               <Link to="/partenaire">
                 <Building2 className="h-4 w-4 mr-2" /> Espace partenaire

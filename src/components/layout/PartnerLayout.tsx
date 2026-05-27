@@ -4,6 +4,7 @@ import { Building2, LayoutDashboard, Users, LogOut, Eye, Inbox, Trash2 } from "l
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
+import { SpaceSwitcher } from "./SpaceSwitcher";
 
 const navItems = [
   { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, end: true },
@@ -49,11 +50,7 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
                 <Eye className="h-4 w-4 mr-2" /> Voir le site
               </Link>
             </Button>
-            {isAdmin && (
-              <Button variant="outline" asChild>
-                <Link to="/admin/validation">Admin</Link>
-              </Button>
-            )}
+            {isAdmin && <SpaceSwitcher />}
             <span className="text-sm text-muted-foreground hidden md:inline">{user?.email}</span>
             <Button variant="ghost" size="icon" onClick={signOut} aria-label="Se déconnecter">
               <LogOut className="h-5 w-5" />

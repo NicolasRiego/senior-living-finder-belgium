@@ -33,12 +33,14 @@ export default function LoginPage() {
       nav(redirectParam);
       return;
     }
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("account_type")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
-    nav(profile?.account_type === "partner" ? "/partenaire" : "/mon-espace");
+    const [{ data: roleRows }, { data: profile }] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", data.user.id),
+      supabase.from("profiles").select("account_type").eq("user_id", data.user.id).maybeSingle(),
+    ]);
+    const isAdmin = (roleRows ?? []).some((r) => r.role === "admin");
+    if (isAdmin) nav("/admin");
+    else if (profile?.account_type === "partner") nav("/partenaire");
+    else nav("/mon-espace");
   };
 
   return (

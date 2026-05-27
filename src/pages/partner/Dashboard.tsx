@@ -110,20 +110,13 @@ export default function PartnerDashboard() {
   return (
     <div className="space-y-6">
       {isAdmin && (
-        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-sm flex items-start gap-3 flex-wrap">
-          <ShieldCheck className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-[260px]">
-            <p className="font-semibold text-foreground">Mode administrateur</p>
-            <p className="text-muted-foreground mt-1">
-              Vous visualisez cet espace en tant qu'admin. Vous avez accès à
-              toutes les résidences dont vous êtes propriétaire. Pour gérer
-              d'autres résidences, attribuez-les vous depuis l'espace admin.
-            </p>
-          </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/admin/residences">
-              Aller à l'espace admin <ArrowRight className="h-4 w-4 ml-2" />
-            </Link>
+        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-sm flex items-center gap-3 flex-wrap">
+          <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
+          <p className="flex-1 min-w-[260px] text-foreground">
+            Vous naviguez en <strong>espace gérant</strong> avec votre compte admin.
+          </p>
+          <Button variant="outline" size="sm" asChild className="shrink-0">
+            <Link to="/admin">Espace admin →</Link>
           </Button>
         </div>
       )}
