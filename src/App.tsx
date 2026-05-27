@@ -58,6 +58,7 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <PasswordGate>
             <BrowserRouter>
               <ScrollToTop />
               {MAINTENANCE ? (
