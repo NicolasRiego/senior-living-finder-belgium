@@ -4,6 +4,7 @@ import { Building2, LayoutDashboard, Users, LogOut, Eye, Inbox, Trash2 } from "l
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
+import { SpaceSwitcher } from "./SpaceSwitcher";
 
 const navItems = [
   { to: "/partenaire", label: "Tableau de bord", icon: LayoutDashboard, end: true },
