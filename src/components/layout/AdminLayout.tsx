@@ -51,7 +51,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             <span className="hidden lg:inline text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" /> Déconnexion
-          </div>
+            </Button>
           </div>
         </div>
         <nav className="md:hidden border-t flex">
