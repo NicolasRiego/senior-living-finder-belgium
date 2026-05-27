@@ -55,8 +55,12 @@ function SavedRow({
   const [cover, setCover] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
+    const FALLBACK =
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80";
     if (apt.cover_path) {
-      getCoverUrl(apt.cover_path).then((u) => { if (active) setCover(u); });
+      getCoverUrl(apt.cover_path).then((u) => { if (active) setCover(u ?? FALLBACK); });
+    } else {
+      if (active) setCover(FALLBACK);
     }
     return () => { active = false; };
   }, [apt.cover_path]);
