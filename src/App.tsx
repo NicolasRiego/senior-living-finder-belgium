@@ -12,6 +12,7 @@ import { RequireAuth } from "@/modules/auth/RequireAuth";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { PartnerLayout } from "@/components/layout/PartnerLayout";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
+import { PasswordGate } from "@/components/PasswordGate";
 
 import HomePage from "./pages/Home";
 import ResidencesPage from "./pages/Residences";
