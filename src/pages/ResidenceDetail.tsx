@@ -93,9 +93,9 @@ export default function ResidenceDetailPage() {
                     <MapPin className="h-4 w-4" /> {[r.ville, r.region].filter(Boolean).join(" · ")}
                   </span>
                 )}
-                {r.capacity && (
+                {apartmentCount > 0 && (
                   <span className="inline-flex items-center gap-1.5">
-                    <Users className="h-4 w-4" /> {r.capacity} {t("detail.units")}
+                    <Users className="h-4 w-4" /> {apartmentCount} {t("detail.units")}
                   </span>
                 )}
               </div>
