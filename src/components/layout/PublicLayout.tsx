@@ -1,12 +1,14 @@
 import type { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { ConstructionBanner } from "./ConstructionBanner";
 import { useFontSize } from "@/modules/accessibility/FontSizeContext";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
   const { size } = useFontSize();
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <ConstructionBanner />
       <Header />
       <main
         id="main"
