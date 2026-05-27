@@ -41,10 +41,11 @@ export default function HomePage() {
           </div>
         ))}
 
-        {/* Overlay sombre modéré uniforme */}
-        <div className="absolute inset-0 bg-black/45" />
-        {/* Dégradé supplémentaire centré sur le texte */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/40" />
+        {/* Gradient overlay: transparent top, darker bottom for text readability */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)" }}
+        />
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6 mt-16">
           <p className="text-sm font-medium tracking-widest uppercase text-white/90 mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
