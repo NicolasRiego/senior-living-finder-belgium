@@ -356,16 +356,14 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
             <MapPin className="h-8 w-8" />
           </div>
         )}
-        <div className="absolute inset-x-3 bottom-3 flex flex-wrap items-end justify-between gap-2 pointer-events-none">
-          <span className="badge-fixed max-w-full truncate rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">
-            {t(`residenceTypes.${row.type_etablissement}`)}
+        <span className="badge-fixed absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-background/80 backdrop-blur-sm px-3 py-1.5 font-medium text-foreground shadow-soft">
+          {t(`residenceTypes.${row.type_etablissement}`)}
+        </span>
+        {row.is_complete && (
+          <span className="badge-fixed absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-primary/80 backdrop-blur-sm px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
+            <BadgeCheck className="h-3.5 w-3.5" /> Profil complet
           </span>
-          {row.is_complete && (
-            <span className="badge-fixed inline-flex items-center gap-1 rounded-full bg-primary/95 px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
-              <BadgeCheck className="h-3.5 w-3.5" /> Profil complet
-            </span>
-          )}
-        </div>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-6">
