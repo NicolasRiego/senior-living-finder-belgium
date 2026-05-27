@@ -12,13 +12,15 @@ export type CompareItem = {
   adresse: string | null;
   code_postal: string | null;
   capacity: number | null;
+  surface_min: number | null;
+  surface_max: number | null;
+  apartment_types: string[];
   contact_email: string | null;
   contact_phone: string | null;
-  proximity: Record<string, any>;
+  proximity: Record<string, unknown>;
   cover_url: string | null;
   price_from: number | null;
   rent_from: number | null;
-  units: { id: string; type: string; surface_min: number | null; surface_max: number | null; available_now: boolean }[];
   pricing: { unit_type_id: string; estimated_monthly_min: number | null; estimated_monthly_max: number | null; rent_min: number | null; rent_max: number | null }[];
   service_codes: Set<string>;
   activity_codes: Set<string>;
@@ -26,24 +28,42 @@ export type CompareItem = {
   has_availability: boolean;
 };
 
+type SearchViewRow = {
+  id: string;
+  slug: string;
+  nom_fr: string;
+  type_etablissement: string;
+  ville: string | null;
+  region: string | null;
+  province: string | null;
+  capacity: number | null;
+  surface_min: number | null;
+  surface_max: number | null;
+  apartment_types: string[] | null;
+  price_from: number | null;
+  rent_from: number | null;
+  cover_path: string | null;
+  is_pmr: boolean | null;
+  has_availability: boolean | null;
+};
+
 export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
   if (ids.length === 0) return [];
 
   const { data: rows } = await supabase
-    .from("residence_search_view" as any)
+    .from("residence_search_view" as never)
     .select("*")
     .in("id", ids);
 
-  const viewRows = (rows ?? []) as any[];
+  const viewRows = (rows ?? []) as unknown as SearchViewRow[];
 
   const results: CompareItem[] = [];
   for (const v of viewRows) {
-    const [units, pricing, services, activities, residence] = await Promise.all([
-      supabase.from("unit_types").select("id, type, surface_min, surface_max, available_now").eq("residence_id", v.id),
+    const [pricing, services, activities, residence] = await Promise.all([
       (async () => {
         const u = await supabase.from("unit_types").select("id").eq("residence_id", v.id);
         const utIds = (u.data ?? []).map((x) => x.id);
-        if (!utIds.length) return { data: [] as any[] };
+        if (!utIds.length) return { data: [] as CompareItem["pricing"] };
         return supabase
           .from("pricing")
           .select("unit_type_id, estimated_monthly_min, estimated_monthly_max, rent_min, rent_max")
@@ -66,16 +86,16 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
     ]);
 
     const resolved = await getCoverUrl(v.cover_path);
-    const cover_url = resolved ?? "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80";
+    const cover_url = resolved ?? "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200";
     const serviceCodes = new Set<string>(
       (services.data ?? [])
-        .map((s: any) => s.services_catalog?.code)
-        .filter((x: any): x is string => !!x),
+        .map((s: { services_catalog?: { code?: string } | null }) => s.services_catalog?.code)
+        .filter((x): x is string => !!x),
     );
     const activityCodes = new Set<string>(
       (activities.data ?? [])
-        .map((a: any) => a.activities_catalog?.code)
-        .filter((x: any): x is string => !!x),
+        .map((a: { activities_catalog?: { code?: string } | null }) => a.activities_catalog?.code)
+        .filter((x): x is string => !!x),
     );
 
     results.push({
@@ -89,14 +109,16 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
       adresse: residence.data?.adresse ?? null,
       code_postal: residence.data?.code_postal ?? null,
       capacity: v.capacity,
+      surface_min: v.surface_min,
+      surface_max: v.surface_max,
+      apartment_types: v.apartment_types ?? [],
       contact_email: residence.data?.contact_email ?? null,
       contact_phone: residence.data?.contact_phone ?? null,
-      proximity: (residence.data?.proximity as Record<string, any>) ?? {},
+      proximity: (residence.data?.proximity as Record<string, unknown>) ?? {},
       cover_url,
       price_from: v.price_from,
       rent_from: v.rent_from,
-      units: (units.data ?? []) as any,
-      pricing: (pricing.data ?? []) as any,
+      pricing: (pricing.data ?? []) as CompareItem["pricing"],
       service_codes: serviceCodes,
       activity_codes: activityCodes,
       is_pmr: !!v.is_pmr,
@@ -104,7 +126,6 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
     });
   }
 
-  // Preserve order of input ids
   results.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
   return results;
 }
