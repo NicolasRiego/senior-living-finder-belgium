@@ -162,7 +162,7 @@ export default function ApartmentDetailPage() {
                     }
                     style={{ height: 80, aspectRatio: "4 / 3" }}
                   >
-                    <img src={p.url} alt={p.alt} className="h-full w-full object-cover" />
+                    <img src={p.url} alt={p.alt} className="h-full w-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=1200"; }} />
                   </button>
                 ))}
               </div>
