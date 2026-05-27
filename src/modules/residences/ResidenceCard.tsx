@@ -23,7 +23,7 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
           }}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <span className="badge-fixed absolute left-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">
+        <span className="badge-fixed absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-background/80 backdrop-blur-sm px-3 py-1.5 font-medium text-foreground shadow-soft">
           {t(`residenceTypes.${residence.type}`)}
         </span>
         <span className="badge-fixed absolute right-4 top-4 flex items-center gap-1 rounded-full bg-foreground/85 px-3 py-1.5 font-medium text-background">
