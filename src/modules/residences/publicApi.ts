@@ -176,6 +176,7 @@ export async function getResidenceFullBySlug(slug: string) {
   }
   return {
     residence: r,
+    apartmentCount: apartmentCountRes.count ?? 0,
     units: units.data ?? [],
     unitSummaries,
     pricing,
