@@ -306,7 +306,7 @@ export default function ResidenceDetailPage() {
                   <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                     {photos.map((p) => (
                       <a key={p.id} href={p.url} target="_blank" rel="noreferrer" className="aspect-[4/3] overflow-hidden rounded-xl bg-muted">
-                        <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover transition hover:scale-105" />
+                        <img src={p.url} alt={p.alt} loading="lazy" className="h-full w-full object-cover transition hover:scale-105" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200"; }} />
                       </a>
                     ))}
                   </div>
