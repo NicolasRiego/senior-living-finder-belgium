@@ -318,21 +318,19 @@ export default function ComparePage() {
 
               <SectionTitle label="Surfaces & logements" count={items.length} />
               <DataRow label="Surface min" count={items.length} index={0}>
-                {items.map((r) => {
-                  const v = r.units.map((u) => u.surface_min).filter((x): x is number => x != null);
-                  return <CellText key={r.id}>{v.length ? `${Math.min(...v)} m²` : <Dash />}</CellText>;
-                })}
+                {items.map((r) => (
+                  <CellText key={r.id}>{r.surface_min != null ? `${r.surface_min} m²` : <Dash />}</CellText>
+                ))}
               </DataRow>
               <DataRow label="Surface max" count={items.length} index={1}>
-                {items.map((r) => {
-                  const v = r.units.map((u) => u.surface_max).filter((x): x is number => x != null);
-                  return <CellText key={r.id}>{v.length ? `${Math.max(...v)} m²` : <Dash />}</CellText>;
-                })}
+                {items.map((r) => (
+                  <CellText key={r.id}>{r.surface_max != null ? `${r.surface_max} m²` : <Dash />}</CellText>
+                ))}
               </DataRow>
               <DataRow label="Types de logements" count={items.length} index={2}>
                 {items.map((r) => (
-                  <CellText key={r.id}>
-                    {r.units.length ? Array.from(new Set(r.units.map((u) => u.type))).join(", ") : <Dash />}
+                  <CellText key={r.id} className="capitalize">
+                    {r.apartment_types.length ? r.apartment_types.join(", ") : <Dash />}
                   </CellText>
                 ))}
               </DataRow>
