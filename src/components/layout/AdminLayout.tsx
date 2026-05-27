@@ -47,8 +47,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 <Home className="h-4 w-4 mr-2" /> Site public
               </Link>
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/mon-espace">Mon espace</Link>
+            <SpaceSwitcher />
+            <span className="hidden lg:inline text-sm text-muted-foreground">{user?.email}</span>
+            <Button variant="ghost" size="sm" onClick={signOut}>
+              <LogOut className="h-4 w-4 mr-2" /> Déconnexion
             </Button>
             <span className="hidden lg:inline text-sm text-muted-foreground">{user?.email}</span>
             <Button variant="ghost" size="sm" onClick={signOut}>
