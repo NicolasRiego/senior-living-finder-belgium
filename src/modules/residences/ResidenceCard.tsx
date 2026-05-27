@@ -17,6 +17,10 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
           src={residence.image}
           alt={residence.name}
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200";
+          }}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <span className="badge-fixed absolute left-4 top-4 max-w-[calc(100%-2rem)] truncate rounded-full bg-background/95 px-3 py-1.5 font-medium text-foreground shadow-soft">

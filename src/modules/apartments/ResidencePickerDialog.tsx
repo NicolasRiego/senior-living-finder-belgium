@@ -46,6 +46,10 @@ function CardCover({ path }: { path: string | null }) {
       src={src}
       alt=""
       loading="lazy"
+      onError={(e) => {
+        e.currentTarget.onerror = null;
+        e.currentTarget.src = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800";
+      }}
       className="aspect-[4/3] w-full object-cover"
     />
   );

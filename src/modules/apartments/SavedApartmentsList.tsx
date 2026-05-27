@@ -76,7 +76,7 @@ function SavedRow({
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative h-40 w-full sm:h-auto sm:w-40 shrink-0 bg-muted">
           {cover ? (
-            <img src={cover} alt={apt.residence_nom_fr} className="h-full w-full object-cover" />
+            <img src={cover} alt={apt.residence_nom_fr} className="h-full w-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800"; }} />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-muted-foreground">
               <Building2 className="h-8 w-8" />

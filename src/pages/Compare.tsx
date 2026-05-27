@@ -616,7 +616,7 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
           <div className="flex-1 min-w-[220px]">
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-muted mb-4 shadow-md">
               {item.cover_url ? (
-                <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" />
+                <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800"; }} />
               ) : (
                 <div className="flex h-full items-center justify-center text-muted-foreground">
                   <MapPin className="h-8 w-8" />
