@@ -325,14 +325,14 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
 
   useEffect(() => {
     let active = true;
+    const FALLBACK =
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80";
     if (row.cover_path) {
       getCoverUrl(row.cover_path).then((u) => {
-        if (active) setCoverUrl(u);
+        if (active) setCoverUrl(u ?? FALLBACK);
       });
     } else {
-      setCoverUrl(
-        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80"
-      );
+      if (active) setCoverUrl(FALLBACK);
     }
     return () => { active = false; };
   }, [row.cover_path]);
