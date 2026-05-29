@@ -259,23 +259,36 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
 
         {Object.entries(grouped).map(([cat, items]) => (
           <div key={cat} className="space-y-2">
-            <h3 className="font-display text-lg">{cat}</h3>
+            <div className="flex items-center gap-3 pt-2">
+              <h3 className="font-display text-xs font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+                {cat}
+              </h3>
+              <div className="flex-1 h-px bg-border" />
+            </div>
             {items.map((s) => {
               const sel = selected[s.id];
               const isFromCharges = sel?.from_charges === true;
               const isIncluded = !!sel?.included;
               const isAvailable = sel?.is_available !== false;
               const isDisabled = isIncluded && !isFromCharges && !isAvailable;
+              const isActive = (isIncluded || isFromCharges) && isAvailable;
               const restaurantService = isRestaurant(s.label_fr);
+              const mode: "inclus" | "optionnel" | null = sel?.is_free
+                ? "inclus"
+                : sel?.optional
+                  ? "optionnel"
+                  : null;
               return (
                 <div
                   key={s.id}
-                  className={`p-3 rounded-lg border transition-colors ${
+                  className={`p-3 rounded-lg border bg-card border-l-4 transition-colors ${
                     isFromCharges
-                      ? "border-primary/30 bg-primary/5"
+                      ? "border-l-primary border-primary/30 bg-primary/5"
                       : isDisabled
-                        ? "border-orange-300 bg-muted/40 opacity-60"
-                        : "border-border"
+                        ? "border-l-orange-400 bg-muted/40 opacity-60"
+                        : isActive
+                          ? "border-l-green-500"
+                          : "border-l-muted"
                   }`}
                 >
                   <div className="flex items-center gap-3 flex-wrap">
@@ -286,48 +299,63 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       disabled={isFromCharges}
                       className="h-5 w-5"
                     />
-                    <Label htmlFor={`svc-${s.id}`} className={`flex-1 text-base ${isFromCharges ? "cursor-default" : "cursor-pointer"}`}>
+                    <Label
+                      htmlFor={`svc-${s.id}`}
+                      className={`flex-1 text-base font-semibold ${isFromCharges ? "cursor-default" : "cursor-pointer"}`}
+                    >
                       {s.label_fr}
                       {s.is_custom && (
-                        <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">Personnalisé</span>
+                        <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-normal text-amber-700">
+                          Personnalisé
+                        </span>
                       )}
                       {isFromCharges && (
-                        <span className="ml-2 text-xs text-primary font-normal">(inclus dans les charges)</span>
+                        <span className="ml-2 text-xs font-normal text-primary">(inclus dans les charges)</span>
                       )}
                       {isDisabled && (
-                        <span className="ml-2 rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-700 font-medium">
-                          Temporairement indisponible
+                        <span className="ml-2 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
+                          Indisponible
                         </span>
                       )}
                     </Label>
 
                     {isIncluded && !isFromCharges && (
-                      <div className="flex items-center gap-3">
-                        <label className="flex items-center gap-1.5 text-sm whitespace-nowrap">
-                          <Checkbox
-                            checked={sel?.is_free === true}
-                            onCheckedChange={(v) =>
-                              updateSel(s.id, {
-                                is_free: !!v,
-                                optional: !!v ? false : sel.optional,
-                                price: !!v ? null : sel.price,
-                                price_unit: !!v ? null : sel.price_unit,
-                                lunch_price: !!v ? null : sel.lunch_price,
-                                dinner_price: !!v ? null : sel.dinner_price,
-                              })
-                            }
-                          />
+                      <div className="inline-flex rounded-full border border-green-600/40 p-0.5 bg-background">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateSel(s.id, {
+                              is_free: true,
+                              optional: false,
+                              price: null,
+                              price_unit: null,
+                              lunch_price: null,
+                              dinner_price: null,
+                            })
+                          }
+                          className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                            mode === "inclus"
+                              ? "bg-green-600 text-white"
+                              : "text-green-700 hover:bg-green-50"
+                          }`}
+                          aria-pressed={mode === "inclus"}
+                        >
                           Inclus
-                        </label>
-                        {!sel?.is_free && (
-                          <label className="flex items-center gap-1.5 text-sm whitespace-nowrap">
-                            <Checkbox
-                              checked={sel?.optional === true}
-                              onCheckedChange={(v) => updateSel(s.id, { optional: !!v })}
-                            />
-                            Optionnel
-                          </label>
-                        )}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateSel(s.id, { optional: true, is_free: false })
+                          }
+                          className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
+                            mode === "optionnel"
+                              ? "bg-green-600 text-white"
+                              : "text-green-700 hover:bg-green-50"
+                          }`}
+                          aria-pressed={mode === "optionnel"}
+                        >
+                          Optionnel
+                        </button>
                       </div>
                     )}
 
@@ -340,6 +368,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                                 checked={isAvailable}
                                 onCheckedChange={(v) => setAvailability(s.id, v)}
                                 aria-label={isAvailable ? "Marquer indisponible" : "Réactiver"}
+                                className="data-[state=checked]:bg-green-600"
                               />
                               <span className={isAvailable ? "text-foreground" : "text-orange-700"}>
                                 {isAvailable ? "Disponible" : "Indisponible"}
@@ -355,7 +384,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 ml-auto text-destructive/60 hover:text-destructive hover:bg-destructive/10"
+                        className="h-8 w-8 ml-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                         onClick={() => setDeleteTarget({ id: s.id, label: s.label_fr })}
                         aria-label="Supprimer définitivement ce service"
                         title="Supprimer définitivement"
@@ -365,6 +394,8 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                     )}
 
                   </div>
+
+
 
 
                   {isIncluded && !isFromCharges && sel?.optional && !sel?.is_free && (
