@@ -186,6 +186,11 @@ const App = () => (
                     path="/admin/demo"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminDemo /></AdminLayout></RequireAuth>}
                   />
+                  <Route
+                    path="/admin/utilisateurs"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminUsers /></AdminLayout></RequireAuth>}
+                  />
+
 
                   <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
                 </Routes>
