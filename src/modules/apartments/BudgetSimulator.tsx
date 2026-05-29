@@ -378,9 +378,9 @@ function FrequencyControls({
         >
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">1×/mois</SelectItem>
-            <SelectItem value="2">2×/mois</SelectItem>
-            <SelectItem value="4">4×/mois</SelectItem>
+            <SelectItem value="1">1 fois par mois</SelectItem>
+            <SelectItem value="2">2 fois par mois</SelectItem>
+            <SelectItem value="4">4 fois par mois</SelectItem>
           </SelectContent>
         </Select>
       </div>
