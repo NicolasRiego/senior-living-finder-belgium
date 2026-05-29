@@ -61,12 +61,8 @@ export function WizardSaveProvider({
     refresh();
   }, [refresh]);
 
-  const dirtySteps = useMemo(() => {
-    const s = new Set<string>();
-    handles.current.forEach((h, k) => { if (h.isDirty) s.add(k); });
-    return s;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handles.current.size, currentStep, isSaving, pending, handles.current]);
+  const dirtySteps = new Set<string>();
+  handles.current.forEach((h, k) => { if (h.isDirty) dirtySteps.add(k); });
 
   const currentIsDirty = dirtySteps.has(currentStep);
 
