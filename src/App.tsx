@@ -45,6 +45,8 @@ import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import AdminDeployHistory from "./pages/admin/AdminDeployHistory";
 import AdminDemo from "./pages/admin/AdminDemo";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminTickets from "./pages/admin/AdminTickets";
+import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
@@ -189,6 +191,14 @@ const App = () => (
                   <Route
                     path="/admin/utilisateurs"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminUsers /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/tickets"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminTickets /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/tickets/:id"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminTicketDetail /></AdminLayout></RequireAuth>}
                   />
 
 

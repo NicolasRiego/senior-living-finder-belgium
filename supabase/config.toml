@@ -1,1 +1,4 @@
 project_id = "hvanbqblpncgrfamugwz"
+
+[functions.notify-ticket-comment]
+verify_jwt = false
