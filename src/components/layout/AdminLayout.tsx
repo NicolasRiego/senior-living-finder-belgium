@@ -2,8 +2,6 @@ import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket, Database } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket, Database, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { APP_VERSION } from "@/lib/version";
@@ -19,8 +17,6 @@ const items = [
   { to: "/admin/demo", label: "Démo", icon: Database },
 ];
 
-  { to: "/admin/demo", label: "Démo", icon: Database },
-];
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
