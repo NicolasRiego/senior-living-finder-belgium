@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { useAutosave } from "../useAutosave";
+import { useRegisterWizardStep } from "@/modules/partner/WizardSaveContext";
 import { StepProps } from "@/pages/partner/ResidenceEditor";
 
 type BePostalCode = {
