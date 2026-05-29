@@ -160,9 +160,9 @@ export function BudgetSimulator({
       const units = unitsPerMonth(kind, sel);
       const total = Math.round(units * unitPrice);
       let detail = "";
-      if (kind === "meals") detail = `${sel.mealsPerDay}×/j × ${sel.daysPerWeek}j/sem`;
-      else if (kind === "perWeek" || kind === "sessionsWeek") detail = `${sel.perWeek}×/sem`;
-      else if (kind === "perMonth") detail = `${sel.perMonth}×/mois`;
+      if (kind === "meals") detail = `${sel.mealsPerDay} repas par jour × ${sel.daysPerWeek} jours par semaine`;
+      else if (kind === "perWeek" || kind === "sessionsWeek") detail = `${sel.perWeek} fois par semaine`;
+      else if (kind === "perMonth") detail = `${sel.perMonth} fois par mois`;
       items.push({
         key: s.id,
         label: s.service?.label_fr ?? code,
