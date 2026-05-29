@@ -11,6 +11,8 @@ import { StepProps } from "@/pages/partner/ResidenceEditor";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator,
 } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
+
 
 type Catalog = {
   id: string;
