@@ -133,14 +133,19 @@ export default function ApartmentDetailPage() {
                     {typeLabel}
                   </span>
                 )}
-                {showSale && (
+                {a.transaction_type === "sale" && (
                   <span className="badge-fixed rounded-full bg-success px-3 py-1 font-medium text-success-foreground shadow-soft">
                     À vendre
                   </span>
                 )}
-                {showRent && (
+                {a.transaction_type === "rent" && (
                   <span className="badge-fixed rounded-full bg-primary px-3 py-1 font-medium text-primary-foreground shadow-soft">
                     À louer
+                  </span>
+                )}
+                {a.transaction_type === "both" && (
+                  <span className="badge-fixed rounded-full bg-primary px-3 py-1 font-medium text-primary-foreground shadow-soft">
+                    À vendre ou à louer
                   </span>
                 )}
               </div>
@@ -236,6 +241,23 @@ export default function ApartmentDetailPage() {
               <div className="text-muted-foreground">Prix sur demande</div>
             )}
           </div>
+
+          {(() => {
+            const inCompare = hasApt(a.id);
+            return (
+              <Button
+                type="button"
+                variant={inCompare ? "soft" : "outline"}
+                disabled={!inCompare && isAptFull}
+                onClick={() => toggleApt(a.id)}
+                aria-pressed={inCompare}
+                className="w-full whitespace-normal py-3 px-4 h-auto leading-tight"
+              >
+                {inCompare ? <Check className="h-5 w-5 shrink-0" /> : <GitCompare className="h-5 w-5 shrink-0" />}
+                <span className="text-left">{inCompare ? "Dans le comparateur" : "Ajouter au comparateur"}</span>
+              </Button>
+            );
+          })()}
 
           <Button
             type="button"
