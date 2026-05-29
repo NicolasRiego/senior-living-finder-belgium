@@ -30,11 +30,12 @@ type SelRow = {
 type Selected = Record<string, SelRow>;
 
 const PERIODS = [
-  { value: "day", label: "Par jour", unit: "jour", max: 1 },
-  { value: "week", label: "Par semaine", unit: "semaine", max: 7 },
-  { value: "month", label: "Par mois", unit: "mois", max: 31 },
-  { value: "year", label: "Par an", unit: "an", max: 365 },
+  { value: "day", label: "/ jour", unit: "jour", max: 1 },
+  { value: "week", label: "/ sem.", unit: "semaine", max: 7 },
+  { value: "month", label: "/ mois", unit: "mois", max: 31 },
+  { value: "year", label: "/ an", unit: "an", max: 365 },
 ] as const;
+
 
 const DEFAULT_RESPONSABLES = [
   "Résidents",
