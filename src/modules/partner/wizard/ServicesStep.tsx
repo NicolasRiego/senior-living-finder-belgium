@@ -209,16 +209,18 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     toast.success(`Service "${(data as any).label_fr}" créé.`);
   };
 
-  const softDeleteService = async (serviceId: string, label: string) => {
+  const hardDeleteService = async (serviceId: string, label: string) => {
     const { error } = await supabase
       .from("residence_services")
-      .update({ deleted_at: new Date().toISOString() } as any)
+      .delete()
       .eq("residence_id", residence.id)
       .eq("service_id", serviceId);
     if (error) { toast.error(error.message); return; }
     setSelected((prev) => { const next = { ...prev }; delete next[serviceId]; return next; });
-    toast.success(`Service "${label}" supprimé.`);
+    setCatalog((prev) => prev.filter((c) => c.id !== serviceId));
+    toast.success(`Service "${label}" supprimé définitivement.`);
   };
+
 
   if (loading) return <Card><CardContent className="py-8 text-muted-foreground">Chargement…</CardContent></Card>;
 
@@ -349,17 +351,19 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       </TooltipProvider>
                     )}
 
-                    {s.is_custom && !isFromCharges && isIncluded && (
+                    {!isFromCharges && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        className="h-8 w-8 ml-auto text-destructive/60 hover:text-destructive hover:bg-destructive/10"
                         onClick={() => setDeleteTarget({ id: s.id, label: s.label_fr })}
-                        aria-label="Supprimer ce service"
+                        aria-label="Supprimer définitivement ce service"
+                        title="Supprimer définitivement"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
+
                   </div>
 
 
@@ -513,9 +517,9 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer ce service ?</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer définitivement ce service ?</AlertDialogTitle>
             <AlertDialogDescription>
-              {deleteTarget ? `« ${deleteTarget.label} » ne sera plus visible sur votre fiche publique.` : ""}
+              {deleteTarget ? `« ${deleteTarget.label} » sera supprimé. Cette action est irréversible.` : ""}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -523,15 +527,16 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
-                if (deleteTarget) softDeleteService(deleteTarget.id, deleteTarget.label);
+                if (deleteTarget) hardDeleteService(deleteTarget.id, deleteTarget.label);
                 setDeleteTarget(null);
               }}
             >
-              Supprimer
+              Supprimer définitivement
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
     </Card>
   );
 }
