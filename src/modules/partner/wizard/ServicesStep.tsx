@@ -262,15 +262,21 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
               const sel = selected[s.id];
               const isFromCharges = sel?.from_charges === true;
               const isIncluded = !!sel?.included;
+              const isAvailable = sel?.is_available !== false;
+              const isDisabled = isIncluded && !isFromCharges && !isAvailable;
               const restaurantService = isRestaurant(s.label_fr);
               return (
                 <div
                   key={s.id}
                   className={`p-3 rounded-lg border transition-colors ${
-                    isFromCharges ? "border-primary/30 bg-primary/5" : "border-border"
+                    isFromCharges
+                      ? "border-primary/30 bg-primary/5"
+                      : isDisabled
+                        ? "border-orange-300 bg-muted/40 opacity-60"
+                        : "border-border"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <Checkbox
                       checked={isIncluded || isFromCharges}
                       onCheckedChange={(v) => !isFromCharges && toggle(s.id, !!v)}
@@ -285,6 +291,11 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       )}
                       {isFromCharges && (
                         <span className="ml-2 text-xs text-primary font-normal">(inclus dans les charges)</span>
+                      )}
+                      {isDisabled && (
+                        <span className="ml-2 rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-700 font-medium">
+                          Temporairement indisponible
+                        </span>
                       )}
                     </Label>
 
@@ -318,22 +329,39 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       </div>
                     )}
 
-                    {s.is_custom && !isFromCharges && (
+                    {isIncluded && !isFromCharges && (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <label className="flex items-center gap-2 text-sm whitespace-nowrap cursor-pointer">
+                              <Switch
+                                checked={isAvailable}
+                                onCheckedChange={(v) => setAvailability(s.id, v)}
+                                aria-label={isAvailable ? "Marquer indisponible" : "Réactiver"}
+                              />
+                              <span className={isAvailable ? "text-foreground" : "text-orange-700"}>
+                                {isAvailable ? "Disponible" : "Indisponible"}
+                              </span>
+                            </label>
+                          </TooltipTrigger>
+                          <TooltipContent>Masquer temporairement ce service sans le supprimer</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+
+                    {s.is_custom && !isFromCharges && isIncluded && (
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => {
-                          if (confirm(`Supprimer le service "${s.label_fr}" ?`)) {
-                            deleteCustomService(s.id, s.label_fr);
-                          }
-                        }}
-                        aria-label="Supprimer ce service personnalisé"
+                        onClick={() => setDeleteTarget({ id: s.id, label: s.label_fr })}
+                        aria-label="Supprimer ce service"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
+
 
                   {isIncluded && !isFromCharges && sel?.optional && !sel?.is_free && (
                     <div className="mt-3 pl-8 space-y-3">
