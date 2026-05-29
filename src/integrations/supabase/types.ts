@@ -1180,10 +1180,12 @@ export type Database = {
           comment_fr: string | null
           comment_nl: string | null
           created_at: string
+          deleted_at: string | null
           dinner_price: number | null
           from_charges: boolean
           id: string
           included: boolean
+          is_available: boolean
           is_free: boolean
           lunch_price: number | null
           optional: boolean
@@ -1198,10 +1200,12 @@ export type Database = {
           comment_fr?: string | null
           comment_nl?: string | null
           created_at?: string
+          deleted_at?: string | null
           dinner_price?: number | null
           from_charges?: boolean
           id?: string
           included?: boolean
+          is_available?: boolean
           is_free?: boolean
           lunch_price?: number | null
           optional?: boolean
@@ -1216,10 +1220,12 @@ export type Database = {
           comment_fr?: string | null
           comment_nl?: string | null
           created_at?: string
+          deleted_at?: string | null
           dinner_price?: number | null
           from_charges?: boolean
           id?: string
           included?: boolean
+          is_available?: boolean
           is_free?: boolean
           lunch_price?: number | null
           optional?: boolean

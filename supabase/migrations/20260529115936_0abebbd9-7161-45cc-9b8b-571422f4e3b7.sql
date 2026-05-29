@@ -1,0 +1,3 @@
+ALTER TABLE public.residence_services
+  ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS is_available BOOLEAN NOT NULL DEFAULT true;

@@ -4,7 +4,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +47,7 @@ type SelectedItem = {
   charges_label: string | null;
   lunch_price: number | null;
   dinner_price: number | null;
+  is_available: boolean;
 };
 type Selected = Record<string, SelectedItem>;
 type Charge = { id: string; label: string; amount: number };
@@ -59,6 +66,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
   const [newServiceLabel, setNewServiceLabel] = useState("");
   const [newServiceCategory, setNewServiceCategory] = useState("Autres");
   const [creatingService, setCreatingService] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -68,7 +76,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
         .select("id,code,label_fr,category,is_custom")
         .or(`is_custom.eq.false,created_by_residence.eq.${residence.id}`)
         .order("category"),
-      supabase.from("residence_services").select("*").eq("residence_id", residence.id),
+      supabase.from("residence_services").select("*").eq("residence_id", residence.id).is("deleted_at", null),
       supabase
         .from("residence_charges")
         .select("*")
@@ -90,6 +98,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
         charges_label: s.charges_label ?? null,
         lunch_price: s.lunch_price ?? null,
         dinner_price: s.dinner_price ?? null,
+        is_available: s.is_available ?? true,
       };
     });
     setSelected(map);
@@ -116,6 +125,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
         charges_label: v.charges_label,
         lunch_price: v.is_free ? null : v.lunch_price,
         dinner_price: v.is_free ? null : v.dinner_price,
+        is_available: v.is_available,
       } as any, { onConflict: "residence_id,service_id" as any });
       if (error) errorCount++;
     }
@@ -140,9 +150,24 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
       [sid]: {
         included: true, optional: false, price: null, price_unit: null,
         is_free: false, from_charges: false, charges_label: null,
-        lunch_price: null, dinner_price: null,
+        lunch_price: null, dinner_price: null, is_available: true,
       },
     }));
+  };
+
+  const setAvailability = async (sid: string, available: boolean) => {
+    setSelected((s) => s[sid] ? { ...s, [sid]: { ...s[sid], is_available: available } } : s);
+    const { error } = await supabase
+      .from("residence_services")
+      .update({ is_available: available } as any)
+      .eq("residence_id", residence.id)
+      .eq("service_id", sid);
+    if (error) {
+      toast.error("Erreur lors de la mise à jour");
+      setSelected((s) => s[sid] ? { ...s, [sid]: { ...s[sid], is_available: !available } } : s);
+    } else {
+      toast.success(available ? "Service réactivé" : "Service marqué indisponible");
+    }
   };
 
   const createCustomService = async () => {
@@ -169,14 +194,14 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     await supabase.from("residence_services").upsert({
       residence_id: residence.id, service_id: (data as any).id,
       included: true, optional: false, price: null, price_unit: null,
-      is_free: false, from_charges: false,
+      is_free: false, from_charges: false, is_available: true,
     } as any, { onConflict: "residence_id,service_id" as any });
     setSelected((prev) => ({
       ...prev,
       [(data as any).id]: {
         included: true, optional: false, price: null, price_unit: null,
         is_free: false, from_charges: false, charges_label: null,
-        lunch_price: null, dinner_price: null,
+        lunch_price: null, dinner_price: null, is_available: true,
       },
     }));
     setNewServiceLabel("");
@@ -184,10 +209,13 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     toast.success(`Service "${(data as any).label_fr}" créé.`);
   };
 
-  const deleteCustomService = async (serviceId: string, label: string) => {
-    await supabase.from("residence_services").delete().eq("residence_id", residence.id).eq("service_id", serviceId);
-    await supabase.from("services_catalog").delete().eq("id", serviceId);
-    setCatalog((prev) => prev.filter((c) => c.id !== serviceId));
+  const softDeleteService = async (serviceId: string, label: string) => {
+    const { error } = await supabase
+      .from("residence_services")
+      .update({ deleted_at: new Date().toISOString() } as any)
+      .eq("residence_id", residence.id)
+      .eq("service_id", serviceId);
+    if (error) { toast.error(error.message); return; }
     setSelected((prev) => { const next = { ...prev }; delete next[serviceId]; return next; });
     toast.success(`Service "${label}" supprimé.`);
   };
@@ -234,15 +262,21 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
               const sel = selected[s.id];
               const isFromCharges = sel?.from_charges === true;
               const isIncluded = !!sel?.included;
+              const isAvailable = sel?.is_available !== false;
+              const isDisabled = isIncluded && !isFromCharges && !isAvailable;
               const restaurantService = isRestaurant(s.label_fr);
               return (
                 <div
                   key={s.id}
                   className={`p-3 rounded-lg border transition-colors ${
-                    isFromCharges ? "border-primary/30 bg-primary/5" : "border-border"
+                    isFromCharges
+                      ? "border-primary/30 bg-primary/5"
+                      : isDisabled
+                        ? "border-orange-300 bg-muted/40 opacity-60"
+                        : "border-border"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <Checkbox
                       checked={isIncluded || isFromCharges}
                       onCheckedChange={(v) => !isFromCharges && toggle(s.id, !!v)}
@@ -257,6 +291,11 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       )}
                       {isFromCharges && (
                         <span className="ml-2 text-xs text-primary font-normal">(inclus dans les charges)</span>
+                      )}
+                      {isDisabled && (
+                        <span className="ml-2 rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-700 font-medium">
+                          Temporairement indisponible
+                        </span>
                       )}
                     </Label>
 
@@ -290,22 +329,39 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       </div>
                     )}
 
-                    {s.is_custom && !isFromCharges && (
+                    {isIncluded && !isFromCharges && (
+                      <TooltipProvider delayDuration={200}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <label className="flex items-center gap-2 text-sm whitespace-nowrap cursor-pointer">
+                              <Switch
+                                checked={isAvailable}
+                                onCheckedChange={(v) => setAvailability(s.id, v)}
+                                aria-label={isAvailable ? "Marquer indisponible" : "Réactiver"}
+                              />
+                              <span className={isAvailable ? "text-foreground" : "text-orange-700"}>
+                                {isAvailable ? "Disponible" : "Indisponible"}
+                              </span>
+                            </label>
+                          </TooltipTrigger>
+                          <TooltipContent>Masquer temporairement ce service sans le supprimer</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+
+                    {s.is_custom && !isFromCharges && isIncluded && (
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => {
-                          if (confirm(`Supprimer le service "${s.label_fr}" ?`)) {
-                            deleteCustomService(s.id, s.label_fr);
-                          }
-                        }}
-                        aria-label="Supprimer ce service personnalisé"
+                        onClick={() => setDeleteTarget({ id: s.id, label: s.label_fr })}
+                        aria-label="Supprimer ce service"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
+
 
                   {isIncluded && !isFromCharges && sel?.optional && !sel?.is_free && (
                     <div className="mt-3 pl-8 space-y-3">
@@ -453,6 +509,29 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
           </Button>
         </div>
       </CardContent>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce service ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget ? `« ${deleteTarget.label} » ne sera plus visible sur votre fiche publique.` : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteTarget) softDeleteService(deleteTarget.id, deleteTarget.label);
+                setDeleteTarget(null);
+              }}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
