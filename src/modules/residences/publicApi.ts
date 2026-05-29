@@ -32,6 +32,7 @@ export type SearchFilters = {
   ville?: string;
   type_etablissement?: string;
   budget_max?: number;
+  budget_min?: number;
   services?: string[]; // service codes that must be included
   pmr?: boolean;
   complete?: boolean;
