@@ -1,70 +1,87 @@
-## Plan: refonte header admin + module tickets
+## Objectif
 
-### 1. Header admin réorganisé
-- Refondre `src/components/layout/AdminLayout.tsx` :
-  - Gauche : logo "Admin" (lien `/admin`), dropdown **Contenu** (Validation, Résidences, Utilisateurs), dropdown **Système** (Journal, Déploiements, Démo), lien **Tickets**, lien **Site public**.
-  - Droite : dropdown **Mon espace** (Espace partenaire, Espace utilisateur), bouton icône **Déconnexion**.
-- Dropdowns 100 % contrôlés en React (`useState`), click-to-toggle, fermeture sur clic extérieur (`useRef` + listener), `z-[9999]`. Jamais liés au scroll.
-- Adaptation responsive : burger menu avec mêmes regroupements en mobile.
+Remplacer l'autosave par une sauvegarde explicite dans l'éditeur de résidence partenaire, avec indicateurs visuels et garde de navigation pour les modifications non enregistrées.
 
-### 2. Base de données (migration Lovable Cloud)
-Tables (schéma `public`, RLS admin uniquement) :
-- `admin_tickets` : `id`, `title`, `description`, `status` (enum `a_reflechir|a_faire|en_cours|resolu`), `priority` (enum `faible|moderee|importante`), `deadline date`, `screenshots text[]`, `created_by uuid`, `created_at`, `updated_at`.
-- `admin_ticket_comments` : `id`, `ticket_id`, `author_id`, `content`, `created_at`.
-- `admin_ticket_participants` : `id`, `ticket_id`, `user_id`, `unique(ticket_id, user_id)`.
-- Trigger auto-ajout participant à la création d'un ticket et à chaque commentaire.
-- Trigger `updated_at`.
-- GRANTs + RLS : lecture/écriture réservée aux admins (`is_admin(auth.uid())`), suppression de commentaires par auteur ou super admin.
-- Bucket Storage `ticket-screenshots` (public en lecture, écriture admins).
-- Realtime activé sur les 3 tables.
+## Approche
 
-### 3. Edge Function `notify-ticket-comment`
-- Déclenchée par webhook DB sur INSERT `admin_ticket_comments`.
-- Récupère ticket, participants (sauf auteur du commentaire), emails via `auth.users`.
-- Anti-spam : table `admin_ticket_email_batches` (ticket_id, user_id, last_sent_at, pending_comment_ids). Si dernier envoi < 15 min → ajout au lot, planification d'un envoi différé via `pg_cron` ou check à l'envoi suivant. Implémentation simple : si un envoi a eu lieu il y a moins de 15 min pour ce user/ticket, on stocke le commentaire en attente ; une fonction cron toutes les 5 min vide les lots en attente.
-- Envoi via Resend (connector déjà disponible ? sinon utiliser Lovable Emails).
-- Sujet : `💬 Nouvelle réponse sur le ticket: <title>`, corps HTML avec lien direct et lien unsubscribe.
+Centraliser la gestion de l'état "modifié / propre" dans un **contexte React partagé** (`WizardSaveContext`). Chaque étape s'enregistre auprès du contexte en exposant : son état "modifié", sa fonction de sauvegarde, et sa fonction de réinitialisation. La coquille `ResidenceEditor` gère ensuite de manière centralisée :
 
-### 4. Page liste `/admin/tickets`
-- Kanban 4 colonnes (drag-and-drop pour changer statut via `@dnd-kit` déjà ou simple update sur drop).
-- Carte : titre, badge priorité (couleurs), deadline, nb commentaires, miniature 1er screenshot, avatars participants, indicateur non-lu (compare `last_visited_at` stocké en localStorage par ticket).
-- Barre de filtres : priorité, statut, créateur.
-- Bouton "+ Nouveau ticket" → modal.
+- Le bouton "Enregistrer les modifications" en bas de chaque étape
+- Le point orange dans la barre latérale
+- La modale d'avertissement à la navigation
+- L'avertissement avant rechargement du navigateur
 
-### 5. Modal création/édition ticket
-- Champs : titre, description (textarea), priorité (boutons colorés), statut, deadline (`<input type="date">`), upload screenshots (max 3, vers bucket `ticket-screenshots`, preview + suppression).
-- Save / Cancel.
+## Périmètre par étape
 
-### 6. Page détail `/admin/tickets/:id`
-- Affichage complet, boutons Éditer (créateur ou super admin) et Supprimer (super admin, avec confirmation).
-- Toggle 🔔 Suivre/Ne plus suivre (insert/delete dans participants).
-- Section commentaires : liste threadée (avatar + nom + date + contenu), suppression par auteur, input de réponse, compteur "X participants suivent".
+L'application a deux types d'étapes :
 
-### 7. Routage
-- Ajouter dans `src/App.tsx` :
-  - `/admin/tickets` → `AdminTickets`
-  - `/admin/tickets/:id` → `AdminTicketDetail`
-- Ajouter "Tickets" dans la nav admin.
+**Étapes "formulaire" (champs texte → 1 sauvegarde groupée)**
+Conversion complète vers le nouveau modèle (suppression d'`useAutosave`, ajout d'enregistrement au contexte, sauvegarde explicite) :
+- Étape 1 — Général
+- Étape 2 — Adresse
+- Étape 8 — Contact
 
-### 8. Route unsubscribe
-- Edge function `ticket-unsubscribe` (ou route React `/admin/tickets/:id/unsubscribe?token=…`) qui supprime le participant.
-- Token signé HMAC simple (secret) pour éviter unsubscribe non autorisé.
+**Étapes "opérationnelles" (chaque action = écriture immédiate déjà existante)**
+Ces étapes contiennent de multiples sous-actions atomiques (ajouter une chambre, uploader une photo, supprimer un service, etc.) qui s'enregistrent déjà immédiatement en base. Elles s'inscrivent au contexte comme "jamais modifiées" — le bouton global reste désactivé avec un message *"Les modifications de cette étape sont enregistrées automatiquement à chaque action"*. C'est la seule façon raisonnable de ne pas casser les flux existants (suppression de services, toggle de disponibilité, upload de photos, etc.) ajoutés récemment :
+- Étape 3 — Logements (déjà lecture seule)
+- Étape 4 — Tarifs
+- Étape 5 — Services
+- Étape 6 — Activités
+- Étape 7 — Photos
+- Étape 9 — Validation
 
-### Détails techniques
-- Architecture respectant la règle "fichiers < 200 lignes" → découpage :
-  - `src/modules/tickets/types.ts`
-  - `src/modules/tickets/ticketsApi.ts`
-  - `src/modules/tickets/TicketCard.tsx`
-  - `src/modules/tickets/TicketColumn.tsx`
-  - `src/modules/tickets/TicketModal.tsx`
-  - `src/modules/tickets/TicketComments.tsx`
-  - `src/modules/tickets/useTickets.ts`
-  - `src/pages/admin/AdminTickets.tsx`
-  - `src/pages/admin/AdminTicketDetail.tsx`
-  - `src/components/layout/admin/AdminHeaderNav.tsx` (dropdowns contrôlés)
-- Realtime Supabase pour mise à jour live du kanban et des commentaires.
+> ⚠️ Si tu souhaites vraiment imposer la sauvegarde explicite *aussi* aux étapes opérationnelles, c'est une réécriture en profondeur de chacune (suivi de diff par ligne, annulation, etc.) que je propose de traiter dans un second temps, étape par étape.
 
-### Question avant exécution
-- **Emails** : tu préfères que j'utilise **Lovable Emails** (intégré, zéro config, recommandé) ou **Resend** (tu l'as mentionné explicitement, nécessitera de connecter le connector Resend et fournir une clé) ?
+## Détails techniques
 
-Réponds-moi sur ce point et je lance toute la suite (migration, edge function, UI) d'un bloc.
+### Nouveau fichier : `src/modules/partner/WizardSaveContext.tsx`
+
+```ts
+type StepHandle = { isDirty: boolean; save: () => Promise<void>; reset: () => void };
+type Ctx = {
+  register: (key: string, handle: StepHandle) => () => void;
+  dirtySteps: Set<string>;
+  currentStep: string;
+  setCurrentStep: (k: string) => void;
+  saveCurrent: () => Promise<boolean>;
+  guardNavigation: (next: () => void) => void;
+};
+```
+
+Hook `useRegisterWizardStep(key, { isDirty, save, reset })` qui ré-enregistre à chaque changement de `isDirty`/`save`.
+
+### `ResidenceEditor.tsx`
+
+- Enveloppe dans `<WizardSaveProvider>`.
+- Sidebar : point orange à droite du label si `dirtySteps.has(stepKey)`.
+- Bouton **"Enregistrer les modifications"** affiché sous la zone d'étape, désactivé si l'étape courante n'est pas modifiée.
+- Boutons Précédent/Suivant + clics sidebar → passent par `guardNavigation`.
+- Modale `AlertDialog` à 3 boutons (Enregistrer / Ignorer / Rester).
+- `window.beforeunload` actif tant que `dirtySteps.size > 0`.
+- Suppression de `AutosaveBadge` (remplacé par un compteur "X modification(s) non enregistrée(s)" si pertinent).
+
+### Étapes formulaire (Général / Adresse / Contact)
+
+- Conserver `local` state, supprimer `useAutosave`.
+- Calculer `isDirty` par comparaison `local` vs valeurs initiales (snapshot mémorisé via `useRef`).
+- Exposer `save()` qui fait l'`update` Supabase, met à jour le snapshot, appelle `onChange(local)`.
+- Exposer `reset()` qui ré-applique le snapshot.
+- Toast succès/erreur géré centralement dans `saveCurrent` du contexte.
+
+### Étapes opérationnelles
+
+Une seule ligne en haut :
+```tsx
+useRegisterWizardStep("services", { isDirty: false, save: async () => {}, reset: () => {} });
+```
+Plus une note `text-muted-foreground` *"Chaque modification est enregistrée immédiatement."* sous le titre.
+
+## Risques / points d'attention
+
+- L'autosave existant dans Général/Adresse/Contact disparaît : un partenaire qui ferme l'onglet sans cliquer "Enregistrer" perdra ses changements (mitigation : `beforeunload` + modale).
+- Les étapes opérationnelles continuent de sauvegarder à chaque action (comportement actuel). Le point orange n'apparaîtra pas pour elles.
+- `useAutosave` reste dans le code (utilisé seulement par les étapes formulaire avant migration) — je le retire des 3 fichiers concernés mais ne supprime pas le fichier au cas où.
+
+## Confirmation demandée
+
+Avant d'implémenter : OK pour ce périmètre (sauvegarde explicite uniquement sur les 3 étapes formulaire, étapes opérationnelles restent en sauvegarde immédiate par action) ? Ou veux-tu que je convertisse aussi une étape opérationnelle spécifique en priorité ?
