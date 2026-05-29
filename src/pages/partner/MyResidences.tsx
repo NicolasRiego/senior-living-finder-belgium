@@ -310,80 +310,26 @@ export default function MyResidences() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {active.map((r) => {
-            const meta = statusLabel[r.status] ?? statusLabel.draft;
-            return (
-              <Card
-                key={r.id}
-                id={`residence-${r.id}`}
-                className={cn(
-                  "scroll-mt-24",
-                  highlightedId === r.id &&
-                    "ring-2 ring-primary ring-offset-2 transition-all",
-                )}
-              >
-                <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                  <div>
-                    <CardTitle className="text-xl">
-                      <Link
-                        to={`/partenaire/residences/${r.id}/edition`}
-                        className="hover:underline"
-                      >
-                        {r.nom_fr}
-                      </Link>
-                    </CardTitle>
-                    <p className="text-muted-foreground mt-1">
-                      {r.ville ?? "Ville non renseignée"} ·{" "}
-                      {r.type_etablissement.replace(/_/g, " ")}
-                    </p>
-                  </div>
-                  <Badge variant={meta.variant}>{meta.label}</Badge>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Complétude</span>
-                      <span className="font-semibold">{r.completeness}%</span>
-                    </div>
-                    <Progress value={r.completeness} />
-                  </div>
-
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Home className="h-4 w-4" />
-                    {r.apartments_count} appartement
-                    {r.apartments_count > 1 ? "s" : ""}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/partenaire/residences/${r.id}/edition`}>
-                        Éditer
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/partenaire/residences/${r.id}/appartements`}>
-                        <Home className="h-4 w-4 mr-2" /> Gérer les appartements
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/partenaire/residences/${r.id}/preview`}>
-                        <Eye className="h-4 w-4 mr-2" /> Aperçu
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => setDeleteTarget(r)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" /> Supprimer
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="space-y-6">
+          {pinned.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                <Pin className="h-4 w-4 fill-current text-green-600" />
+                Résidences épinglées
+              </h2>
+              <div className="grid gap-4">{pinned.map(renderCard)}</div>
+            </section>
+          )}
+          {unpinned.length > 0 && (
+            <section className="space-y-3">
+              {pinned.length > 0 && (
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Autres résidences
+                </h2>
+              )}
+              <div className="grid gap-4">{unpinned.map(renderCard)}</div>
+            </section>
+          )}
         </div>
       )}
 
