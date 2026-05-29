@@ -22,6 +22,7 @@ import {
   Home,
   Eye,
   Trash2,
+  Pin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,8 @@ type Row = {
   updated_at: string;
   completeness: number;
   apartments_count: number;
+  is_pinned: boolean;
+  pinned_at: string | null;
 };
 
 const statusLabel: Record<
