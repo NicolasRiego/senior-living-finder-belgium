@@ -37,6 +37,13 @@ function urlToTx(v: string | null): TxFilter {
 export default function ApartmentsPage() {
   const [sp, setSp] = useSearchParams();
 
+  const SALE_MIN = 0;
+  const SALE_MAX = 800000;
+  const RENT_MIN = 0;
+  const RENT_MAX = 5000;
+  const [saleRange, setSaleRange] = useState<[number, number]>([SALE_MIN, SALE_MAX]);
+  const [rentRange, setRentRange] = useState<[number, number]>([RENT_MIN, RENT_MAX]);
+
   const filters: ApartmentFilters = useMemo(() => {
     const tx = urlToTx(sp.get("type"));
     const residencesParam = sp.get("residences");
@@ -48,8 +55,10 @@ export default function ApartmentsPage() {
       code_postal: sp.get("cp") || undefined,
       type: (sp.get("aptType") as ApartmentType) || undefined,
       surface_min: sp.get("surface") ? Number(sp.get("surface")) : undefined,
-      sale_max: sp.get("saleMax") ? Number(sp.get("saleMax")) : undefined,
-      rent_max: sp.get("rentMax") ? Number(sp.get("rentMax")) : undefined,
+      sale_min: saleRange[0] > SALE_MIN ? saleRange[0] : undefined,
+      sale_max: saleRange[1] < SALE_MAX ? saleRange[1] : undefined,
+      rent_min: rentRange[0] > RENT_MIN ? rentRange[0] : undefined,
+      rent_max: rentRange[1] < RENT_MAX ? rentRange[1] : undefined,
       residence_ids: residencesParam ? residencesParam.split(",").filter(Boolean) : undefined,
       sort: sortParam && validSorts.includes(sortParam) ? sortParam : "price_asc",
       page: sp.get("page") ? Number(sp.get("page")) : 1,
@@ -59,7 +68,7 @@ export default function ApartmentsPage() {
       if (sp.get(k) === "1") (f as Record<string, unknown>)[k] = true;
     }
     return f;
-  }, [sp]);
+  }, [sp, saleRange, rentRange]);
 
   const updateParam = (patch: Record<string, string | number | boolean | null | undefined>) => {
     const next = new URLSearchParams(sp);
