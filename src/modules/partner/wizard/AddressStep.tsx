@@ -378,12 +378,14 @@ function AutocompleteField({
   onPick: (v: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
         setOpen(false);
+        setIsTyping(false);
       }
     };
     document.addEventListener("mousedown", onClick);
@@ -392,9 +394,12 @@ function AutocompleteField({
 
   const q = normalize(value);
   const filtered = useMemo(() => {
-    const list = q.length >= 2 ? options.filter((o) => normalize(o).includes(q)) : options;
-    return list.slice(0, 10);
-  }, [options, q]);
+    const list =
+      isTyping && q.length >= 1
+        ? options.filter((o) => normalize(o).includes(q))
+        : options;
+    return list.slice(0, 50);
+  }, [options, q, isTyping]);
 
   return (
     <div className="space-y-2" ref={wrapRef}>
@@ -406,9 +411,17 @@ function AutocompleteField({
           value={value}
           onChange={(e) => {
             onManualChange(e.target.value);
+            setIsTyping(true);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setIsTyping(false);
+            setOpen(true);
+          }}
+          onClick={() => {
+            setIsTyping(false);
+            setOpen(true);
+          }}
           placeholder={placeholder}
           autoComplete="off"
           className={cn(
@@ -422,10 +435,14 @@ function AutocompleteField({
               <button
                 key={opt}
                 type="button"
-                className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted"
+                className={cn(
+                  "w-full px-4 py-2.5 text-left text-sm hover:bg-muted",
+                  opt === value && "bg-muted font-semibold",
+                )}
                 onClick={() => {
                   onPick(opt);
                   setOpen(false);
+                  setIsTyping(false);
                 }}
               >
                 {opt}
@@ -456,12 +473,14 @@ function PostalCodeField({
   onPick: (r: Row) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
         setOpen(false);
+        setIsTyping(false);
       }
     };
     document.addEventListener("mousedown", onClick);
@@ -473,7 +492,7 @@ function PostalCodeField({
     // If filtered rows are constrained (commune chosen), show those; otherwise search across all
     const base = rows.length > 0 && rows.length < allRows.length ? rows : allRows;
     const list =
-      q.length >= 1
+      isTyping && q.length >= 1
         ? base.filter(
             (r) =>
               r.code_postal.startsWith(q) ||
@@ -481,8 +500,8 @@ function PostalCodeField({
               normalize(r.ville_fr).includes(q),
           )
         : base;
-    return uniqBy(list, (r) => r.code_postal + "|" + r.commune_fr).slice(0, 10);
-  }, [rows, allRows, q]);
+    return uniqBy(list, (r) => r.code_postal + "|" + r.commune_fr).slice(0, 50);
+  }, [rows, allRows, q, isTyping]);
 
   return (
     <div className="space-y-2" ref={wrapRef}>
@@ -494,9 +513,17 @@ function PostalCodeField({
           value={value}
           onChange={(e) => {
             onManualChange(e.target.value);
+            setIsTyping(true);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setIsTyping(false);
+            setOpen(true);
+          }}
+          onClick={() => {
+            setIsTyping(false);
+            setOpen(true);
+          }}
           placeholder="ex. 1180"
           autoComplete="off"
           className={cn(
@@ -510,10 +537,14 @@ function PostalCodeField({
               <button
                 key={r.code_postal + r.commune_fr}
                 type="button"
-                className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted flex justify-between items-center"
+                className={cn(
+                  "w-full px-4 py-2.5 text-left text-sm hover:bg-muted flex justify-between items-center",
+                  r.code_postal === value && "bg-muted font-semibold",
+                )}
                 onClick={() => {
                   onPick(r);
                   setOpen(false);
+                  setIsTyping(false);
                 }}
               >
                 <span>
