@@ -1349,12 +1349,14 @@ export type Database = {
           description_nl: string | null
           id: string
           is_demo: boolean
+          is_pinned: boolean
           latitude: number | null
           longitude: number | null
           nom_fr: string
           nom_nl: string | null
           org_id: string
           pays: string
+          pinned_at: string | null
           pmr_accessible: boolean
           province: string | null
           proximity: Json
@@ -1386,12 +1388,14 @@ export type Database = {
           description_nl?: string | null
           id?: string
           is_demo?: boolean
+          is_pinned?: boolean
           latitude?: number | null
           longitude?: number | null
           nom_fr: string
           nom_nl?: string | null
           org_id: string
           pays?: string
+          pinned_at?: string | null
           pmr_accessible?: boolean
           province?: string | null
           proximity?: Json
@@ -1423,12 +1427,14 @@ export type Database = {
           description_nl?: string | null
           id?: string
           is_demo?: boolean
+          is_pinned?: boolean
           latitude?: number | null
           longitude?: number | null
           nom_fr?: string
           nom_nl?: string | null
           org_id?: string
           pays?: string
+          pinned_at?: string | null
           pmr_accessible?: boolean
           province?: string | null
           proximity?: Json

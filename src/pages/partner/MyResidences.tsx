@@ -22,6 +22,7 @@ import {
   Home,
   Eye,
   Trash2,
+  Pin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,8 @@ type Row = {
   updated_at: string;
   completeness: number;
   apartments_count: number;
+  is_pinned: boolean;
+  pinned_at: string | null;
 };
 
 const statusLabel: Record<
@@ -62,7 +65,7 @@ export default function MyResidences() {
     setLoading(true);
     const { data, error } = await supabase
       .from("residences")
-      .select("id, nom_fr, status, ville, type_etablissement, org_id, updated_at")
+      .select("id, nom_fr, status, ville, type_etablissement, org_id, updated_at, is_pinned, pinned_at")
       .in("org_id", orgIds.length ? orgIds : ["00000000-0000-0000-0000-000000000000"])
       .order("updated_at", { ascending: false });
     if (error) toast.error(error.message);
@@ -154,7 +157,130 @@ export default function MyResidences() {
     load();
   };
 
+  const togglePin = async (r: Row) => {
+    const next = !r.is_pinned;
+    const nextAt = next ? new Date().toISOString() : null;
+    setRows((prev) =>
+      prev.map((x) =>
+        x.id === r.id ? { ...x, is_pinned: next, pinned_at: nextAt } : x,
+      ),
+    );
+    const { error } = await supabase
+      .from("residences")
+      .update({ is_pinned: next, pinned_at: nextAt })
+      .eq("id", r.id);
+    if (error) {
+      toast.error(error.message);
+      setRows((prev) =>
+        prev.map((x) =>
+          x.id === r.id
+            ? { ...x, is_pinned: r.is_pinned, pinned_at: r.pinned_at }
+            : x,
+        ),
+      );
+    }
+  };
+
   const active = rows.filter((r) => r.status !== "archived");
+  const sorted = [...active].sort((a, b) => {
+    if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+    if (a.is_pinned && b.is_pinned) {
+      return (b.pinned_at ?? "").localeCompare(a.pinned_at ?? "");
+    }
+    return (b.updated_at ?? "").localeCompare(a.updated_at ?? "");
+  });
+  const pinned = sorted.filter((r) => r.is_pinned);
+  const unpinned = sorted.filter((r) => !r.is_pinned);
+
+  const renderCard = (r: Row) => {
+    const meta = statusLabel[r.status] ?? statusLabel.draft;
+    return (
+      <Card
+        key={r.id}
+        id={`residence-${r.id}`}
+        className={cn(
+          "scroll-mt-24",
+          r.is_pinned && "border-l-4 border-l-green-600 bg-green-50/40",
+          highlightedId === r.id &&
+            "ring-2 ring-primary ring-offset-2 transition-all",
+        )}
+      >
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 gap-3">
+          <div className="min-w-0">
+            <CardTitle className="text-xl">
+              <Link
+                to={`/partenaire/residences/${r.id}/edition`}
+                className="hover:underline"
+              >
+                {r.nom_fr}
+              </Link>
+            </CardTitle>
+            <p className="text-muted-foreground mt-1">
+              {r.ville ?? "Ville non renseignée"} ·{" "}
+              {r.type_etablissement.replace(/_/g, " ")}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              type="button"
+              size="sm"
+              variant={r.is_pinned ? "default" : "outline"}
+              onClick={() => togglePin(r)}
+              className={cn(
+                r.is_pinned &&
+                  "bg-green-600 hover:bg-green-700 text-white border-green-600",
+              )}
+              aria-pressed={r.is_pinned}
+              aria-label={r.is_pinned ? "Désépingler" : "Épingler"}
+            >
+              <Pin className={cn("h-4 w-4", r.is_pinned && "fill-current")} />
+              {r.is_pinned ? "Épinglé" : "Épingler"}
+            </Button>
+            <Badge variant={meta.variant}>{meta.label}</Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Complétude</span>
+              <span className="font-semibold">{r.completeness}%</span>
+            </div>
+            <Progress value={r.completeness} />
+          </div>
+
+          <p className="text-sm text-muted-foreground flex items-center gap-2">
+            <Home className="h-4 w-4" />
+            {r.apartments_count} appartement
+            {r.apartments_count > 1 ? "s" : ""}
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/partenaire/residences/${r.id}/edition`}>Éditer</Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/partenaire/residences/${r.id}/appartements`}>
+                <Home className="h-4 w-4 mr-2" /> Gérer les appartements
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/partenaire/residences/${r.id}/preview`}>
+                <Eye className="h-4 w-4 mr-2" /> Aperçu
+              </Link>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              onClick={() => setDeleteTarget(r)}
+            >
+              <Trash2 className="h-4 w-4 mr-2" /> Supprimer
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -184,80 +310,26 @@ export default function MyResidences() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {active.map((r) => {
-            const meta = statusLabel[r.status] ?? statusLabel.draft;
-            return (
-              <Card
-                key={r.id}
-                id={`residence-${r.id}`}
-                className={cn(
-                  "scroll-mt-24",
-                  highlightedId === r.id &&
-                    "ring-2 ring-primary ring-offset-2 transition-all",
-                )}
-              >
-                <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                  <div>
-                    <CardTitle className="text-xl">
-                      <Link
-                        to={`/partenaire/residences/${r.id}/edition`}
-                        className="hover:underline"
-                      >
-                        {r.nom_fr}
-                      </Link>
-                    </CardTitle>
-                    <p className="text-muted-foreground mt-1">
-                      {r.ville ?? "Ville non renseignée"} ·{" "}
-                      {r.type_etablissement.replace(/_/g, " ")}
-                    </p>
-                  </div>
-                  <Badge variant={meta.variant}>{meta.label}</Badge>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Complétude</span>
-                      <span className="font-semibold">{r.completeness}%</span>
-                    </div>
-                    <Progress value={r.completeness} />
-                  </div>
-
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Home className="h-4 w-4" />
-                    {r.apartments_count} appartement
-                    {r.apartments_count > 1 ? "s" : ""}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/partenaire/residences/${r.id}/edition`}>
-                        Éditer
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/partenaire/residences/${r.id}/appartements`}>
-                        <Home className="h-4 w-4 mr-2" /> Gérer les appartements
-                      </Link>
-                    </Button>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to={`/partenaire/residences/${r.id}/preview`}>
-                        <Eye className="h-4 w-4 mr-2" /> Aperçu
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => setDeleteTarget(r)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" /> Supprimer
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="space-y-6">
+          {pinned.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+                <Pin className="h-4 w-4 fill-current text-green-600" />
+                Résidences épinglées
+              </h2>
+              <div className="grid gap-4">{pinned.map(renderCard)}</div>
+            </section>
+          )}
+          {unpinned.length > 0 && (
+            <section className="space-y-3">
+              {pinned.length > 0 && (
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                  Autres résidences
+                </h2>
+              )}
+              <div className="grid gap-4">{unpinned.map(renderCard)}</div>
+            </section>
+          )}
         </div>
       )}
 
