@@ -517,9 +517,9 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
       <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Supprimer ce service ?</AlertDialogTitle>
+            <AlertDialogTitle>Supprimer définitivement ce service ?</AlertDialogTitle>
             <AlertDialogDescription>
-              {deleteTarget ? `« ${deleteTarget.label} » ne sera plus visible sur votre fiche publique.` : ""}
+              {deleteTarget ? `« ${deleteTarget.label} » sera supprimé. Cette action est irréversible.` : ""}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -527,15 +527,16 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
-                if (deleteTarget) softDeleteService(deleteTarget.id, deleteTarget.label);
+                if (deleteTarget) hardDeleteService(deleteTarget.id, deleteTarget.label);
                 setDeleteTarget(null);
               }}
             >
-              Supprimer
+              Supprimer définitivement
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
     </Card>
   );
 }
