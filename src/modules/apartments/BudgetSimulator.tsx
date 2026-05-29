@@ -83,11 +83,11 @@ function unitsPerMonth(kind: FreqKind, s: SelectedState[string]): number {
 
 function unitLabel(kind: FreqKind): string {
   switch (kind) {
-    case "meals": return "/repas";
+    case "meals": return "par repas";
     case "perWeek":
-    case "sessionsWeek": return "/séance";
-    case "perMonth": return "/passage";
-    case "fixed": return "/mois";
+    case "sessionsWeek": return "par séance";
+    case "perMonth": return "par passage";
+    case "fixed": return "par mois";
   }
 }
 
