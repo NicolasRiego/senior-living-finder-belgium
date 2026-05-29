@@ -351,17 +351,19 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       </TooltipProvider>
                     )}
 
-                    {s.is_custom && !isFromCharges && isIncluded && (
+                    {!isFromCharges && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        className="h-8 w-8 ml-auto text-destructive/60 hover:text-destructive hover:bg-destructive/10"
                         onClick={() => setDeleteTarget({ id: s.id, label: s.label_fr })}
-                        aria-label="Supprimer ce service"
+                        aria-label="Supprimer définitivement ce service"
+                        title="Supprimer définitivement"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
+
                   </div>
 
 
