@@ -31,8 +31,14 @@ export async function searchApartments(filters: ApartmentFilters) {
   if (filters.type) q = q.eq("type", filters.type);
   if (filters.surface_min) q = q.gte("surface_m2", filters.surface_min);
 
-  if (filters.tx !== "rent" && filters.sale_max) q = q.lte("sale_price", filters.sale_max);
-  if (filters.tx !== "sale" && filters.rent_max) q = q.lte("rent_price", filters.rent_max);
+  if (filters.tx !== "rent") {
+    if (filters.sale_max) q = q.lte("sale_price", filters.sale_max);
+    if (filters.sale_min) q = q.gte("sale_price", filters.sale_min);
+  }
+  if (filters.tx !== "sale") {
+    if (filters.rent_max) q = q.lte("rent_price", filters.rent_max);
+    if (filters.rent_min) q = q.gte("rent_price", filters.rent_min);
+  }
 
   for (const f of APT_BOOL_FIELDS) {
     if (filters[f]) q = q.eq(f, true);
