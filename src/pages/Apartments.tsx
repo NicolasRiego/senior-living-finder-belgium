@@ -83,7 +83,9 @@ export default function ApartmentsPage() {
 
   const setTx = (tx: TxFilter) => {
     const opt = TX_OPTIONS.find((o) => o.value === tx)!;
-    updateParam({ type: opt.urlValue, saleMax: null, rentMax: null, sort: "price_asc" });
+    setSaleRange([SALE_MIN, SALE_MAX]);
+    setRentRange([RENT_MIN, RENT_MAX]);
+    updateParam({ type: opt.urlValue, sort: "price_asc" });
   };
 
   const setSort = (s: ApartmentSort) => updateParam({ sort: s });
