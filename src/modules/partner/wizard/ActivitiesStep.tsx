@@ -442,6 +442,8 @@ export default function ActivitiesStep({ residence }: StepProps) {
             </div>
           );
         })}
+        </TooltipProvider>
+
 
         <div className="mt-6 rounded-xl border-2 border-dashed border-border p-4 space-y-3">
           <h3 className="font-semibold text-sm">+ Créer une activité personnalisée</h3>
