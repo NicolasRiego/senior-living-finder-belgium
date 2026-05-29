@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RangeSlider } from "@/components/ui/range-slider";
 import { listApartmentResidences, searchApartments } from "@/modules/apartments/publicApi";
 import { usePostalSearch } from "@/modules/apartments/usePostalSearch";
 import {
