@@ -44,6 +44,7 @@ import AdminVersions from "./pages/admin/AdminVersions";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import AdminDeployHistory from "./pages/admin/AdminDeployHistory";
 import AdminDemo from "./pages/admin/AdminDemo";
+import AdminUsers from "./pages/admin/AdminUsers";
 import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
