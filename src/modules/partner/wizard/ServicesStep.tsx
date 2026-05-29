@@ -47,6 +47,7 @@ type SelectedItem = {
   charges_label: string | null;
   lunch_price: number | null;
   dinner_price: number | null;
+  is_available: boolean;
 };
 type Selected = Record<string, SelectedItem>;
 type Charge = { id: string; label: string; amount: number };
