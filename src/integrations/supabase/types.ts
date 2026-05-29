@@ -1180,12 +1180,15 @@ export type Database = {
           comment_fr: string | null
           comment_nl: string | null
           created_at: string
+          dinner_price: number | null
           from_charges: boolean
           id: string
           included: boolean
           is_free: boolean
+          lunch_price: number | null
           optional: boolean
           price: number | null
+          price_unit: string | null
           residence_id: string
           service_id: string
           updated_at: string
@@ -1195,12 +1198,15 @@ export type Database = {
           comment_fr?: string | null
           comment_nl?: string | null
           created_at?: string
+          dinner_price?: number | null
           from_charges?: boolean
           id?: string
           included?: boolean
           is_free?: boolean
+          lunch_price?: number | null
           optional?: boolean
           price?: number | null
+          price_unit?: string | null
           residence_id: string
           service_id: string
           updated_at?: string
@@ -1210,12 +1216,15 @@ export type Database = {
           comment_fr?: string | null
           comment_nl?: string | null
           created_at?: string
+          dinner_price?: number | null
           from_charges?: boolean
           id?: string
           included?: boolean
           is_free?: boolean
+          lunch_price?: number | null
           optional?: boolean
           price?: number | null
+          price_unit?: string | null
           residence_id?: string
           service_id?: string
           updated_at?: string
