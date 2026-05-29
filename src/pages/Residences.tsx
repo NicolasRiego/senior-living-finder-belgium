@@ -31,13 +31,18 @@ export default function ResidencesPage() {
   const { t, tr } = useI18n();
   const [sp, setSp] = useSearchParams();
 
+  const BUDGET_MIN = 0;
+  const BUDGET_MAX = 4000;
+  const [budgetRange, setBudgetRange] = useState<[number, number]>([BUDGET_MIN, BUDGET_MAX]);
+
   const filters: SearchFilters = useMemo(() => ({
     q: sp.get("q") ?? "",
     region: sp.get("region") || undefined,
     province: sp.get("province") || undefined,
     ville: sp.get("ville") || undefined,
     type_etablissement: sp.get("type") || undefined,
-    budget_max: sp.get("budget") ? Number(sp.get("budget")) : undefined,
+    budget_min: budgetRange[0] > BUDGET_MIN ? budgetRange[0] : undefined,
+    budget_max: budgetRange[1] < BUDGET_MAX ? budgetRange[1] : undefined,
     services: sp.get("services") ? sp.get("services")!.split(",").filter(Boolean) : [],
     pmr: sp.get("pmr") === "1",
     complete: sp.get("complete") === "1",
@@ -45,7 +50,7 @@ export default function ResidencesPage() {
     sort: (paramOr<"relevance" | "price_asc" | "price_desc">(sp, "sort", "relevance")) ?? "relevance",
     page: sp.get("page") ? Number(sp.get("page")) : 1,
     pageSize: sp.get("size") ? Number(sp.get("size")) : 12,
-  }), [sp]);
+  }), [sp, budgetRange]);
 
   const updateParam = (patch: Record<string, string | number | boolean | string[] | null | undefined>) => {
     const next = new URLSearchParams(sp);
