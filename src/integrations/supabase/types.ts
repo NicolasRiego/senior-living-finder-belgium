@@ -989,25 +989,34 @@ export type Database = {
           activity_id: string
           created_at: string
           frequency: string | null
+          frequency_count: number | null
+          frequency_period: string | null
           id: string
           managed_by: string | null
           residence_id: string
+          responsable: string | null
         }
         Insert: {
           activity_id: string
           created_at?: string
           frequency?: string | null
+          frequency_count?: number | null
+          frequency_period?: string | null
           id?: string
           managed_by?: string | null
           residence_id: string
+          responsable?: string | null
         }
         Update: {
           activity_id?: string
           created_at?: string
           frequency?: string | null
+          frequency_count?: number | null
+          frequency_period?: string | null
           id?: string
           managed_by?: string | null
           residence_id?: string
+          responsable?: string | null
         }
         Relationships: [
           {
@@ -1173,6 +1182,27 @@ export type Database = {
             referencedColumns: ["residence_id"]
           },
         ]
+      }
+      residence_responsables_custom: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          residence_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          residence_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          residence_id?: string
+        }
+        Relationships: []
       }
       residence_services: {
         Row: {

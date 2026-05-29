@@ -301,12 +301,20 @@ export default function ResidenceDetailPage() {
               {activities.length > 0 && (
                 <Section id="activites" title="Activités">
                   <div className="flex flex-wrap gap-2">
-                    {activities.map((a: any) => (
-                      <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm text-primary">
-                        {tr(a.activities_catalog?.label_fr, a.activities_catalog?.label_nl) || "Activité"}
-                        {a.frequency && <span className="text-xs opacity-70">· {a.frequency}</span>}
-                      </span>
-                    ))}
+                    {activities.map((a: any) => {
+                      const unitMap: Record<string, string> = { day: "jour", week: "semaine", month: "mois", year: "an" };
+                      const unit = a.frequency_period ? unitMap[a.frequency_period] : null;
+                      const freqText = unit && a.frequency_count
+                        ? `${a.frequency_count} fois par ${unit}`
+                        : a.frequency || "";
+                      return (
+                        <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm text-primary">
+                          {tr(a.activities_catalog?.label_fr, a.activities_catalog?.label_nl) || "Activité"}
+                          {freqText && <span className="text-xs opacity-70">· {freqText}</span>}
+                          {a.responsable && <span className="text-xs opacity-70">· {a.responsable}</span>}
+                        </span>
+                      );
+                    })}
                   </div>
                 </Section>
               )}
