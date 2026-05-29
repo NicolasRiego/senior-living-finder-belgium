@@ -219,7 +219,7 @@ export function BudgetSimulator({
                 </div>
                 <div className="mt-1">
                   {apt.rent_price
-                    ? <>Loyer : <strong>{apt.rent_price.toLocaleString("fr-BE")} €</strong>/mois</>
+                    ? <>Loyer : <strong>{apt.rent_price.toLocaleString("fr-BE")} €</strong> par mois</>
                     : apt.sale_price
                     ? <>Prix : <strong>{apt.sale_price.toLocaleString("fr-BE")} €</strong></>
                     : <span className="text-muted-foreground">Prix sur demande</span>}
