@@ -378,12 +378,14 @@ function AutocompleteField({
   onPick: (v: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
         setOpen(false);
+        setIsTyping(false);
       }
     };
     document.addEventListener("mousedown", onClick);
@@ -392,9 +394,12 @@ function AutocompleteField({
 
   const q = normalize(value);
   const filtered = useMemo(() => {
-    const list = q.length >= 2 ? options.filter((o) => normalize(o).includes(q)) : options;
-    return list.slice(0, 10);
-  }, [options, q]);
+    const list =
+      isTyping && q.length >= 1
+        ? options.filter((o) => normalize(o).includes(q))
+        : options;
+    return list.slice(0, 50);
+  }, [options, q, isTyping]);
 
   return (
     <div className="space-y-2" ref={wrapRef}>
@@ -406,9 +411,17 @@ function AutocompleteField({
           value={value}
           onChange={(e) => {
             onManualChange(e.target.value);
+            setIsTyping(true);
             setOpen(true);
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setIsTyping(false);
+            setOpen(true);
+          }}
+          onClick={() => {
+            setIsTyping(false);
+            setOpen(true);
+          }}
           placeholder={placeholder}
           autoComplete="off"
           className={cn(
@@ -422,10 +435,14 @@ function AutocompleteField({
               <button
                 key={opt}
                 type="button"
-                className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted"
+                className={cn(
+                  "w-full px-4 py-2.5 text-left text-sm hover:bg-muted",
+                  opt === value && "bg-muted font-semibold",
+                )}
                 onClick={() => {
                   onPick(opt);
                   setOpen(false);
+                  setIsTyping(false);
                 }}
               >
                 {opt}
