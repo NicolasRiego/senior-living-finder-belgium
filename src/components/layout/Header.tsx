@@ -126,6 +126,7 @@ export function Header() {
               {isAdmin ? (
                 <SpaceSwitcher
                   variant={isTransparent ? "outline" : "outline"}
+                  onOpenChange={setDropdownOpen}
                   triggerClassName={cn(
                     "h-[34px] text-[1.091rem]",
                     isTransparent && "border-white/50 bg-white/10 text-white hover:bg-white/20 hover:text-white backdrop-blur-sm",

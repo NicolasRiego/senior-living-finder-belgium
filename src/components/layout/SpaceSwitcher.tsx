@@ -16,6 +16,7 @@ type Props = {
   variant?: "outline" | "ghost" | "default";
   size?: "sm" | "default";
   label?: string;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function SpaceSwitcher({
@@ -23,10 +24,11 @@ export function SpaceSwitcher({
   variant = "outline",
   size = "sm",
   label = "Mon espace",
+  onOpenChange,
 }: Props) {
   const navigate = useNavigate();
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button variant={variant} size={size} className={cn("gap-1.5", triggerClassName)}>
           <User className="h-4 w-4" />
@@ -34,6 +36,7 @@ export function SpaceSwitcher({
           <ChevronDown className="h-4 w-4 opacity-70" />
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuLabel>Changer d'espace</DropdownMenuLabel>
         <DropdownMenuSeparator />
