@@ -174,37 +174,25 @@ export default function ApartmentsPage() {
             </div>
 
             {showSaleSlider && (
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Prix d'achat max : <span className="font-semibold text-primary">{(filters.sale_max ?? 800000).toLocaleString("fr-BE")} €</span>
-                </label>
-                <input
-                  type="range"
-                  min={50000}
-                  max={800000}
-                  step={5000}
-                  value={filters.sale_max ?? 800000}
-                  onChange={(e) => updateParam({ saleMax: Number(e.target.value) })}
-                  className="w-full accent-[hsl(var(--primary))]"
-                />
-              </div>
+              <RangeSlider
+                label="Prix d'achat"
+                min={SALE_MIN}
+                max={SALE_MAX}
+                step={5000}
+                value={saleRange}
+                onValueChange={setSaleRange}
+              />
             )}
 
             {showRentSlider && (
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Loyer mensuel max : <span className="font-semibold text-primary">{(filters.rent_max ?? 5000).toLocaleString("fr-BE")} €</span>
-                </label>
-                <input
-                  type="range"
-                  min={500}
-                  max={5000}
-                  step={50}
-                  value={filters.rent_max ?? 5000}
-                  onChange={(e) => updateParam({ rentMax: Number(e.target.value) })}
-                  className="w-full accent-[hsl(var(--primary))]"
-                />
-              </div>
+              <RangeSlider
+                label="Loyer mensuel"
+                min={RENT_MIN}
+                max={RENT_MAX}
+                step={50}
+                value={rentRange}
+                onValueChange={setRentRange}
+              />
             )}
 
             <div>
