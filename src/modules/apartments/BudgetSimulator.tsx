@@ -308,13 +308,13 @@ export function BudgetSimulator({
             </ul>
             <div className="border-t pt-3 space-y-1">
               <div className="flex justify-between text-base">
-                <span className="font-semibold">Total / mois</span>
+                <span className="font-semibold">Total par mois</span>
                 <span className="font-display font-bold text-primary">
                   {totalMonth.toLocaleString("fr-BE")} €
                 </span>
               </div>
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Total / an</span>
+                <span>Total par an</span>
                 <span>{totalYear.toLocaleString("fr-BE")} €</span>
               </div>
             </div>
