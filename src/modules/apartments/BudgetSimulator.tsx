@@ -9,12 +9,20 @@ import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import type { SavedApartment } from "./savedApartments";
+
+type PriceUnit =
+  | "par séance" | "par repas" | "par mois" | "par semaine"
+  | "par jour" | "par an" | "forfait";
 
 type ServiceRow = {
   id: string;
   service_id: string;
   price: number | null;
+  price_unit: PriceUnit | null;
+  lunch_price: number | null;
+  dinner_price: number | null;
   included: boolean;
   optional: boolean;
   is_free: boolean;
@@ -25,71 +33,47 @@ type ServiceRow = {
 
 type ChargeRow = { id: string; label: string; amount: number };
 
-type FreqKind = "meals" | "perWeek" | "perMonth" | "sessionsWeek" | "fixed";
+function isRestaurant(label: string): boolean {
+  const l = label.toLowerCase();
+  return l.includes("restaurant") || l.includes("repas") || l.includes("restauration");
+}
 
-const FREQ_BY_CODE: Record<string, FreqKind> = {
-  repas: "meals",
-  restaurant: "meals",
-  coiffeur: "perMonth",
-  pedicure: "perMonth",
-  kine: "sessionsWeek",
-  infirmier: "sessionsWeek",
-  soins: "sessionsWeek",
-  menage: "perWeek",
-  linge: "perWeek",
-  blanchisserie: "perWeek",
-  navette: "perWeek",
-  transport: "perWeek",
-  jardinage: "perWeek",
-  parking: "fixed",
-  wifi: "fixed",
-  securite: "fixed",
-  reception: "fixed",
-  piscine: "fixed",
-  salle_sport: "fixed",
-};
+const WEEKS_PER_MONTH = 4.33;
+
+// Convert price + unit + user freq to monthly cost
+function monthlyFromUnit(price: number, unit: PriceUnit | null, freq: number, freqKind: "week" | "month"): number {
+  if (!unit) return 0;
+  switch (unit) {
+    case "par mois":
+    case "forfait":
+      return price;
+    case "par an":
+      return price / 12;
+    case "par séance":
+    case "par repas":
+    case "par jour":
+      // freq is per week or per month
+      return freqKind === "week" ? price * freq * WEEKS_PER_MONTH : price * freq;
+    case "par semaine":
+      return price * WEEKS_PER_MONTH;
+  }
+}
+
+function needsFrequency(unit: PriceUnit | null): boolean {
+  return unit === "par séance" || unit === "par repas" || unit === "par jour";
+}
+
+function isFixedMonthly(unit: PriceUnit | null): boolean {
+  return unit === "par mois" || unit === "par an" || unit === "forfait" || unit === "par semaine";
+}
 
 type SelectedState = Record<string, {
   enabled: boolean;
-  mealsPerDay?: number;
-  daysPerWeek?: number;
-  perWeek?: number;
-  perMonth?: number;
+  freq?: number;        // weekly frequency for normal services
+  freqKind?: "week" | "month";
+  lunchPerWeek?: number;
+  dinnerPerWeek?: number;
 }>;
-
-function defaultsForKind(kind: FreqKind) {
-  switch (kind) {
-    case "meals": return { mealsPerDay: 1, daysPerWeek: 5 };
-    case "perWeek": return { perWeek: 1 };
-    case "perMonth": return { perMonth: 1 };
-    case "sessionsWeek": return { perWeek: 2 };
-    case "fixed": return {};
-  }
-}
-
-function unitsPerMonth(kind: FreqKind, s: SelectedState[string]): number {
-  switch (kind) {
-    case "meals":
-      return (s.mealsPerDay ?? 0) * (s.daysPerWeek ?? 0) * 4;
-    case "perWeek":
-    case "sessionsWeek":
-      return (s.perWeek ?? 0) * 4;
-    case "perMonth":
-      return s.perMonth ?? 0;
-    case "fixed":
-      return 1;
-  }
-}
-
-function unitLabel(kind: FreqKind): string {
-  switch (kind) {
-    case "meals": return "par repas";
-    case "perWeek":
-    case "sessionsWeek": return "par séance";
-    case "perMonth": return "par passage";
-    case "fixed": return "par mois";
-  }
-}
 
 export function BudgetSimulator({
   apartments,
@@ -118,12 +102,11 @@ export function BudgetSimulator({
   useEffect(() => {
     if (!apt) { setServices([]); setCharges([]); return; }
     setLoadingSvc(true);
-    setSelected({});
     (async () => {
       const [svcData, chargesData] = await Promise.all([
         supabase
           .from("residence_services")
-          .select("id, service_id, price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
+          .select("id, service_id, price, price_unit, lunch_price, dinner_price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
           .eq("residence_id", apt.residence_id)
           .eq("included", true),
         supabase
@@ -134,8 +117,18 @@ export function BudgetSimulator({
           .gt("amount", 0)
           .neq("label", "Nouveau service"),
       ]);
-      setServices((svcData.data ?? []) as unknown as ServiceRow[]);
+      const rows = (svcData.data ?? []) as unknown as ServiceRow[];
+      setServices(rows);
       setCharges((chargesData.data ?? []) as ChargeRow[]);
+
+      // Pre-select "Inclus" services (non-removable)
+      const initial: SelectedState = {};
+      for (const r of rows) {
+        if (r.is_free || r.from_charges) {
+          initial[r.service_id] = { enabled: true };
+        }
+      }
+      setSelected(initial);
       setLoadingSvc(false);
     })();
   }, [apt]);
@@ -152,24 +145,45 @@ export function BudgetSimulator({
       items.push({ key: `charge-${c.id}`, label: c.label, total: c.amount, isCharge: true });
     }
     for (const s of services) {
-      const code = s.service?.code ?? "";
-      const kind = FREQ_BY_CODE[code] ?? "fixed";
       const sel = selected[s.service_id];
       if (!sel?.enabled) continue;
-      const unitPrice = (s.is_free || s.from_charges) ? 0 : (s.price ?? 0);
-      const units = unitsPerMonth(kind, sel);
-      const total = Math.round(units * unitPrice);
+      const label = s.service?.label_fr ?? s.service?.code ?? "Service";
+      // Inclus / charges
+      if (s.is_free || s.from_charges) {
+        items.push({ key: s.id, label, total: 0, isFree: true });
+        continue;
+      }
+      // Restaurant
+      if (isRestaurant(label) && (s.lunch_price || s.dinner_price)) {
+        const lunchFreq = sel.lunchPerWeek ?? 0;
+        const dinnerFreq = sel.dinnerPerWeek ?? 0;
+        const lunchCost = (s.lunch_price ?? 0) * lunchFreq * WEEKS_PER_MONTH;
+        const dinnerCost = (s.dinner_price ?? 0) * dinnerFreq * WEEKS_PER_MONTH;
+        const total = Math.round(lunchCost + dinnerCost);
+        const detail = [
+          lunchFreq > 0 && s.lunch_price ? `Déjeuner ${s.lunch_price}€ × ${lunchFreq} par semaine` : null,
+          dinnerFreq > 0 && s.dinner_price ? `Dîner ${s.dinner_price}€ × ${dinnerFreq} par semaine` : null,
+        ].filter(Boolean).join(" + ");
+        items.push({ key: s.id, label, total, detail });
+        continue;
+      }
+      // Normal optional service
+      const price = s.price ?? 0;
+      const unit = s.price_unit;
+      let total = 0;
       let detail = "";
-      if (kind === "meals") detail = `${sel.mealsPerDay} repas par jour × ${sel.daysPerWeek} jours par semaine`;
-      else if (kind === "perWeek" || kind === "sessionsWeek") detail = `${sel.perWeek} fois par semaine`;
-      else if (kind === "perMonth") detail = `${sel.perMonth} fois par mois`;
-      items.push({
-        key: s.id,
-        label: s.service?.label_fr ?? code,
-        total,
-        detail,
-        isFree: s.is_free || s.from_charges,
-      });
+      if (isFixedMonthly(unit)) {
+        total = Math.round(monthlyFromUnit(price, unit, 0, "week"));
+        detail = `${price}€ ${unit}`;
+      } else if (needsFrequency(unit)) {
+        const freq = sel.freq ?? 0;
+        const kind = sel.freqKind ?? "week";
+        total = Math.round(monthlyFromUnit(price, unit, freq, kind));
+        detail = `${price}€ ${unit} × ${freq} ${kind === "week" ? "fois par semaine" : "fois par mois"}`;
+      } else {
+        total = price;
+      }
+      items.push({ key: s.id, label, total, detail });
     }
     return items;
   }, [services, charges, selected, baseAmount, baseLabel]);
@@ -182,9 +196,7 @@ export function BudgetSimulator({
       <Card>
         <CardContent className="py-10 text-center space-y-3">
           <Building2 className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="text-base">
-            Vous devez d'abord enregistrer un appartement pour le simuler.
-          </p>
+          <p className="text-base">Vous devez d'abord enregistrer un appartement pour le simuler.</p>
           <Button asChild><Link to="/appartements">Voir les appartements</Link></Button>
         </CardContent>
       </Card>
@@ -195,14 +207,10 @@ export function BudgetSimulator({
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
       <div className="space-y-6 min-w-0">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Logement à simuler</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-lg">Logement à simuler</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <Select value={selectedId ?? ""} onValueChange={(v) => setSelectedId(v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choisir un appartement" />
-              </SelectTrigger>
+              <SelectTrigger className="w-full"><SelectValue placeholder="Choisir un appartement" /></SelectTrigger>
               <SelectContent>
                 {apartments.map((a) => (
                   <SelectItem key={a.id} value={a.id}>
@@ -230,56 +238,112 @@ export function BudgetSimulator({
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Services</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-lg">Services</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {loadingSvc && <p className="text-muted-foreground">Chargement…</p>}
             {!loadingSvc && services.length === 0 && (
               <p className="text-muted-foreground">Aucun service renseigné pour cette résidence.</p>
             )}
             {services.map((s) => {
-              const code = s.service?.code ?? "";
-              const kind = FREQ_BY_CODE[code] ?? "fixed";
+              const label = s.service?.label_fr ?? s.service?.code ?? "Service";
               const sel = selected[s.service_id] ?? { enabled: false };
-              const isFreeOrIncluded = s.is_free || s.from_charges;
+              const incluse = s.is_free || s.from_charges;
+              const restaurant = isRestaurant(label) && (s.lunch_price || s.dinner_price);
+              const fixed = isFixedMonthly(s.price_unit);
               const setSel = (v: Partial<SelectedState[string]>) =>
                 setSelected((m) => ({
                   ...m,
                   [s.service_id]: { ...(m[s.service_id] ?? { enabled: false }), ...v },
                 }));
+
               return (
                 <div key={s.id} className="rounded-lg border p-4 space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <Switch
-                        checked={sel.enabled}
-                        onCheckedChange={(v) => {
-                          if (v) setSel({ enabled: true, ...defaultsForKind(kind) });
-                          else setSel({ enabled: false });
-                        }}
-                        id={`svc-${s.id}`}
-                      />
+                      {incluse ? (
+                        <span className="inline-flex h-5 w-9 items-center rounded-full bg-primary px-1">
+                          <span className="h-3.5 w-3.5 rounded-full bg-white translate-x-3.5" />
+                        </span>
+                      ) : (
+                        <Switch
+                          checked={sel.enabled}
+                          onCheckedChange={(v) => setSel({ enabled: v })}
+                          id={`svc-${s.id}`}
+                        />
+                      )}
                       <Label htmlFor={`svc-${s.id}`} className="text-base font-medium cursor-pointer break-words">
-                        {s.service?.label_fr}
+                        {label}
                       </Label>
                     </div>
-                    {isFreeOrIncluded ? (
+                    {incluse ? (
                       <span className="text-sm rounded-full bg-green-100 text-green-700 px-2.5 py-1 font-medium whitespace-nowrap">
-                        {s.from_charges ? "Inclus dans les charges" : "Gratuit"}
+                        {s.from_charges ? "Inclus dans les charges" : "Inclus"}
                       </span>
-                    ) : s.price != null && s.price > 0 ? (
+                    ) : restaurant ? (
                       <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        {s.price.toLocaleString("fr-BE")} € {unitLabel(kind)}
+                        {s.lunch_price ? `Déjeuner ~${s.lunch_price}€` : ""}
+                        {s.lunch_price && s.dinner_price ? " / " : ""}
+                        {s.dinner_price ? `Dîner ~${s.dinner_price}€` : ""} par repas
+                      </span>
+                    ) : s.price != null && s.price > 0 && s.price_unit ? (
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        {s.price.toLocaleString("fr-BE")} € {s.price_unit}
                       </span>
                     ) : (
-                      <span className="text-sm text-muted-foreground whitespace-nowrap italic">
-                        Prix sur demande
-                      </span>
+                      <span className="text-sm text-muted-foreground whitespace-nowrap italic">Prix sur demande</span>
                     )}
                   </div>
-                  {sel.enabled && kind !== "fixed" && (
-                    <FrequencyControls kind={kind} sel={sel} setSel={setSel} />
+
+                  {!incluse && sel.enabled && restaurant && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                      {s.lunch_price ? (
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Déjeuners par semaine</Label>
+                          <Select
+                            value={String(sel.lunchPerWeek ?? 0)}
+                            onValueChange={(v) => setSel({ lunchPerWeek: Number(v) })}
+                          >
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {[0,1,2,3,4,5,6,7].map((n) => (
+                                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : null}
+                      {s.dinner_price ? (
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Dîners par semaine</Label>
+                          <Select
+                            value={String(sel.dinnerPerWeek ?? 0)}
+                            onValueChange={(v) => setSel({ dinnerPerWeek: Number(v) })}
+                          >
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {[0,1,2,3,4,5,6,7].map((n) => (
+                                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+
+                  {!incluse && sel.enabled && !restaurant && needsFrequency(s.price_unit) && (
+                    <FrequencySelector
+                      unit={s.price_unit!}
+                      freq={sel.freq ?? 1}
+                      freqKind={sel.freqKind ?? "week"}
+                      onChange={(freq, freqKind) => setSel({ freq, freqKind })}
+                    />
+                  )}
+
+                  {!incluse && sel.enabled && fixed && (
+                    <p className="text-xs text-muted-foreground pt-1">
+                      Coût fixe ajouté au budget mensuel.
+                    </p>
                   )}
                 </div>
               );
@@ -328,79 +392,61 @@ export function BudgetSimulator({
   );
 }
 
-function FrequencyControls({
-  kind, sel, setSel,
+function FrequencySelector({
+  unit, freq, freqKind, onChange,
 }: {
-  kind: FreqKind;
-  sel: SelectedState[string];
-  setSel: (v: Partial<SelectedState[string]>) => void;
+  unit: PriceUnit;
+  freq: number;
+  freqKind: "week" | "month";
+  onChange: (freq: number, freqKind: "week" | "month") => void;
 }) {
-  if (kind === "meals") {
-    return (
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">Repas par jour</Label>
-          <Select
-            value={String(sel.mealsPerDay ?? 1)}
-            onValueChange={(v) => setSel({ mealsPerDay: Number(v) })}
-          >
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1</SelectItem>
-              <SelectItem value="2">2</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">Jours par semaine</Label>
-          <Select
-            value={String(sel.daysPerWeek ?? 5)}
-            onValueChange={(v) => setSel({ daysPerWeek: Number(v) })}
-          >
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {[1,2,3,4,5,6,7].map((n) => (
-                <SelectItem key={n} value={String(n)}>{n}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-    );
-  }
-  if (kind === "perMonth") {
-    return (
-      <div className="space-y-1">
-        <Label className="text-xs text-muted-foreground">Fréquence par mois</Label>
-        <Select
-          value={String(sel.perMonth ?? 1)}
-          onValueChange={(v) => setSel({ perMonth: Number(v) })}
-        >
-          <SelectTrigger><SelectValue /></SelectTrigger>
+  const [customMode, setCustomMode] = useState(false);
+  const options = [1, 2, 3, 4, 5];
+  const label =
+    freqKind === "week" ? "Combien de fois par semaine ?" : "Combien de fois par mois ?";
+
+  return (
+    <div className="space-y-2 pt-2">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <Label className="text-sm">{label}</Label>
+        <Select value={freqKind} onValueChange={(v) => onChange(freq, v as "week" | "month")}>
+          <SelectTrigger className="w-auto h-8 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">1 fois par mois</SelectItem>
-            <SelectItem value="2">2 fois par mois</SelectItem>
-            <SelectItem value="4">4 fois par mois</SelectItem>
+            <SelectItem value="week">par semaine</SelectItem>
+            <SelectItem value="month">par mois</SelectItem>
           </SelectContent>
         </Select>
       </div>
-    );
-  }
-  if (kind === "fixed") return null;
-  return (
-    <div className="space-y-1">
-      <Label className="text-xs text-muted-foreground">Fréquence par semaine</Label>
-      <Select
-        value={String(sel.perWeek ?? 1)}
-        onValueChange={(v) => setSel({ perWeek: Number(v) })}
-      >
-        <SelectTrigger><SelectValue /></SelectTrigger>
-        <SelectContent>
-          {[1,2,3,4,5,6,7].map((n) => (
-            <SelectItem key={n} value={String(n)}>{n} fois par semaine</SelectItem>
+      {customMode ? (
+        <Input
+          type="number"
+          min={1}
+          value={freq}
+          onChange={(e) => onChange(Number(e.target.value || 1), freqKind)}
+        />
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {options.map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onChange(n, freqKind)}
+              className={`h-9 min-w-[2.5rem] rounded-md border px-3 text-sm ${
+                freq === n ? "bg-primary text-primary-foreground border-primary" : "bg-background hover:bg-accent"
+              }`}
+            >
+              {n}
+            </button>
           ))}
-        </SelectContent>
-      </Select>
+          <button
+            type="button"
+            onClick={() => setCustomMode(true)}
+            className="h-9 rounded-md border px-3 text-sm bg-background hover:bg-accent"
+          >
+            autre
+          </button>
+        </div>
+      )}
     </div>
   );
 }
