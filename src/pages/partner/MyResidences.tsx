@@ -65,7 +65,7 @@ export default function MyResidences() {
     setLoading(true);
     const { data, error } = await supabase
       .from("residences")
-      .select("id, nom_fr, status, ville, type_etablissement, org_id, updated_at")
+      .select("id, nom_fr, status, ville, type_etablissement, org_id, updated_at, is_pinned, pinned_at")
       .in("org_id", orgIds.length ? orgIds : ["00000000-0000-0000-0000-000000000000"])
       .order("updated_at", { ascending: false });
     if (error) toast.error(error.message);
