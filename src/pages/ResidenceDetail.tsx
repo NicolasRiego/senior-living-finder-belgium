@@ -262,15 +262,26 @@ export default function ResidenceDetailPage() {
                               </span>
                             ) : isFree ? (
                               <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs text-green-700 font-medium">
-                                Gratuit
+                                Inclus
                               </span>
+                            ) : s.lunch_price || s.dinner_price ? (
+                              <div className="flex items-center gap-1.5">
+                                <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                                  Optionnel
+                                </span>
+                                <span className="text-sm font-semibold whitespace-nowrap">
+                                  {s.lunch_price ? `Déjeuner ~${s.lunch_price}€` : ""}
+                                  {s.lunch_price && s.dinner_price ? " / " : ""}
+                                  {s.dinner_price ? `Dîner ~${s.dinner_price}€` : ""} par repas
+                                </span>
+                              </div>
                             ) : isOptional && price ? (
                               <div className="flex items-center gap-1.5">
                                 <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                                   Optionnel
                                 </span>
                                 <span className="text-sm font-semibold">
-                                  {Number(price).toLocaleString("fr-BE")} €/mois
+                                  {Number(price).toLocaleString("fr-BE")} € {s.price_unit ?? "par mois"}
                                 </span>
                               </div>
                             ) : isOptional ? (
