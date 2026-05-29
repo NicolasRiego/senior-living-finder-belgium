@@ -132,6 +132,135 @@ export type Database = {
           },
         ]
       }
+      admin_ticket_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_ticket_comments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "admin_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_ticket_email_batches: {
+        Row: {
+          id: string
+          last_sent_at: string
+          ticket_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          last_sent_at?: string
+          ticket_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          last_sent_at?: string
+          ticket_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_ticket_email_batches_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "admin_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_ticket_participants: {
+        Row: {
+          created_at: string
+          id: string
+          ticket_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ticket_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ticket_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_ticket_participants_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "admin_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_tickets: {
+        Row: {
+          created_at: string
+          created_by: string
+          deadline: string | null
+          description: string | null
+          id: string
+          priority: Database["public"]["Enums"]["ticket_priority"]
+          screenshots: string[]
+          status: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          screenshots?: string[]
+          status?: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          screenshots?: string[]
+          status?: Database["public"]["Enums"]["ticket_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       apartments: {
         Row: {
           address_complement: string | null
@@ -1680,6 +1809,46 @@ export type Database = {
           ville: string
         }[]
       }
+      admin_list_ticket_comments: {
+        Args: { _ticket_id: string }
+        Returns: {
+          author_email: string
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          ticket_id: string
+        }[]
+      }
+      admin_list_ticket_participants: {
+        Args: { _ticket_id: string }
+        Returns: {
+          display_name: string
+          email: string
+          user_id: string
+        }[]
+      }
+      admin_list_tickets: {
+        Args: never
+        Returns: {
+          comment_count: number
+          created_at: string
+          created_by: string
+          creator_email: string
+          creator_name: string
+          deadline: string
+          description: string
+          id: string
+          last_comment_at: string
+          participant_count: number
+          priority: Database["public"]["Enums"]["ticket_priority"]
+          screenshots: string[]
+          status: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at: string
+        }[]
+      }
       admin_list_users: {
         Args: never
         Returns: {
@@ -1824,6 +1993,8 @@ export type Database = {
         | "published"
         | "rejected"
         | "archived"
+      ticket_priority: "faible" | "moderee" | "importante"
+      ticket_status: "a_reflechir" | "a_faire" | "en_cours" | "resolu"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1987,6 +2158,8 @@ export const Constants = {
         "rejected",
         "archived",
       ],
+      ticket_priority: ["faible", "moderee", "importante"],
+      ticket_status: ["a_reflechir", "a_faire", "en_cours", "resolu"],
     },
   },
 } as const
