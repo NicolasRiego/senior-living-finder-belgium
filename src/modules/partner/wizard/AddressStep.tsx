@@ -76,8 +76,10 @@ export default function AddressStep({ residence, onChange }: StepProps) {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  useAutosave(local, async (v) => {
-    setExternalSaving("saving");
+  const isDirty = JSON.stringify(local) !== JSON.stringify(initial.current);
+
+  const save = useCallback(async () => {
+    const v = local;
     const { error } = await supabase
       .from("residences")
       .update({
@@ -89,13 +91,17 @@ export default function AddressStep({ residence, onChange }: StepProps) {
         region: v.region || null,
       } as any)
       .eq("id", residence.id);
-    if (error) {
-      setExternalSaving("error");
-      throw error;
-    }
-    setExternalSaving("saved");
+    if (error) throw error;
+    initial.current = { ...v };
     onChange(v as any);
-  });
+  }, [local, residence.id, onChange]);
+
+  const reset = useCallback(() => {
+    setLocal({ ...initial.current });
+    setCpQuery(initial.current.code_postal);
+  }, []);
+
+  useRegisterWizardStep("address", { isDirty, save, reset });
 
   const update = (patch: Partial<typeof local>) =>
     setLocal((s) => ({ ...s, ...patch }));
