@@ -188,7 +188,7 @@ export default function ApartmentsPage() {
 
             {showRentSlider && (
               <RangeSlider
-                label="Loyer mensuel"
+                label="Loyer mensuel minimum"
                 min={RENT_MIN}
                 max={RENT_MAX}
                 step={50}
