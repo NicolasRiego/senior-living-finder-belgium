@@ -44,7 +44,9 @@ export type ApartmentFilters = {
   type?: ApartmentType;
   surface_min?: number;
   sale_max?: number;
+  sale_min?: number;
   rent_max?: number;
+  rent_min?: number;
   residence_ids?: string[];
   sort?: ApartmentSort;
   parking?: boolean;

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RangeSlider } from "@/components/ui/range-slider";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import {
   searchResidences,
@@ -30,13 +31,18 @@ export default function ResidencesPage() {
   const { t, tr } = useI18n();
   const [sp, setSp] = useSearchParams();
 
+  const BUDGET_MIN = 0;
+  const BUDGET_MAX = 4000;
+  const [budgetRange, setBudgetRange] = useState<[number, number]>([BUDGET_MIN, BUDGET_MAX]);
+
   const filters: SearchFilters = useMemo(() => ({
     q: sp.get("q") ?? "",
     region: sp.get("region") || undefined,
     province: sp.get("province") || undefined,
     ville: sp.get("ville") || undefined,
     type_etablissement: sp.get("type") || undefined,
-    budget_max: sp.get("budget") ? Number(sp.get("budget")) : undefined,
+    budget_min: budgetRange[0] > BUDGET_MIN ? budgetRange[0] : undefined,
+    budget_max: budgetRange[1] < BUDGET_MAX ? budgetRange[1] : undefined,
     services: sp.get("services") ? sp.get("services")!.split(",").filter(Boolean) : [],
     pmr: sp.get("pmr") === "1",
     complete: sp.get("complete") === "1",
@@ -44,7 +50,7 @@ export default function ResidencesPage() {
     sort: (paramOr<"relevance" | "price_asc" | "price_desc">(sp, "sort", "relevance")) ?? "relevance",
     page: sp.get("page") ? Number(sp.get("page")) : 1,
     pageSize: sp.get("size") ? Number(sp.get("size")) : 12,
-  }), [sp]);
+  }), [sp, budgetRange]);
 
   const updateParam = (patch: Record<string, string | number | boolean | string[] | null | undefined>) => {
     const next = new URLSearchParams(sp);
@@ -156,17 +162,13 @@ export default function ResidencesPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">
-                Budget mensuel : <span className="font-semibold text-primary">≤ {filters.budget_max ?? 4000}€</span>
-              </label>
-              <input
-                type="range"
-                min={800}
-                max={4000}
+              <RangeSlider
+                label="Budget mensuel"
+                min={BUDGET_MIN}
+                max={BUDGET_MAX}
                 step={50}
-                value={filters.budget_max ?? 4000}
-                onChange={(e) => updateParam({ budget: Number(e.target.value) })}
-                className="w-full accent-[hsl(var(--primary))]"
+                value={budgetRange}
+                onValueChange={setBudgetRange}
               />
             </div>
 
@@ -224,7 +226,7 @@ export default function ResidencesPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => setSp(new URLSearchParams(), { replace: true })}
+              onClick={() => { setSp(new URLSearchParams(), { replace: true }); setBudgetRange([BUDGET_MIN, BUDGET_MAX]); }}
             >
               Réinitialiser
             </Button>
