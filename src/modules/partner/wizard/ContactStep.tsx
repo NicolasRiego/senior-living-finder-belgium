@@ -1,29 +1,36 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { useAutosave } from "../useAutosave";
+import { useRegisterWizardStep } from "@/modules/partner/WizardSaveContext";
 import { StepProps } from "@/pages/partner/ResidenceEditor";
 
-export default function ContactStep({ residence, onChange, setExternalSaving }: StepProps) {
-  const [local, setLocal] = useState({
+export default function ContactStep({ residence, onChange }: StepProps) {
+  const initial = useRef({
     contact_email: residence.contact_email ?? "",
     contact_phone: residence.contact_phone ?? "",
     website: residence.website ?? "",
   });
+  const [local, setLocal] = useState({ ...initial.current });
 
-  useAutosave(local, async (v) => {
-    setExternalSaving("saving");
+  const isDirty = JSON.stringify(local) !== JSON.stringify(initial.current);
+
+  const save = useCallback(async () => {
+    const v = local;
     const { error } = await supabase.from("residences").update({
       contact_email: v.contact_email || null,
       contact_phone: v.contact_phone || null,
       website: v.website || null,
     }).eq("id", residence.id);
-    if (error) { setExternalSaving("error"); throw error; }
-    setExternalSaving("saved");
+    if (error) throw error;
+    initial.current = { ...v };
     onChange(v as any);
-  });
+  }, [local, residence.id, onChange]);
+
+  const reset = useCallback(() => setLocal({ ...initial.current }), []);
+
+  useRegisterWizardStep("contact", { isDirty, save, reset });
 
   return (
     <Card>

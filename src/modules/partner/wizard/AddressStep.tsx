@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { useAutosave } from "../useAutosave";
+import { useRegisterWizardStep } from "@/modules/partner/WizardSaveContext";
 import { StepProps } from "@/pages/partner/ResidenceEditor";
 
 type BePostalCode = {
@@ -43,7 +43,15 @@ function usePostalSearch(query: string) {
   return results;
 }
 
-export default function AddressStep({ residence, onChange, setExternalSaving }: StepProps) {
+export default function AddressStep({ residence, onChange }: StepProps) {
+  const initial = useRef({
+    adresse: residence.adresse ?? "",
+    code_postal: residence.code_postal ?? "",
+    commune: (residence as any).commune ?? "",
+    ville: residence.ville ?? "",
+    province: residence.province ?? "",
+    region: residence.region ?? "",
+  });
   const [local, setLocal] = useState({
     adresse: residence.adresse ?? "",
     code_postal: residence.code_postal ?? "",
@@ -68,8 +76,10 @@ export default function AddressStep({ residence, onChange, setExternalSaving }: 
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  useAutosave(local, async (v) => {
-    setExternalSaving("saving");
+  const isDirty = JSON.stringify(local) !== JSON.stringify(initial.current);
+
+  const save = useCallback(async () => {
+    const v = local;
     const { error } = await supabase
       .from("residences")
       .update({
@@ -81,13 +91,17 @@ export default function AddressStep({ residence, onChange, setExternalSaving }: 
         region: v.region || null,
       } as any)
       .eq("id", residence.id);
-    if (error) {
-      setExternalSaving("error");
-      throw error;
-    }
-    setExternalSaving("saved");
+    if (error) throw error;
+    initial.current = { ...v };
     onChange(v as any);
-  });
+  }, [local, residence.id, onChange]);
+
+  const reset = useCallback(() => {
+    setLocal({ ...initial.current });
+    setCpQuery(initial.current.code_postal);
+  }, []);
+
+  useRegisterWizardStep("address", { isDirty, save, reset });
 
   const update = (patch: Partial<typeof local>) =>
     setLocal((s) => ({ ...s, ...patch }));

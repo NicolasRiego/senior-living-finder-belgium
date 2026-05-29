@@ -4,10 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, Send, ArrowLeft } from "lucide-react";
-import { AutosaveBadge } from "@/modules/partner/useAutosave";
+import { Eye, ArrowLeft, Save } from "lucide-react";
+import { WizardSaveProvider, useWizardSave } from "@/modules/partner/WizardSaveContext";
 import GeneralStep from "@/modules/partner/wizard/GeneralStep";
 import AddressStep from "@/modules/partner/wizard/AddressStep";
 import UnitsStep from "@/modules/partner/wizard/UnitsStep";
@@ -29,6 +38,9 @@ const steps = [
   { key: "contact", label: "Contact", Component: ContactStep },
   { key: "validation", label: "Validation", Component: ValidationStep },
 ];
+
+// Steps that handle their own per-action persistence (no centralized Save button needed)
+const OPERATIONAL_STEPS = new Set(["units", "pricing", "services", "activities", "photos", "validation"]);
 
 export type ResidenceRow = {
   id: string;
@@ -74,41 +86,38 @@ const statusBadge: Record<string, { label: string; tone: string }> = {
   rejected: { label: "Refusé", tone: "bg-destructive/15 text-destructive" },
 };
 
-export default function ResidenceEditor() {
-  const { id } = useParams<{ id: string }>();
+function EditorShell({
+  residence,
+  completeness,
+  onChange,
+  reload,
+}: {
+  residence: ResidenceRow;
+  completeness: number;
+  onChange: (patch: Partial<ResidenceRow>) => void;
+  reload: () => Promise<void>;
+}) {
   const nav = useNavigate();
-  const [residence, setResidence] = useState<ResidenceRow | null>(null);
-  const [completeness, setCompleteness] = useState(0);
-  const [stepIdx, setStepIdx] = useState(0);
-  const [external, setExternal] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const {
+    dirtySteps, currentStep, setCurrentStep,
+    saveCurrent, guardNavigation, currentIsDirty, isSaving,
+  } = useWizardSave();
 
-  const load = async () => {
-    if (!id) return;
-    const { data, error } = await supabase.from("residences").select("*").eq("id", id).single();
-    if (error) { toast.error(error.message); return; }
-    setResidence(data as any);
-    const { data: c } = await supabase.rpc("residence_completeness", { _residence_id: id });
-    setCompleteness((c as number) ?? 0);
-  };
-
-  useEffect(() => { load(); }, [id]);
-
-  if (!residence) {
-    return <div className="container py-12 text-muted-foreground">Chargement…</div>;
-  }
-
-  const onChange = (patch: Partial<ResidenceRow>) => {
-    setResidence((r) => (r ? { ...r, ...patch } : r));
-  };
-
+  const stepIdx = Math.max(0, steps.findIndex((s) => s.key === currentStep));
   const Step = steps[stepIdx].Component;
   const meta = statusBadge[residence.status] ?? statusBadge.draft;
+  const isOperational = OPERATIONAL_STEPS.has(currentStep);
+
+  const goToStep = (key: string) => guardNavigation(() => setCurrentStep(key));
+  const goPrev = () => guardNavigation(() => setCurrentStep(steps[Math.max(0, stepIdx - 1)].key));
+  const goNext = () => guardNavigation(() => setCurrentStep(steps[Math.min(steps.length - 1, stepIdx + 1)].key));
+  const goBack = () => guardNavigation(() => nav(`/partenaire/residences#residence-${residence.id}`));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => nav(`/partenaire/residences#residence-${residence.id}`)} aria-label="Retour">
+          <Button variant="ghost" size="icon" onClick={goBack} aria-label="Retour">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
@@ -117,7 +126,11 @@ export default function ResidenceEditor() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <AutosaveBadge status={external} />
+          {dirtySteps.size > 0 && (
+            <span className="text-sm text-orange-600 font-medium">
+              {dirtySteps.size} modification{dirtySteps.size > 1 ? "s" : ""} non enregistrée{dirtySteps.size > 1 ? "s" : ""}
+            </span>
+          )}
           <Button variant="outline" asChild>
             <Link to={`/partenaire/residences/${residence.id}/preview`} target="_blank">
               <Eye className="h-4 w-4 mr-2" /> Aperçu
@@ -147,42 +160,125 @@ export default function ResidenceEditor() {
 
       <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
         <nav aria-label="Étapes" className="space-y-1">
-          {steps.map((s, i) => (
-            <button
-              key={s.key}
-              onClick={() => setStepIdx(i)}
-              className={`w-full text-left rounded-lg px-4 py-3 text-base transition-colors ${
-                i === stepIdx ? "bg-primary text-primary-foreground" : "hover:bg-accent"
-              }`}
-            >
-              <span className="text-xs opacity-70">Étape {i + 1}</span>
-              <div>{s.label}</div>
-            </button>
-          ))}
+          {steps.map((s, i) => {
+            const dirty = dirtySteps.has(s.key);
+            return (
+              <button
+                key={s.key}
+                onClick={() => goToStep(s.key)}
+                className={`w-full text-left rounded-lg px-4 py-3 text-base transition-colors ${
+                  i === stepIdx ? "bg-primary text-primary-foreground" : "hover:bg-accent"
+                }`}
+              >
+                <span className="text-xs opacity-70">Étape {i + 1}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span>{s.label}</span>
+                  {dirty && (
+                    <span
+                      className="h-2.5 w-2.5 rounded-full bg-orange-500 shrink-0"
+                      aria-label="Modifications non enregistrées"
+                      title="Modifications non enregistrées"
+                    />
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </nav>
 
         <div className="space-y-6">
           <Step
             residence={residence}
             onChange={onChange}
-            reload={load}
-            setExternalSaving={setExternal}
-            onStepChange={(key) => {
-              const idx = steps.findIndex((s) => s.key === key);
-              if (idx !== -1) setStepIdx(idx);
-            }}
+            reload={reload}
+            setExternalSaving={() => {}}
+            onStepChange={(key) => goToStep(key)}
           />
 
+          {/* Centralized Save button */}
+          <div className="flex items-center justify-end gap-3">
+            {isOperational ? (
+              <span className="text-sm text-muted-foreground italic">
+                Les modifications de cette étape sont enregistrées automatiquement à chaque action.
+              </span>
+            ) : (
+              <Button
+                size="lg"
+                onClick={saveCurrent}
+                disabled={!currentIsDirty || isSaving}
+                className={currentIsDirty ? "bg-green-600 hover:bg-green-700 text-white" : ""}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? "Enregistrement…" : "Enregistrer les modifications"}
+              </Button>
+            )}
+          </div>
+
           <div className="flex justify-between">
-            <Button variant="outline" disabled={stepIdx === 0} onClick={() => setStepIdx((i) => Math.max(0, i - 1))}>
+            <Button variant="outline" disabled={stepIdx === 0} onClick={goPrev}>
               Précédent
             </Button>
-            <Button disabled={stepIdx === steps.length - 1} onClick={() => setStepIdx((i) => Math.min(steps.length - 1, i + 1))}>
+            <Button disabled={stepIdx === steps.length - 1} onClick={goNext}>
               Suivant
             </Button>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResidenceEditor() {
+  const { id } = useParams<{ id: string }>();
+  const [residence, setResidence] = useState<ResidenceRow | null>(null);
+  const [completeness, setCompleteness] = useState(0);
+
+  const load = async () => {
+    if (!id) return;
+    const { data, error } = await supabase.from("residences").select("*").eq("id", id).single();
+    if (error) { toast.error(error.message); return; }
+    setResidence(data as any);
+    const { data: c } = await supabase.rpc("residence_completeness", { _residence_id: id });
+    setCompleteness((c as number) ?? 0);
+  };
+
+  useEffect(() => { load(); }, [id]);
+
+  if (!residence) {
+    return <div className="container py-12 text-muted-foreground">Chargement…</div>;
+  }
+
+  const onChange = (patch: Partial<ResidenceRow>) => {
+    setResidence((r) => (r ? { ...r, ...patch } : r));
+  };
+
+  return (
+    <WizardSaveProvider
+      initialStep="general"
+      renderModal={({ open, onSave, onDiscard, onStay }) => (
+        <AlertDialog open={open} onOpenChange={(v) => { if (!v) onStay(); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Modifications non enregistrées</AlertDialogTitle>
+              <AlertDialogDescription>
+                Vous avez des modifications non enregistrées. Les sauvegarder avant de continuer ?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2 sm:gap-2">
+              <AlertDialogCancel onClick={onStay}>Rester</AlertDialogCancel>
+              <Button variant="outline" onClick={onDiscard}>Ignorer</Button>
+              <AlertDialogAction onClick={onSave}>Enregistrer</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    >
+      <EditorShell
+        residence={residence}
+        completeness={completeness}
+        onChange={onChange}
+        reload={load}
+      />
+    </WizardSaveProvider>
   );
 }

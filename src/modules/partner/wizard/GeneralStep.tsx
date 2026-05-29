@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { useAutosave } from "../useAutosave";
+import { useRegisterWizardStep } from "@/modules/partner/WizardSaveContext";
 import { StepProps } from "@/pages/partner/ResidenceEditor";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +18,8 @@ const types = [
   { value: "maison_repos_soins", label: "Maison de repos et de soins" },
 ];
 
-export default function GeneralStep({ residence, onChange, setExternalSaving, onStepChange }: StepProps) {
-  const [local, setLocal] = useState({
+export default function GeneralStep({ residence, onChange, onStepChange }: StepProps) {
+  const initial = useRef({
     nom_fr: residence.nom_fr ?? "",
     nom_nl: residence.nom_nl ?? "",
     tagline_fr: residence.tagline_fr ?? "",
@@ -28,6 +28,7 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
     description_nl: residence.description_nl ?? "",
     type_etablissement: residence.type_etablissement,
   });
+  const [local, setLocal] = useState({ ...initial.current });
 
   const { data: apartmentCount = 0 } = useQuery({
     queryKey: ["apartment-count", residence.id],
@@ -41,9 +42,10 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
     enabled: !!residence.id,
   });
 
+  const isDirty = JSON.stringify(local) !== JSON.stringify(initial.current);
 
-  useAutosave(local, async (v) => {
-    setExternalSaving("saving");
+  const save = useCallback(async () => {
+    const v = local;
     const { error } = await supabase
       .from("residences")
       .update({
@@ -56,10 +58,14 @@ export default function GeneralStep({ residence, onChange, setExternalSaving, on
         type_etablissement: v.type_etablissement as any,
       })
       .eq("id", residence.id);
-    if (error) { setExternalSaving("error"); throw error; }
-    setExternalSaving("saved");
+    if (error) throw error;
+    initial.current = { ...v };
     onChange(v as any);
-  });
+  }, [local, residence.id, onChange]);
+
+  const reset = useCallback(() => setLocal({ ...initial.current }), []);
+
+  useRegisterWizardStep("general", { isDirty, save, reset });
 
   const set = <K extends keyof typeof local>(k: K, v: typeof local[K]) =>
     setLocal((s) => ({ ...s, [k]: v }));
