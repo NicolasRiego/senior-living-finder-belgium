@@ -827,6 +827,7 @@ export type Database = {
           account_type: string
           created_at: string
           display_name: string | null
+          is_super_admin: boolean
           language: string
           phone: string | null
           updated_at: string
@@ -836,6 +837,7 @@ export type Database = {
           account_type?: string
           created_at?: string
           display_name?: string | null
+          is_super_admin?: boolean
           language?: string
           phone?: string | null
           updated_at?: string
@@ -845,6 +847,7 @@ export type Database = {
           account_type?: string
           created_at?: string
           display_name?: string | null
+          is_super_admin?: boolean
           language?: string
           phone?: string | null
           updated_at?: string
@@ -1677,6 +1680,24 @@ export type Database = {
           ville: string
         }[]
       }
+      admin_list_users: {
+        Args: never
+        Returns: {
+          account_type: string
+          created_at: string
+          display_name: string
+          email: string
+          is_admin: boolean
+          is_partner: boolean
+          is_super_admin: boolean
+          last_sign_in_at: string
+          user_id: string
+        }[]
+      }
+      admin_set_user_role: {
+        Args: { _role: string; _target_user_id: string }
+        Returns: undefined
+      }
       anonymize_my_account: { Args: never; Returns: undefined }
       approve_residence: { Args: { _residence_id: string }; Returns: undefined }
       archive_residence: {
@@ -1710,6 +1731,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       log_lead_view: { Args: { _lead_id: string }; Returns: undefined }
       promote_email_to_admin: { Args: { _email: string }; Returns: undefined }
       purge_demo_apartments: { Args: never; Returns: Json }

@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket, Database } from "lucide-react";
+import { ShieldCheck, ListChecks, ScrollText, LogOut, Home, Rocket, Database, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { APP_VERSION } from "@/lib/version";
 import { SpaceSwitcher } from "./SpaceSwitcher";
@@ -11,10 +11,12 @@ import { ConstructionBanner } from "./ConstructionBanner";
 const items = [
   { to: "/admin/validation", label: "Validation", icon: ListChecks },
   { to: "/admin/residences", label: "Résidences", icon: ShieldCheck },
+  { to: "/admin/utilisateurs", label: "Utilisateurs", icon: Users },
   { to: "/admin/audit", label: "Journal", icon: ScrollText },
   { to: "/admin/deploiements", label: "Déploiements", icon: Rocket },
   { to: "/admin/demo", label: "Démo", icon: Database },
 ];
+
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   const { user, signOut } = useAuth();
