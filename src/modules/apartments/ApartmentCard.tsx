@@ -193,7 +193,7 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
               </>
             ) : (
               <>
-                <GitCompare className="h-4 w-4" /> Ajouter au comparateur
+                <GitCompare className="h-4 w-4" /> Comparateur
               </>
             )}
           </Button>
