@@ -226,7 +226,7 @@ export default function ResidencesPage() {
               type="button"
               variant="outline"
               className="w-full"
-              onClick={() => setSp(new URLSearchParams(), { replace: true })}
+              onClick={() => { setSp(new URLSearchParams(), { replace: true }); setBudgetRange([BUDGET_MIN, BUDGET_MAX]); }}
             >
               Réinitialiser
             </Button>
