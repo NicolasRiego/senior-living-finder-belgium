@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RangeSlider } from "@/components/ui/range-slider";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import {
   searchResidences,
