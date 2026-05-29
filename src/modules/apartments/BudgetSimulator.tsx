@@ -339,7 +339,7 @@ function FrequencyControls({
     return (
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">Repas/jour</Label>
+          <Label className="text-xs text-muted-foreground">Repas par jour</Label>
           <Select
             value={String(sel.mealsPerDay ?? 1)}
             onValueChange={(v) => setSel({ mealsPerDay: Number(v) })}
@@ -352,7 +352,7 @@ function FrequencyControls({
           </Select>
         </div>
         <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">Jours/semaine</Label>
+          <Label className="text-xs text-muted-foreground">Jours par semaine</Label>
           <Select
             value={String(sel.daysPerWeek ?? 5)}
             onValueChange={(v) => setSel({ daysPerWeek: Number(v) })}
