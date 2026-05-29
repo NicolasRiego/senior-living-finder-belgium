@@ -162,17 +162,13 @@ export default function ResidencesPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">
-                Budget mensuel : <span className="font-semibold text-primary">≤ {filters.budget_max ?? 4000}€</span>
-              </label>
-              <input
-                type="range"
-                min={800}
-                max={4000}
+              <RangeSlider
+                label="Budget mensuel"
+                min={BUDGET_MIN}
+                max={BUDGET_MAX}
                 step={50}
-                value={filters.budget_max ?? 4000}
-                onChange={(e) => updateParam({ budget: Number(e.target.value) })}
-                className="w-full accent-[hsl(var(--primary))]"
+                value={budgetRange}
+                onValueChange={setBudgetRange}
               />
             </div>
 
