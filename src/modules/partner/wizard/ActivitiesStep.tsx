@@ -247,22 +247,24 @@ export default function ActivitiesStep({ residence }: StepProps) {
       <CardHeader>
         <CardTitle>Étape 6 — Activités</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2">
         {catalog.length === 0 && (
           <p className="text-muted-foreground">Aucune activité au catalogue pour l'instant.</p>
         )}
 
         {/* Column headers */}
         {catalog.length > 0 && (
-          <div className="hidden md:grid grid-cols-[1.6fr_1.4fr_1.4fr_auto] gap-3 px-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <div className="hidden md:grid grid-cols-[1.6fr_90px_60px_1.7fr_auto] gap-3 px-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             <div>Activité</div>
-            <div>Fréquence</div>
+            <div>Période</div>
+            <div className="text-center">Fois</div>
             <div>Responsable</div>
             <div className="w-8" aria-hidden />
           </div>
         )}
 
-        {catalog.map((a) => {
+        <TooltipProvider delayDuration={300}>
+        {catalog.map((a, idx) => {
           const sel = selected[a.id];
           const period = sel?.frequency_period || "";
           const count = sel?.frequency_count ?? "";
@@ -273,11 +275,14 @@ export default function ActivitiesStep({ residence }: StepProps) {
             responsable && (DEFAULT_RESPONSABLES.includes(responsable) || customResponsables.includes(responsable))
               ? responsable
               : undefined;
+          const responsableDisplay = responsable || (isCustomResp ? responsable : "");
 
           return (
             <div
               key={a.id}
-              className="grid grid-cols-1 md:grid-cols-[1.6fr_1.4fr_1.4fr_auto] items-start md:items-center gap-3 p-3 rounded-lg border"
+              className={`grid grid-cols-1 md:grid-cols-[1.6fr_90px_60px_1.7fr_auto] items-start md:items-center gap-x-3 gap-y-2 px-3 py-2 rounded-lg border min-h-[68px] ${
+                idx % 2 === 1 ? "bg-muted/30" : "bg-background"
+              }`}
             >
               {/* Activité */}
               <div className="flex items-center gap-3 min-w-0">
@@ -287,7 +292,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                   id={`act-${a.id}`}
                   className="h-5 w-5 shrink-0"
                 />
-                <Label htmlFor={`act-${a.id}`} className="flex-1 text-base cursor-pointer">
+                <Label htmlFor={`act-${a.id}`} className="flex-1 text-base cursor-pointer leading-tight">
                   {a.label_fr}
                   {a.is_custom && (
                     <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
@@ -297,15 +302,15 @@ export default function ActivitiesStep({ residence }: StepProps) {
                 </Label>
               </div>
 
-              {/* Fréquence */}
+              {/* Période + Fois (stacked inline on mobile) */}
               {sel ? (
-                <div className="space-y-1">
-                  <div className="flex gap-2">
+                <>
+                  <div className="md:contents flex gap-2 items-center">
                     <Select
                       value={period || undefined}
                       onValueChange={(v) => onPeriodChange(a.id, v)}
                     >
-                      <SelectTrigger className="h-10 flex-1 min-w-0">
+                      <SelectTrigger className="h-10 md:w-[90px] w-[110px]" aria-label="Période">
                         <SelectValue placeholder="Période" />
                       </SelectTrigger>
                       <SelectContent>
@@ -318,23 +323,20 @@ export default function ActivitiesStep({ residence }: StepProps) {
                       type="text"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      placeholder="Nombre"
                       value={count}
                       onChange={(e) => onCountChange(a.id, e.target.value)}
                       disabled={!period}
-                      className="h-10 w-24"
+                      className="h-10 md:w-[60px] w-[60px] text-center px-1"
                       aria-label="Nombre de fois"
+                      title={max ? `Maximum ${max}` : undefined}
                     />
                   </div>
-                  {period && count && (
-                    <p className="text-xs text-muted-foreground">
-                      {frequencyText(period, Number(count))}
-                      {max ? <span className="opacity-60"> · max {max}</span> : null}
-                    </p>
-                  )}
-                </div>
+                </>
               ) : (
-                <div className="text-xs text-muted-foreground italic">Cochez pour activer</div>
+                <>
+                  <div className="text-xs text-muted-foreground italic md:block hidden">—</div>
+                  <div className="hidden md:block" />
+                </>
               )}
 
               {/* Responsable */}
@@ -378,31 +380,43 @@ export default function ActivitiesStep({ residence }: StepProps) {
                     </Button>
                   </div>
                 ) : (
-                  <Select
-                    value={selectValue}
-                    onValueChange={(v) => onResponsableChange(a.id, v)}
-                  >
-                    <SelectTrigger className="h-10">
-                      <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEFAULT_RESPONSABLES.map((r) => (
-                        <SelectItem key={r} value={r}>{r}</SelectItem>
-                      ))}
-                      {customResponsables.length > 0 && <SelectSeparator />}
-                      {customResponsables.map((r) => (
-                        <SelectItem key={r} value={r}>{r}</SelectItem>
-                      ))}
-                      <SelectSeparator />
-                      <SelectItem value={ADD_CUSTOM_VALUE} className="text-primary font-medium">
-                        + Ajouter un responsable personnalisé
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Select
+                          value={selectValue}
+                          onValueChange={(v) => onResponsableChange(a.id, v)}
+                        >
+                          <SelectTrigger
+                            className="min-h-[44px] h-auto py-1.5 items-start text-left [&>span]:line-clamp-2 [&>span]:leading-snug [&>span]:whitespace-normal [&>span]:text-left"
+                          >
+                            <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
+                          </SelectTrigger>
+                          <SelectContent className="max-w-[320px]">
+                            {DEFAULT_RESPONSABLES.map((r) => (
+                              <SelectItem key={r} value={r}>{r}</SelectItem>
+                            ))}
+                            {customResponsables.length > 0 && <SelectSeparator />}
+                            {customResponsables.map((r) => (
+                              <SelectItem key={r} value={r}>{r}</SelectItem>
+                            ))}
+                            <SelectSeparator />
+                            <SelectItem value={ADD_CUSTOM_VALUE} className="text-primary font-medium">
+                              + Ajouter un responsable personnalisé
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </TooltipTrigger>
+                    {responsableDisplay && (
+                      <TooltipContent side="top">{responsableDisplay}</TooltipContent>
+                    )}
+                  </Tooltip>
                 )
               ) : (
                 <div />
               )}
+
 
               {/* Delete custom activity */}
               <div className="flex justify-end">
