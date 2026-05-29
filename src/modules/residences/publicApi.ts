@@ -58,6 +58,7 @@ export async function searchResidences(filters: SearchFilters) {
   if (filters.ville) q = q.ilike("ville", `%${filters.ville}%`);
   if (filters.type_etablissement) q = q.eq("type_etablissement", filters.type_etablissement);
   if (filters.budget_max != null) q = q.lte("price_from", filters.budget_max);
+  if (filters.budget_min != null && filters.budget_min > 0) q = q.gte("price_from", filters.budget_min);
   if (filters.pmr) q = q.eq("is_pmr", true);
   if (filters.complete) q = q.eq("is_complete", true);
   if (filters.available) q = q.eq("has_availability", true);
