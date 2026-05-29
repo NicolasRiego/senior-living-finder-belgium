@@ -1,0 +1,1 @@
+ALTER VIEW public.apartment_search_view SET (security_invoker = true);
