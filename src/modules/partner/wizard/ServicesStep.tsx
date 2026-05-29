@@ -66,6 +66,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
   const [newServiceLabel, setNewServiceLabel] = useState("");
   const [newServiceCategory, setNewServiceCategory] = useState("Autres");
   const [creatingService, setCreatingService] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -75,7 +76,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
         .select("id,code,label_fr,category,is_custom")
         .or(`is_custom.eq.false,created_by_residence.eq.${residence.id}`)
         .order("category"),
-      supabase.from("residence_services").select("*").eq("residence_id", residence.id),
+      supabase.from("residence_services").select("*").eq("residence_id", residence.id).is("deleted_at", null),
       supabase
         .from("residence_charges")
         .select("*")
@@ -97,6 +98,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
         charges_label: s.charges_label ?? null,
         lunch_price: s.lunch_price ?? null,
         dinner_price: s.dinner_price ?? null,
+        is_available: s.is_available ?? true,
       };
     });
     setSelected(map);
@@ -123,6 +125,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
         charges_label: v.charges_label,
         lunch_price: v.is_free ? null : v.lunch_price,
         dinner_price: v.is_free ? null : v.dinner_price,
+        is_available: v.is_available,
       } as any, { onConflict: "residence_id,service_id" as any });
       if (error) errorCount++;
     }
@@ -147,9 +150,24 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
       [sid]: {
         included: true, optional: false, price: null, price_unit: null,
         is_free: false, from_charges: false, charges_label: null,
-        lunch_price: null, dinner_price: null,
+        lunch_price: null, dinner_price: null, is_available: true,
       },
     }));
+  };
+
+  const setAvailability = async (sid: string, available: boolean) => {
+    setSelected((s) => s[sid] ? { ...s, [sid]: { ...s[sid], is_available: available } } : s);
+    const { error } = await supabase
+      .from("residence_services")
+      .update({ is_available: available } as any)
+      .eq("residence_id", residence.id)
+      .eq("service_id", sid);
+    if (error) {
+      toast.error("Erreur lors de la mise à jour");
+      setSelected((s) => s[sid] ? { ...s, [sid]: { ...s[sid], is_available: !available } } : s);
+    } else {
+      toast.success(available ? "Service réactivé" : "Service marqué indisponible");
+    }
   };
 
   const createCustomService = async () => {
@@ -176,14 +194,14 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     await supabase.from("residence_services").upsert({
       residence_id: residence.id, service_id: (data as any).id,
       included: true, optional: false, price: null, price_unit: null,
-      is_free: false, from_charges: false,
+      is_free: false, from_charges: false, is_available: true,
     } as any, { onConflict: "residence_id,service_id" as any });
     setSelected((prev) => ({
       ...prev,
       [(data as any).id]: {
         included: true, optional: false, price: null, price_unit: null,
         is_free: false, from_charges: false, charges_label: null,
-        lunch_price: null, dinner_price: null,
+        lunch_price: null, dinner_price: null, is_available: true,
       },
     }));
     setNewServiceLabel("");
@@ -191,10 +209,13 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     toast.success(`Service "${(data as any).label_fr}" créé.`);
   };
 
-  const deleteCustomService = async (serviceId: string, label: string) => {
-    await supabase.from("residence_services").delete().eq("residence_id", residence.id).eq("service_id", serviceId);
-    await supabase.from("services_catalog").delete().eq("id", serviceId);
-    setCatalog((prev) => prev.filter((c) => c.id !== serviceId));
+  const softDeleteService = async (serviceId: string, label: string) => {
+    const { error } = await supabase
+      .from("residence_services")
+      .update({ deleted_at: new Date().toISOString() } as any)
+      .eq("residence_id", residence.id)
+      .eq("service_id", serviceId);
+    if (error) { toast.error(error.message); return; }
     setSelected((prev) => { const next = { ...prev }; delete next[serviceId]; return next; });
     toast.success(`Service "${label}" supprimé.`);
   };
