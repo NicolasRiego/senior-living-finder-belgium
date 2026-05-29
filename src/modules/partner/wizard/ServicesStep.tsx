@@ -209,16 +209,18 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
     toast.success(`Service "${(data as any).label_fr}" créé.`);
   };
 
-  const softDeleteService = async (serviceId: string, label: string) => {
+  const hardDeleteService = async (serviceId: string, label: string) => {
     const { error } = await supabase
       .from("residence_services")
-      .update({ deleted_at: new Date().toISOString() } as any)
+      .delete()
       .eq("residence_id", residence.id)
       .eq("service_id", serviceId);
     if (error) { toast.error(error.message); return; }
     setSelected((prev) => { const next = { ...prev }; delete next[serviceId]; return next; });
-    toast.success(`Service "${label}" supprimé.`);
+    setCatalog((prev) => prev.filter((c) => c.id !== serviceId));
+    toast.success(`Service "${label}" supprimé définitivement.`);
   };
+
 
   if (loading) return <Card><CardContent className="py-8 text-muted-foreground">Chargement…</CardContent></Card>;
 
