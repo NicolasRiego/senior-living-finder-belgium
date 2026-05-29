@@ -509,6 +509,29 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
           </Button>
         </div>
       </CardContent>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce service ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget ? `« ${deleteTarget.label} » ne sera plus visible sur votre fiche publique.` : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteTarget) softDeleteService(deleteTarget.id, deleteTarget.label);
+                setDeleteTarget(null);
+              }}
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
