@@ -83,11 +83,11 @@ function unitsPerMonth(kind: FreqKind, s: SelectedState[string]): number {
 
 function unitLabel(kind: FreqKind): string {
   switch (kind) {
-    case "meals": return "/repas";
+    case "meals": return "par repas";
     case "perWeek":
-    case "sessionsWeek": return "/séance";
-    case "perMonth": return "/passage";
-    case "fixed": return "/mois";
+    case "sessionsWeek": return "par séance";
+    case "perMonth": return "par passage";
+    case "fixed": return "par mois";
   }
 }
 
@@ -160,9 +160,9 @@ export function BudgetSimulator({
       const units = unitsPerMonth(kind, sel);
       const total = Math.round(units * unitPrice);
       let detail = "";
-      if (kind === "meals") detail = `${sel.mealsPerDay}×/j × ${sel.daysPerWeek}j/sem`;
-      else if (kind === "perWeek" || kind === "sessionsWeek") detail = `${sel.perWeek}×/sem`;
-      else if (kind === "perMonth") detail = `${sel.perMonth}×/mois`;
+      if (kind === "meals") detail = `${sel.mealsPerDay} repas par jour × ${sel.daysPerWeek} jours par semaine`;
+      else if (kind === "perWeek" || kind === "sessionsWeek") detail = `${sel.perWeek} fois par semaine`;
+      else if (kind === "perMonth") detail = `${sel.perMonth} fois par mois`;
       items.push({
         key: s.id,
         label: s.service?.label_fr ?? code,
@@ -219,7 +219,7 @@ export function BudgetSimulator({
                 </div>
                 <div className="mt-1">
                   {apt.rent_price
-                    ? <>Loyer : <strong>{apt.rent_price.toLocaleString("fr-BE")} €</strong>/mois</>
+                    ? <>Loyer : <strong>{apt.rent_price.toLocaleString("fr-BE")} €</strong> par mois</>
                     : apt.sale_price
                     ? <>Prix : <strong>{apt.sale_price.toLocaleString("fr-BE")} €</strong></>
                     : <span className="text-muted-foreground">Prix sur demande</span>}
@@ -308,13 +308,13 @@ export function BudgetSimulator({
             </ul>
             <div className="border-t pt-3 space-y-1">
               <div className="flex justify-between text-base">
-                <span className="font-semibold">Total / mois</span>
+                <span className="font-semibold">Total par mois</span>
                 <span className="font-display font-bold text-primary">
                   {totalMonth.toLocaleString("fr-BE")} €
                 </span>
               </div>
               <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Total / an</span>
+                <span>Total par an</span>
                 <span>{totalYear.toLocaleString("fr-BE")} €</span>
               </div>
             </div>
@@ -339,7 +339,7 @@ function FrequencyControls({
     return (
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">Repas/jour</Label>
+          <Label className="text-xs text-muted-foreground">Repas par jour</Label>
           <Select
             value={String(sel.mealsPerDay ?? 1)}
             onValueChange={(v) => setSel({ mealsPerDay: Number(v) })}
@@ -352,7 +352,7 @@ function FrequencyControls({
           </Select>
         </div>
         <div className="space-y-1">
-          <Label className="text-xs text-muted-foreground">Jours/semaine</Label>
+          <Label className="text-xs text-muted-foreground">Jours par semaine</Label>
           <Select
             value={String(sel.daysPerWeek ?? 5)}
             onValueChange={(v) => setSel({ daysPerWeek: Number(v) })}
@@ -378,9 +378,9 @@ function FrequencyControls({
         >
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">1×/mois</SelectItem>
-            <SelectItem value="2">2×/mois</SelectItem>
-            <SelectItem value="4">4×/mois</SelectItem>
+            <SelectItem value="1">1 fois par mois</SelectItem>
+            <SelectItem value="2">2 fois par mois</SelectItem>
+            <SelectItem value="4">4 fois par mois</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -397,7 +397,7 @@ function FrequencyControls({
         <SelectTrigger><SelectValue /></SelectTrigger>
         <SelectContent>
           {[1,2,3,4,5,6,7].map((n) => (
-            <SelectItem key={n} value={String(n)}>{n}×/sem</SelectItem>
+            <SelectItem key={n} value={String(n)}>{n} fois par semaine</SelectItem>
           ))}
         </SelectContent>
       </Select>
