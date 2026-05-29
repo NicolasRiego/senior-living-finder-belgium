@@ -108,7 +108,9 @@ export function BudgetSimulator({
           .from("residence_services")
           .select("id, service_id, price, price_unit, lunch_price, dinner_price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
           .eq("residence_id", apt.residence_id)
-          .eq("included", true),
+          .eq("included", true)
+          .eq("is_available", true)
+          .is("deleted_at", null),
         supabase
           .from("residence_charges")
           .select("id, label, amount")
