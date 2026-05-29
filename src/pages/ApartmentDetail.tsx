@@ -223,7 +223,7 @@ export default function ApartmentDetailPage() {
             )}
             {showRent && a.rent_price != null && a.rent_price > 0 && (
               <div>
-                <div className="text-muted-foreground">Loyer mensuel</div>
+                <div className="text-muted-foreground">Loyer mensuel minimum</div>
                 <div className="font-display font-semibold text-primary leading-tight">
                   {a.rent_price.toLocaleString("fr-BE")} €
                   <span className="text-muted-foreground"> /mois</span>

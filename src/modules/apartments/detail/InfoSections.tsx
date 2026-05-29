@@ -171,7 +171,7 @@ export function FinancesInfo({ a }: { a: A }) {
       <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4 text-sm">
         {showRent && (
           <div className="space-y-2">
-            <div className="flex justify-between"><span>Loyer mensuel</span><span className="font-medium">{a.rent_price ? fmt(a.rent_price) : "—"}</span></div>
+            <div className="flex justify-between"><span>Loyer mensuel minimum</span><span className="font-medium">{a.rent_price ? fmt(a.rent_price) : "—"}</span></div>
             <div className="flex justify-between"><span>Charges mensuelles</span><span className="font-medium">{a.charges_monthly ? fmt(a.charges_monthly) : "—"}</span></div>
             <div className="flex justify-between"><span>Copropriété / mois</span><span className="font-medium">{a.co_ownership_fee ? fmt(a.co_ownership_fee) : "—"}</span></div>
             <div className="flex justify-between border-t border-border/60 pt-2">

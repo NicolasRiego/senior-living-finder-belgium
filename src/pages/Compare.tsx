@@ -459,7 +459,7 @@ export default function ComparePage() {
                   </CellText>
                 ))}
               </DataRow>
-              <DataRow label="Loyer mensuel" count={aptItems.length} index={1}>
+              <DataRow label="Loyer mensuel minimum" count={aptItems.length} index={1}>
                 {aptItems.map((a) => (
                   <div key={a.id} className="text-center">
                     {a.rent_price ? (

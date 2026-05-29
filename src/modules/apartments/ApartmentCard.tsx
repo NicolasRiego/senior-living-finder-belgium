@@ -121,22 +121,26 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
         </div>
 
         <div className="mt-auto flex flex-col gap-3 pt-3">
-          <div className="space-y-1">
+          <div className="space-y-2">
             {showSale && row.sale_price != null && row.sale_price > 0 && (
               <div>
-                <span className="text-sm text-muted-foreground">Prix : </span>
-                <span className="font-display text-xl font-semibold text-primary xl:text-2xl">
-                  {row.sale_price.toLocaleString("fr-BE")} €
-                </span>
+                <div className="text-sm text-muted-foreground">À partir de</div>
+                <div>
+                  <span className="font-display text-2xl font-semibold text-primary">
+                    {row.sale_price.toLocaleString("fr-BE")} €
+                  </span>
+                </div>
               </div>
             )}
             {showRent && row.rent_price != null && row.rent_price > 0 && (
               <div>
-                <span className="text-sm text-muted-foreground">Loyer : </span>
-                <span className="font-display text-xl font-semibold text-primary xl:text-2xl">
-                  {row.rent_price.toLocaleString("fr-BE")} €
-                </span>
-                <span className="text-sm text-muted-foreground">/mois</span>
+                <div className="text-sm text-muted-foreground">Loyer mensuel minimum — à partir de</div>
+                <div>
+                  <span className="font-display text-2xl font-semibold text-primary">
+                    {row.rent_price.toLocaleString("fr-BE")} €
+                  </span>
+                  <span className="text-sm text-muted-foreground">/mois</span>
+                </div>
               </div>
             )}
             {(!showSale || !row.sale_price || row.sale_price <= 0) &&
@@ -146,7 +150,7 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button asChild size="sm" className="w-auto whitespace-nowrap px-4">
+            <Button asChild size="sm" className="flex-1 min-w-[140px] whitespace-nowrap">
               <Link to={`/appartements/${row.id}`}>Voir l'appartement</Link>
             </Button>
             <Button
@@ -160,32 +164,43 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             >
               <Heart className={"h-4 w-4 " + (isFav ? "fill-current" : "")} />
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleApt(row.id);
-              }}
-              disabled={!inCompare && isAptFull}
-              aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
-              title={
-                inCompare
-                  ? "Retirer du comparateur"
-                  : isAptFull
-                  ? "Comparateur plein (max 4)"
-                  : "Ajouter au comparateur"
-              }
-              className={"px-3 " + (inCompare ? "border-primary text-primary" : "")}
-            >
-              {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
-            </Button>
-            <Button asChild size="sm" variant="outline" className="w-auto whitespace-nowrap px-4">
-              <Link to={`/residences/${row.residence_slug}`}>Voir la résidence</Link>
-            </Button>
           </div>
+
+          <Button
+            type="button"
+            size="sm"
+            variant={inCompare ? "soft" : "outline"}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleApt(row.id);
+            }}
+            disabled={!inCompare && isAptFull}
+            aria-pressed={inCompare}
+            aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+            title={
+              inCompare
+                ? "Retirer du comparateur"
+                : isAptFull
+                ? "Comparateur plein (max 4)"
+                : "Ajouter au comparateur"
+            }
+            className="w-full whitespace-nowrap"
+          >
+            {inCompare ? (
+              <>
+                <Check className="h-4 w-4" /> Dans le comparateur
+              </>
+            ) : (
+              <>
+                <GitCompare className="h-4 w-4" /> Ajouter au comparateur
+              </>
+            )}
+          </Button>
+
+          <Button asChild size="sm" variant="ghost" className="w-full whitespace-nowrap">
+            <Link to={`/residences/${row.residence_slug}`}>Voir la résidence</Link>
+          </Button>
         </div>
       </div>
     </article>
