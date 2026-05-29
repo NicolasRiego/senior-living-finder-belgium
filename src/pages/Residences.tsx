@@ -423,7 +423,15 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
               title={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
               className="px-4"
             >
-              {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
+              {inCompare ? (
+                <>
+                  <Check className="h-4 w-4" /> Dans le comparateur
+                </>
+              ) : (
+                <>
+                  <GitCompare className="h-4 w-4" /> Comparateur
+                </>
+              )}
             </Button>
           </div>
         </div>

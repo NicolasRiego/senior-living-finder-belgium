@@ -134,7 +134,7 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             )}
             {showRent && row.rent_price != null && row.rent_price > 0 && (
               <div>
-                <div className="text-sm text-muted-foreground">Loyer mensuel minimum — à partir de</div>
+                <div className="text-sm text-muted-foreground">Loyer mensuel — à partir de</div>
                 <div>
                   <span className="font-display text-2xl font-semibold text-primary">
                     {row.rent_price.toLocaleString("fr-BE")} €
