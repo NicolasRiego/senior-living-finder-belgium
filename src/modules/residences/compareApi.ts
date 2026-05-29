@@ -73,7 +73,9 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
         .from("residence_services")
         .select("included, services_catalog(code)")
         .eq("residence_id", v.id)
-        .eq("included", true),
+        .eq("included", true)
+        .eq("is_available", true)
+        .is("deleted_at", null),
       supabase
         .from("residence_activities")
         .select("activities_catalog(code)")
