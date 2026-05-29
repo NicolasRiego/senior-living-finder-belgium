@@ -43,7 +43,15 @@ function usePostalSearch(query: string) {
   return results;
 }
 
-export default function AddressStep({ residence, onChange, setExternalSaving }: StepProps) {
+export default function AddressStep({ residence, onChange }: StepProps) {
+  const initial = useRef({
+    adresse: residence.adresse ?? "",
+    code_postal: residence.code_postal ?? "",
+    commune: (residence as any).commune ?? "",
+    ville: residence.ville ?? "",
+    province: residence.province ?? "",
+    region: residence.region ?? "",
+  });
   const [local, setLocal] = useState({
     adresse: residence.adresse ?? "",
     code_postal: residence.code_postal ?? "",
