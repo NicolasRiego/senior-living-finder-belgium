@@ -110,10 +110,14 @@ function EditorShell({
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = contentRef.current;
-    if (!el) return;
-    el.scrollTop = 0;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    const contentPanel = document.querySelector(".content-panel-scroll");
+    if (contentPanel) {
+      contentPanel.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
   }, [currentStep]);
 
 
@@ -195,7 +199,7 @@ function EditorShell({
           })}
         </nav>
 
-        <div ref={contentRef} className="space-y-6 scroll-mt-4">
+        <div ref={contentRef} className="content-panel-scroll space-y-6 scroll-mt-4">
 
           <Step
             residence={residence}
