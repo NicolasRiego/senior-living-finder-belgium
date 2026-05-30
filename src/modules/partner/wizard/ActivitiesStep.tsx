@@ -340,7 +340,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+                  <div className="flex flex-col gap-1 w-[180px]">
                     <span className="text-xs text-muted-foreground">Responsable</span>
                     {addingFor === a.id ? (
                       <div className="flex gap-1">
