@@ -340,7 +340,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1 w-[180px]">
+                  <div className="flex flex-col gap-1 w-[220px]">
                     <span className="text-xs text-muted-foreground">Responsable</span>
                     {addingFor === a.id ? (
                       <div className="flex gap-1">
@@ -385,7 +385,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                         <TooltipTrigger asChild>
                           <div>
                             <Select value={selectValue} onValueChange={(v) => onResponsableChange(a.id, v)}>
-                              <SelectTrigger className="h-10 w-[180px] [&>span]:truncate [&>span]:block">
+                              <SelectTrigger className="h-10 w-[220px] min-w-[220px] [&>span]:truncate [&>span]:block">
                                 <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
                               </SelectTrigger>
                               <SelectContent className="max-w-[320px]">
