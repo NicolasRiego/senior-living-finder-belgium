@@ -195,7 +195,8 @@ function EditorShell({
           })}
         </nav>
 
-        <div className="space-y-6">
+        <div ref={contentRef} className="space-y-6 scroll-mt-4">
+
           <Step
             residence={residence}
             onChange={onChange}
