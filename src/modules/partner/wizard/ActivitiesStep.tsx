@@ -252,175 +252,44 @@ export default function ActivitiesStep({ residence }: StepProps) {
           <p className="text-muted-foreground">Aucune activité au catalogue pour l'instant.</p>
         )}
 
-        {/* Column headers */}
-        {catalog.length > 0 && (
-          <div className="hidden md:grid grid-cols-[1.6fr_90px_60px_1.7fr_auto] gap-3 px-3 pb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            <div>Activité</div>
-            <div>Période</div>
-            <div className="text-center">Fois</div>
-            <div>Responsable</div>
-            <div className="w-8" aria-hidden />
-          </div>
-        )}
-
         <TooltipProvider delayDuration={300}>
-        {catalog.map((a, idx) => {
+        {catalog.map((a) => {
           const sel = selected[a.id];
           const period = sel?.frequency_period || "";
           const count = sel?.frequency_count ?? "";
           const max = period ? periodMax(period) : undefined;
           const responsable = sel?.responsable || "";
-          const isCustomResp = responsable && !DEFAULT_RESPONSABLES.includes(responsable) && !customResponsables.includes(responsable);
+          const isCustomResp = !!responsable && !DEFAULT_RESPONSABLES.includes(responsable) && !customResponsables.includes(responsable);
           const selectValue =
             responsable && (DEFAULT_RESPONSABLES.includes(responsable) || customResponsables.includes(responsable))
               ? responsable
               : undefined;
-          const responsableDisplay = responsable || (isCustomResp ? responsable : "");
+          const checked = !!sel;
 
           return (
             <div
               key={a.id}
-              className={`grid grid-cols-1 md:grid-cols-[1.6fr_90px_60px_1.7fr_auto] items-start md:items-center gap-x-3 gap-y-2 px-3 py-2 rounded-lg border min-h-[68px] ${
-                idx % 2 === 1 ? "bg-muted/30" : "bg-background"
+              className={`rounded-lg border border-l-4 bg-background p-3 ${
+                checked ? "border-l-green-600" : "border-l-muted-foreground/30"
               }`}
             >
-              {/* Activité */}
-              <div className="flex items-center gap-3 min-w-0">
+              {/* LINE 1: checkbox + name + delete */}
+              <div className="flex items-center gap-3">
                 <Checkbox
-                  checked={!!sel}
+                  checked={checked}
                   onCheckedChange={(v) => toggle(a.id, !!v)}
                   id={`act-${a.id}`}
                   className="h-5 w-5 shrink-0"
                 />
-                <Label htmlFor={`act-${a.id}`} className="flex-1 text-base cursor-pointer leading-tight">
+                <Label htmlFor={`act-${a.id}`} className="flex-1 text-base font-bold cursor-pointer leading-tight">
                   {a.label_fr}
                   {a.is_custom && (
-                    <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">
+                    <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-normal text-amber-700">
                       Personnalisé
                     </span>
                   )}
                 </Label>
-              </div>
-
-              {/* Période + Fois (stacked inline on mobile) */}
-              {sel ? (
-                <>
-                  <div className="md:contents flex gap-2 items-center">
-                    <Select
-                      value={period || undefined}
-                      onValueChange={(v) => onPeriodChange(a.id, v)}
-                    >
-                      <SelectTrigger className="h-10 md:w-[90px] w-[110px]" aria-label="Période">
-                        <SelectValue placeholder="Période" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PERIODS.map((p) => (
-                          <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={count}
-                      onChange={(e) => onCountChange(a.id, e.target.value)}
-                      disabled={!period}
-                      className="h-10 md:w-[60px] w-[60px] text-center px-1"
-                      aria-label="Nombre de fois"
-                      title={max ? `Maximum ${max}` : undefined}
-                    />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="text-xs text-muted-foreground italic md:block hidden">—</div>
-                  <div className="hidden md:block" />
-                </>
-              )}
-
-              {/* Responsable */}
-              {sel ? (
-                addingFor === a.id ? (
-                  <div className="flex gap-1">
-                    <Input
-                      autoFocus
-                      value={customDraft}
-                      onChange={(e) => setCustomDraft(e.target.value)}
-                      placeholder="Nom du responsable"
-                      className="h-10"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          confirmCustomResponsable(a.id);
-                        } else if (e.key === "Escape") {
-                          setAddingFor(null);
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="default"
-                      className="h-10 w-10 shrink-0"
-                      onClick={() => confirmCustomResponsable(a.id)}
-                      aria-label="Confirmer"
-                    >
-                      <Check className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="ghost"
-                      className="h-10 w-10 shrink-0"
-                      onClick={() => setAddingFor(null)}
-                      aria-label="Annuler"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div>
-                        <Select
-                          value={selectValue}
-                          onValueChange={(v) => onResponsableChange(a.id, v)}
-                        >
-                          <SelectTrigger
-                            className="min-h-[44px] h-auto py-1.5 items-start text-left [&>span]:line-clamp-2 [&>span]:leading-snug [&>span]:whitespace-normal [&>span]:text-left"
-                          >
-                            <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
-                          </SelectTrigger>
-                          <SelectContent className="max-w-[320px]">
-                            {DEFAULT_RESPONSABLES.map((r) => (
-                              <SelectItem key={r} value={r}>{r}</SelectItem>
-                            ))}
-                            {customResponsables.length > 0 && <SelectSeparator />}
-                            {customResponsables.map((r) => (
-                              <SelectItem key={r} value={r}>{r}</SelectItem>
-                            ))}
-                            <SelectSeparator />
-                            <SelectItem value={ADD_CUSTOM_VALUE} className="text-primary font-medium">
-                              + Ajouter un responsable personnalisé
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </TooltipTrigger>
-                    {responsableDisplay && (
-                      <TooltipContent side="top">{responsableDisplay}</TooltipContent>
-                    )}
-                  </Tooltip>
-                )
-              ) : (
-                <div />
-              )}
-
-
-              {/* Delete custom activity */}
-              <div className="flex justify-end">
-                {a.is_custom ? (
+                {a.is_custom && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -435,10 +304,113 @@ export default function ActivitiesStep({ residence }: StepProps) {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                ) : (
-                  <div className="w-8" aria-hidden />
                 )}
               </div>
+
+              {/* LINE 2: période / fois / responsable */}
+              {sel && (
+                <div className="mt-2 pl-8 flex flex-wrap items-end gap-3">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-muted-foreground">Période</span>
+                    <Select value={period || undefined} onValueChange={(v) => onPeriodChange(a.id, v)}>
+                      <SelectTrigger className="h-10 w-[110px]" aria-label="Période">
+                        <SelectValue placeholder="Choisir…" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PERIODS.map((p) => (
+                          <SelectItem key={p.value} value={p.value}>{`/ ${p.unit}`}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-muted-foreground">Fois</span>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      value={count}
+                      onChange={(e) => onCountChange(a.id, e.target.value)}
+                      disabled={!period}
+                      className="h-10 w-[60px] text-center px-1"
+                      aria-label="Nombre de fois"
+                      title={max ? `Maximum ${max}` : undefined}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+                    <span className="text-xs text-muted-foreground">Responsable</span>
+                    {addingFor === a.id ? (
+                      <div className="flex gap-1">
+                        <Input
+                          autoFocus
+                          value={customDraft}
+                          onChange={(e) => setCustomDraft(e.target.value)}
+                          placeholder="Nom du responsable"
+                          className="h-10"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              confirmCustomResponsable(a.id);
+                            } else if (e.key === "Escape") {
+                              setAddingFor(null);
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="default"
+                          className="h-10 w-10 shrink-0"
+                          onClick={() => confirmCustomResponsable(a.id)}
+                          aria-label="Confirmer"
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="h-10 w-10 shrink-0"
+                          onClick={() => setAddingFor(null)}
+                          aria-label="Annuler"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <Select value={selectValue} onValueChange={(v) => onResponsableChange(a.id, v)}>
+                              <SelectTrigger className="h-10">
+                                <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
+                              </SelectTrigger>
+                              <SelectContent className="max-w-[320px]">
+                                {DEFAULT_RESPONSABLES.map((r) => (
+                                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                                ))}
+                                {customResponsables.length > 0 && <SelectSeparator />}
+                                {customResponsables.map((r) => (
+                                  <SelectItem key={r} value={r}>{r}</SelectItem>
+                                ))}
+                                <SelectSeparator />
+                                <SelectItem value={ADD_CUSTOM_VALUE} className="text-primary font-medium">
+                                  + Ajouter un responsable personnalisé
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </TooltipTrigger>
+                        {responsable && (
+                          <TooltipContent side="top">{responsable}</TooltipContent>
+                        )}
+                      </Tooltip>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
