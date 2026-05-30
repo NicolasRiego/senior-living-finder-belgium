@@ -199,7 +199,7 @@ function EditorShell({
           })}
         </nav>
 
-        <div ref={contentRef} className="space-y-6 scroll-mt-4">
+        <div ref={contentRef} className="content-panel-scroll space-y-6 scroll-mt-4">
 
           <Step
             residence={residence}
