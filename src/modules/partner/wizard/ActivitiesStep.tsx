@@ -385,7 +385,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                         <TooltipTrigger asChild>
                           <div>
                             <Select value={selectValue} onValueChange={(v) => onResponsableChange(a.id, v)}>
-                              <SelectTrigger className="h-10">
+                              <SelectTrigger className="h-10 w-[180px] [&>span]:truncate [&>span]:block">
                                 <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
                               </SelectTrigger>
                               <SelectContent className="max-w-[320px]">
