@@ -33,17 +33,22 @@ export default function PhotosStep({ residence }: StepProps) {
   const [uploading, setUploading] = useState(false);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
 
+  const isExternalUrl = (path: string) => /^https?:\/\//i.test(path);
+
   const load = async () => {
     const { data } = await supabase.from("photos").select("*")
       .eq("residence_id", residence.id).order("display_order");
     const list = (data ?? []) as any as Photo[];
     setPhotos(list);
-    // signed urls (residence might not be published yet)
     const urls: Record<string, string> = {};
-    for (const p of list) {
+    await Promise.all(list.map(async (p) => {
+      if (isExternalUrl(p.storage_path)) {
+        urls[p.id] = p.storage_path;
+        return;
+      }
       const { data: s } = await supabase.storage.from("residence-photos").createSignedUrl(p.storage_path, 3600);
       if (s?.signedUrl) urls[p.id] = s.signedUrl;
-    }
+    }));
     setSignedUrls(urls);
   };
   useEffect(() => { load(); }, [residence.id]);
@@ -75,10 +80,15 @@ export default function PhotosStep({ residence }: StepProps) {
   };
 
   const remove = async (p: Photo) => {
-    await supabase.storage.from("residence-photos").remove([p.storage_path]);
+    if (!confirm("Supprimer cette photo ?")) return;
+    if (!isExternalUrl(p.storage_path)) {
+      await supabase.storage.from("residence-photos").remove([p.storage_path]);
+    }
     await supabase.from("photos").delete().eq("id", p.id);
     setPhotos((ps) => ps.filter((x) => x.id !== p.id));
+    toast.success("Photo supprimée");
   };
+
 
   const setCover = async (p: Photo) => {
     // unset existing covers, then set this one
