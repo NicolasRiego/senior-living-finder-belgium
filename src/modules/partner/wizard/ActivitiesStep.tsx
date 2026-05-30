@@ -309,12 +309,13 @@ export default function ActivitiesStep({ residence }: StepProps) {
 
               {/* LINE 2: période / fois / responsable */}
               {sel && (
-                <div className="mt-2 pl-8 flex flex-wrap items-end gap-3">
+                <div className="mt-2 pl-8 flex flex-wrap items-end gap-2">
                   <div className="flex flex-col gap-1">
                     <span className="text-xs text-muted-foreground">Période</span>
                     <Select value={period || undefined} onValueChange={(v) => onPeriodChange(a.id, v)}>
-                      <SelectTrigger className="h-10 w-[110px]" aria-label="Période">
+                      <SelectTrigger className="h-10 min-w-[120px] w-[120px] whitespace-nowrap" aria-label="Période">
                         <SelectValue placeholder="Choisir…" />
+
                       </SelectTrigger>
                       <SelectContent>
                         {PERIODS.map((p) => (
@@ -339,7 +340,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1 flex-1 min-w-[200px]">
+                  <div className="flex flex-col gap-1 w-[180px]">
                     <span className="text-xs text-muted-foreground">Responsable</span>
                     {addingFor === a.id ? (
                       <div className="flex gap-1">
@@ -384,7 +385,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
                         <TooltipTrigger asChild>
                           <div>
                             <Select value={selectValue} onValueChange={(v) => onResponsableChange(a.id, v)}>
-                              <SelectTrigger className="h-10">
+                              <SelectTrigger className="h-10 w-[180px] [&>span]:truncate [&>span]:block">
                                 <SelectValue placeholder={isCustomResp ? responsable : "Choisir…"} />
                               </SelectTrigger>
                               <SelectContent className="max-w-[320px]">
