@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { StepProps } from "@/pages/partner/ResidenceEditor";
 import { toast } from "sonner";
-import { ImagePlus, Star, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { ImagePlus, Star, Trash2, ArrowUp, ArrowDown, GripVertical } from "lucide-react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, TouchSensor,
+  closestCenter, useSensor, useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext, arrayMove, rectSortingStrategy, useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type Photo = {
   id: string;
@@ -28,12 +35,77 @@ const categories = [
   { value: "other", label: "Autre" },
 ];
 
+const isExternalUrl = (path: string) => /^https?:\/\//i.test(path);
+
+function PhotoCard({
+  p, idx, total, signedUrl, isCover, onSetCover, onCategory, onUp, onDown, onRemove, isOverlay,
+}: {
+  p: Photo; idx: number; total: number; signedUrl?: string; isCover: boolean;
+  onSetCover: () => void; onCategory: (v: string) => void;
+  onUp: () => void; onDown: () => void; onRemove: () => void;
+  isOverlay?: boolean;
+}) {
+  const sortable = useSortable({ id: p.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } = sortable;
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  };
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card
+        className={`${isCover ? "ring-2 ring-primary" : ""} ${isOver ? "outline outline-2 outline-dashed outline-green-500" : ""} ${isOverlay ? "scale-105 shadow-2xl opacity-90" : ""}`}
+      >
+        <div className="relative aspect-video bg-muted overflow-hidden rounded-t-lg">
+          {signedUrl && <img src={signedUrl} alt={p.alt_text ?? ""} className="h-full w-full object-cover" />}
+          <button
+            type="button"
+            className="absolute top-1 left-1 rounded bg-background/80 p-1 cursor-grab active:cursor-grabbing touch-none"
+            aria-label="Glisser pour réordonner"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="h-4 w-4" />
+          </button>
+        </div>
+        <CardContent className="p-3 space-y-2">
+          <Select value={p.category} onValueChange={onCategory}>
+            <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <div className="flex items-center justify-between gap-1">
+            <Button variant="ghost" size="icon" onClick={onSetCover} aria-label="Définir comme couverture">
+              <Star className={`h-4 w-4 ${isCover ? "fill-primary text-primary" : ""}`} />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onUp} disabled={idx === 0} aria-label="Monter">
+              <ArrowUp className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onDown} disabled={idx === total - 1} aria-label="Descendre">
+              <ArrowDown className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onRemove} aria-label="Supprimer">
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function PhotosStep({ residence }: StepProps) {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [uploading, setUploading] = useState(false);
   const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  const isExternalUrl = (path: string) => /^https?:\/\//i.test(path);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
+  );
 
   const load = async () => {
     const { data } = await supabase.from("photos").select("*")
@@ -42,16 +114,20 @@ export default function PhotosStep({ residence }: StepProps) {
     setPhotos(list);
     const urls: Record<string, string> = {};
     await Promise.all(list.map(async (p) => {
-      if (isExternalUrl(p.storage_path)) {
-        urls[p.id] = p.storage_path;
-        return;
-      }
+      if (isExternalUrl(p.storage_path)) { urls[p.id] = p.storage_path; return; }
       const { data: s } = await supabase.storage.from("residence-photos").createSignedUrl(p.storage_path, 3600);
       if (s?.signedUrl) urls[p.id] = s.signedUrl;
     }));
     setSignedUrls(urls);
   };
   useEffect(() => { load(); }, [residence.id]);
+
+  const persistOrder = async (list: Photo[]) => {
+    await Promise.all(list.map((p, i) =>
+      p.display_order === i ? Promise.resolve() :
+      supabase.from("photos").update({ display_order: i }).eq("id", p.id)
+    ));
+  };
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -85,23 +161,26 @@ export default function PhotosStep({ residence }: StepProps) {
       await supabase.storage.from("residence-photos").remove([p.storage_path]);
     }
     await supabase.from("photos").delete().eq("id", p.id);
-    setPhotos((ps) => ps.filter((x) => x.id !== p.id));
+    const next = photos.filter((x) => x.id !== p.id);
+    setPhotos(next);
+    await persistOrder(next);
     toast.success("Photo supprimée");
   };
 
-
   const setCover = async (p: Photo) => {
-    // unset existing covers, then set this one
-    const covers = photos.filter((x) => x.category === "cover" && x.id !== p.id);
-    for (const c of covers) {
-      await supabase.from("photos").update({ category: "other" as any }).eq("id", c.id);
+    // Optimistic: exactly one cover
+    setPhotos((ps) => ps.map((x) => ({ ...x, category: x.id === p.id ? "cover" : (x.category === "cover" ? "other" : x.category) })));
+    const others = photos.filter((x) => x.category === "cover" && x.id !== p.id).map((x) => x.id);
+    if (others.length) {
+      await supabase.from("photos").update({ category: "other" as any }).in("id", others);
     }
     await supabase.from("photos").update({ category: "cover" as any }).eq("id", p.id);
-    await load();
     toast.success("Photo de couverture définie");
   };
 
   const updateCategory = async (p: Photo, cat: string) => {
+    if (cat === "cover") { await setCover(p); return; }
+    // If demoting current cover, just update it
     await supabase.from("photos").update({ category: cat as any }).eq("id", p.id);
     setPhotos((ps) => ps.map((x) => x.id === p.id ? { ...x, category: cat } : x));
   };
@@ -109,15 +188,26 @@ export default function PhotosStep({ residence }: StepProps) {
   const move = async (idx: number, dir: -1 | 1) => {
     const j = idx + dir;
     if (j < 0 || j >= photos.length) return;
-    const a = photos[idx], b = photos[j];
-    await Promise.all([
-      supabase.from("photos").update({ display_order: b.display_order }).eq("id", a.id),
-      supabase.from("photos").update({ display_order: a.display_order }).eq("id", b.id),
-    ]);
-    await load();
+    const next = arrayMove(photos, idx, j).map((p, i) => ({ ...p, display_order: i }));
+    setPhotos(next);
+    await persistOrder(next);
+  };
+
+  const onDragStart = (e: DragStartEvent) => setActiveId(String(e.active.id));
+  const onDragEnd = async (e: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const oldIdx = photos.findIndex((p) => p.id === active.id);
+    const newIdx = photos.findIndex((p) => p.id === over.id);
+    if (oldIdx < 0 || newIdx < 0) return;
+    const next = arrayMove(photos, oldIdx, newIdx).map((p, i) => ({ ...p, display_order: i }));
+    setPhotos(next);
+    await persistOrder(next);
   };
 
   const hasCover = photos.some((p) => p.category === "cover");
+  const activePhoto = activeId ? photos.find((p) => p.id === activeId) : null;
 
   return (
     <Card>
@@ -135,31 +225,36 @@ export default function PhotosStep({ residence }: StepProps) {
           <input type="file" multiple accept="image/*" className="hidden" onChange={onUpload} disabled={uploading} />
         </label>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          {photos.map((p, idx) => (
-            <Card key={p.id} className={p.category === "cover" ? "ring-2 ring-primary" : ""}>
-              <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
-                {signedUrls[p.id] && <img src={signedUrls[p.id]} alt={p.alt_text ?? ""} className="h-full w-full object-cover" />}
-              </div>
-              <CardContent className="p-3 space-y-2">
-                <Select value={p.category} onValueChange={(v) => updateCategory(p, v)}>
-                  <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {categories.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                <div className="flex items-center justify-between gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => setCover(p)} aria-label="Définir comme couverture">
-                    <Star className={`h-4 w-4 ${p.category === "cover" ? "fill-primary text-primary" : ""}`} />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => move(idx, -1)} aria-label="Monter"><ArrowUp className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => move(idx, 1)} aria-label="Descendre"><ArrowDown className="h-4 w-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => remove(p)} aria-label="Supprimer"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+          <SortableContext items={photos.map((p) => p.id)} strategy={rectSortingStrategy}>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+              {photos.map((p, idx) => (
+                <PhotoCard
+                  key={p.id}
+                  p={p} idx={idx} total={photos.length}
+                  signedUrl={signedUrls[p.id]}
+                  isCover={p.category === "cover"}
+                  onSetCover={() => setCover(p)}
+                  onCategory={(v) => updateCategory(p, v)}
+                  onUp={() => move(idx, -1)}
+                  onDown={() => move(idx, 1)}
+                  onRemove={() => remove(p)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+          <DragOverlay>
+            {activePhoto && (
+              <Card className="scale-105 shadow-2xl opacity-90">
+                <div className="aspect-video bg-muted overflow-hidden rounded-t-lg">
+                  {signedUrls[activePhoto.id] && (
+                    <img src={signedUrls[activePhoto.id]} alt="" className="h-full w-full object-cover" />
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            )}
+          </DragOverlay>
+        </DndContext>
       </CardContent>
     </Card>
   );
