@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -107,6 +107,15 @@ function EditorShell({
   const Step = steps[stepIdx].Component;
   const meta = statusBadge[residence.status] ?? statusBadge.draft;
   const isOperational = OPERATIONAL_STEPS.has(currentStep);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.scrollTop = 0;
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [currentStep]);
+
 
   const goToStep = (key: string) => guardNavigation(() => setCurrentStep(key));
   const goPrev = () => guardNavigation(() => setCurrentStep(steps[Math.max(0, stepIdx - 1)].key));
@@ -186,7 +195,8 @@ function EditorShell({
           })}
         </nav>
 
-        <div className="space-y-6">
+        <div ref={contentRef} className="space-y-6 scroll-mt-4">
+
           <Step
             residence={residence}
             onChange={onChange}
