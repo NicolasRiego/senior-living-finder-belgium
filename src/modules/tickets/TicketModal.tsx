@@ -155,7 +155,7 @@ export function TicketModal({ open, onClose, onSaved, initial }: Props) {
             <div className="flex gap-2 flex-wrap mt-1">
               {screenshots.map((url) => (
                 <div key={url} className="relative w-24 h-24">
-                  <img src={url} alt="" className="w-full h-full object-cover rounded-md border" />
+                  <TicketScreenshot stored={url} className="w-full h-full object-cover rounded-md border bg-muted" />
                   <button
                     type="button"
                     onClick={() => setScreenshots((s) => s.filter((u) => u !== url))}
