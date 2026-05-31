@@ -123,11 +123,17 @@ export default function PhotosStep({ residence }: StepProps) {
   useEffect(() => { load(); }, [residence.id]);
 
   const persistOrder = async (list: Photo[]) => {
-    const results = await Promise.all(list.map((p, i) =>
-      supabase.from("photos").update({ display_order: i }).eq("id", p.id)
-    ));
-    const err = results.find((r) => r.error)?.error;
-    if (err) toast.error("Ordre non sauvegardé: " + err.message);
+    try {
+      for (let i = 0; i < list.length; i++) {
+        const { error } = await supabase
+          .from("photos")
+          .update({ display_order: i })
+          .eq("id", list[i].id);
+        if (error) throw error;
+      }
+    } catch {
+      toast.error("Une erreur est survenue lors de la sauvegarde de l'ordre des photos. Veuillez réessayer.");
+    }
   };
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
