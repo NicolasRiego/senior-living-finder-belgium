@@ -18,6 +18,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { TicketComments } from "@/modules/tickets/TicketComments";
 import { TicketModal } from "@/modules/tickets/TicketModal";
+import { TicketScreenshot } from "@/modules/tickets/TicketScreenshot";
+import { getScreenshotSignedUrl } from "@/modules/tickets/ticketsApi";
 import {
   deleteTicket,
   getTicket,
@@ -192,9 +194,17 @@ export default function AdminTicketDetail() {
         {ticket.screenshots.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {ticket.screenshots.map((url) => (
-              <a key={url} href={url} target="_blank" rel="noreferrer">
-                <img src={url} alt="" className="w-full h-40 object-cover rounded-md border" />
-              </a>
+              <button
+                key={url}
+                type="button"
+                onClick={async () => {
+                  const signed = await getScreenshotSignedUrl(url);
+                  if (signed) window.open(signed, "_blank", "noopener,noreferrer");
+                }}
+                className="block w-full"
+              >
+                <TicketScreenshot stored={url} className="w-full h-40 object-cover rounded-md border bg-muted" />
+              </button>
             ))}
           </div>
         )}

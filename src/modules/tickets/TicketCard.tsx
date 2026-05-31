@@ -9,6 +9,7 @@ import {
   TICKET_PRIORITY_LABELS,
   type TicketRow,
 } from "./types";
+import { TicketScreenshot } from "./TicketScreenshot";
 
 type Props = { ticket: TicketRow; unread: boolean };
 
@@ -28,11 +29,9 @@ function TicketCardComponent({ ticket, unread }: Props) {
         )}
       >
         {ticket.screenshots[0] && (
-          <img
-            src={ticket.screenshots[0]}
-            alt=""
-            className="w-full h-24 object-cover rounded-md"
-            loading="lazy"
+          <TicketScreenshot
+            stored={ticket.screenshots[0]}
+            className="w-full h-24 object-cover rounded-md bg-muted"
           />
         )}
         <h3 className={cn("text-sm leading-snug", unread ? "font-bold" : "font-semibold")}>
