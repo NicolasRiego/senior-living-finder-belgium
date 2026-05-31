@@ -15,6 +15,7 @@ import {
   type TicketStatus,
 } from "./types";
 import { createTicket, updateTicket, uploadScreenshot, type TicketInput } from "./ticketsApi";
+import { TicketScreenshot } from "./TicketScreenshot";
 import { cn } from "@/lib/utils";
 
 type Props = {
