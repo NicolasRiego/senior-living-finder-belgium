@@ -106,6 +106,23 @@ export async function uploadScreenshot(file: File, userId: string): Promise<stri
     upsert: false,
   });
   if (error) throw error;
-  const { data } = supabase.storage.from("ticket-screenshots").getPublicUrl(path);
-  return data.publicUrl;
+  // Store the storage path; consumers create short-lived signed URLs for display.
+  return path;
+}
+
+/**
+ * Resolves a stored screenshot reference to a signed URL.
+ * Accepts either a raw storage path or a legacy public URL (which is normalized to a path).
+ */
+export async function getScreenshotSignedUrl(stored: string, expiresIn = 3600): Promise<string | null> {
+  if (!stored) return null;
+  let path = stored;
+  const marker = "/ticket-screenshots/";
+  const idx = stored.indexOf(marker);
+  if (idx !== -1) path = stored.slice(idx + marker.length);
+  const { data, error } = await supabase.storage
+    .from("ticket-screenshots")
+    .createSignedUrl(path, expiresIn);
+  if (error) return null;
+  return data?.signedUrl ?? null;
 }
