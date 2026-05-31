@@ -123,10 +123,11 @@ export default function PhotosStep({ residence }: StepProps) {
   useEffect(() => { load(); }, [residence.id]);
 
   const persistOrder = async (list: Photo[]) => {
-    await Promise.all(list.map((p, i) =>
-      p.display_order === i ? Promise.resolve() :
+    const results = await Promise.all(list.map((p, i) =>
       supabase.from("photos").update({ display_order: i }).eq("id", p.id)
     ));
+    const err = results.find((r) => r.error)?.error;
+    if (err) toast.error("Ordre non sauvegardé: " + err.message);
   };
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
