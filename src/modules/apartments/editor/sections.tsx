@@ -1,10 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Plus, Trash2 } from "lucide-react";
 import { Field, NumberField, SelectField } from "./Field";
 import {
   ApartmentFormState, KITCHEN_OPTIONS, BUILDING_STATE_OPTIONS,
   FLOORING_OPTIONS, ORIENTATION_OPTIONS, PARKING_TYPE_OPTIONS,
   HEATING_OPTIONS, HOT_WATER_OPTIONS, INTERNET_OPTIONS, ENERGY_CLASS_OPTIONS,
+  type AdditionalCharge,
 } from "./types";
 
 type Setter = <K extends keyof ApartmentFormState>(k: K, v: ApartmentFormState[K]) => void;
