@@ -252,7 +252,7 @@ export function BudgetSimulator({
       items.push({ key: s.id, label, total, detail });
     }
     return items;
-  }, [services, charges, selected, baseAmount, baseLabel]);
+  }, [services, charges, selected, baseAmount, baseLabel, aptExtras]);
 
   const totalMonth = useMemo(() => lines.reduce((acc, l) => acc + l.total, 0), [lines]);
   const totalYear = useMemo(() => totalMonth * 12, [totalMonth]);
