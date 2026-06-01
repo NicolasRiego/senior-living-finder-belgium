@@ -200,6 +200,7 @@ export default function ApartmentEditorShell({
       )}
     >
       <ApartmentFormProvider value={ctxValue}>
+        <AllStepRegistrars />
         <Shell residenceName={residenceName} apartmentTitle={apartmentTitle} />
       </ApartmentFormProvider>
     </WizardSaveProvider>
