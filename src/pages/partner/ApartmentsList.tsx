@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
@@ -204,7 +204,8 @@ export default function ApartmentsList() {
                   const showUnpinnedHeader =
                     hasPinned && page === 1 && idx === firstUnpinnedIndex && firstUnpinnedIndex > 0;
                   return (
-                    <>
+                    <Fragment key={a.id}>
+
                       {showUnpinnedHeader && (
                         <tr key={`sep-${a.id}`} className="bg-muted/10">
                           <td colSpan={7} className="p-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
