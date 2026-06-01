@@ -1,9 +1,12 @@
+import { useState } from "react";
 import {
   Bed, Bath, Toilet, Ruler, ChefHat, CalendarDays, Building, Wrench,
   Layers, Archive, Shirt, Briefcase, Sun, Compass, Car, ArrowUpDown,
   PhoneCall, Video, Bell, KeyRound, Flame, Droplets, Wifi, Zap,
-  Leaf, ShieldCheck, Sparkles,
+  Leaf, ShieldCheck, Sparkles, FileText, Download, Eye,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import PebPreviewModal from "../PebPreviewModal";
 import type { ApartmentDetail } from "../publicApi";
 import {
   KITCHEN_LABELS, BUILDING_STATE_LABELS, FLOORING_LABELS,
@@ -135,7 +138,11 @@ export function InstallationsInfo({ a }: { a: A }) {
 }
 
 export function EnergyInfo({ a }: { a: A }) {
-  if (!a.energy_class && !a.primary_energy && !a.double_glazing && !a.co2_emission) return null;
+  const [pebOpen, setPebOpen] = useState(false);
+  const showPeb = !!a.peb_certificate_url && a.peb_certificate_visible !== false;
+  if (
+    !a.energy_class && !a.primary_energy && !a.double_glazing && !a.co2_emission && !showPeb
+  ) return null;
   return (
     <section>
       <h2 className="mb-3 font-display font-semibold">Énergie</h2>
@@ -153,6 +160,26 @@ export function EnergyInfo({ a }: { a: A }) {
           <Row icon={ShieldCheck} label="Double vitrage" value={YesNo(a.double_glazing)} />
           <Row icon={Leaf} label="Émission CO₂" value={a.co2_emission ?? null} />
         </div>
+        {showPeb && (
+          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/40">
+            <FileText className="h-5 w-5 text-primary" aria-hidden />
+            <span className="text-sm font-medium flex-1 min-w-[120px]">Certificat PEB officiel</span>
+            <Button variant="outline" size="sm" onClick={() => setPebOpen(true)}>
+              <Eye className="h-4 w-4 mr-2" /> Voir le certificat PEB
+            </Button>
+            <Button variant="ghost" size="sm" asChild>
+              <a href={a.peb_certificate_url!} download={a.peb_certificate_name ?? "certificat-peb"} target="_blank" rel="noopener noreferrer">
+                <Download className="h-4 w-4 mr-2" /> Télécharger le certificat
+              </a>
+            </Button>
+            <PebPreviewModal
+              open={pebOpen}
+              onClose={() => setPebOpen(false)}
+              url={a.peb_certificate_url!}
+              name={a.peb_certificate_name ?? "certificat-peb"}
+            />
+          </div>
+        )}
       </div>
     </section>
   );

@@ -4,6 +4,7 @@ import {
 } from "./sections";
 import { useAptForm } from "./ApartmentFormContext";
 import type { ApartmentFormState } from "./types";
+import PebCertificate from "./PebCertificate";
 
 function useFormSetter() {
   const { form, setForm } = useAptForm();
@@ -30,7 +31,12 @@ export function InstallationsStep() {
 }
 export function EnergyStep() {
   const { form, set } = useFormSetter();
-  return <EnergySection form={form} set={set} />;
+  return (
+    <div className="space-y-6">
+      <EnergySection form={form} set={set} />
+      <PebCertificate />
+    </div>
+  );
 }
 export function FinancesStep() {
   const { form, set } = useFormSetter();

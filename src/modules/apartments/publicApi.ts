@@ -163,6 +163,9 @@ export type ApartmentExtraFields = {
   co_ownership_fee: number | null;
   charges_monthly: number | null;
   charges_description: string | null;
+  peb_certificate_url: string | null;
+  peb_certificate_name: string | null;
+  peb_certificate_visible: boolean | null;
 };
 
 export type ApartmentDetail = {
