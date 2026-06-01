@@ -161,11 +161,21 @@ export type ApartmentExtraFields = {
   agency_fee: number | null;
   property_tax: number | null;
   co_ownership_fee: number | null;
+  co_ownership_included: boolean | null;
+  co_ownership_description: string | null;
   charges_monthly: number | null;
   charges_description: string | null;
   peb_certificate_url: string | null;
   peb_certificate_name: string | null;
   peb_certificate_visible: boolean | null;
+};
+
+export type AdditionalChargeRow = {
+  id: string;
+  label: string;
+  amount: number;
+  description: string | null;
+  is_included: boolean;
 };
 
 export type ApartmentDetail = {
