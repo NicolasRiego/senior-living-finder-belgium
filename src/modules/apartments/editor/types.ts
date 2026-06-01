@@ -172,7 +172,7 @@ export const emptyForm: ApartmentFormState = {
   heating_type: "", hot_water: "", internet: "",
   energy_class: "", primary_energy: "", double_glazing: false, co2_emission: "",
   agency_fee: "", property_tax: "", co_ownership_fee: "",
-  co_ownership_included: false, co_ownership_description: "", additional_charges: [],
+  co_ownership_included: false, co_ownership_description: "", additional_charges: [], custom_equipment: [],
   parking: false, cave: false, terrace: false, garden: false,
   furnished: false, kitchen_equipped: false, elevator: false, wheelchair_accessible: false,
 };
