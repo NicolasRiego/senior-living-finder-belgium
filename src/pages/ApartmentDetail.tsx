@@ -47,7 +47,7 @@ export default function ApartmentDetailPage() {
     );
   }
 
-  const { apartment: a, residence: r, photos, additional_charges: addCharges } = data;
+  const { apartment: a, residence: r, photos, additional_charges: addCharges, custom_equipment: customEq } = data;
   const residenceName = tr(r.nom_fr, r.nom_nl);
   const description = tr(a.description_fr, a.description_nl);
   const typeLabel = a.type ? (TYPE_LABEL[a.type] ?? a.type) : "Logement";
