@@ -162,6 +162,7 @@ export type ApartmentExtraFields = {
   property_tax: number | null;
   co_ownership_fee: number | null;
   charges_monthly: number | null;
+  charges_description: string | null;
 };
 
 export type ApartmentDetail = {
