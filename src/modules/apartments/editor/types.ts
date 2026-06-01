@@ -135,7 +135,19 @@ export type ApartmentFormState = {
   agency_fee: string;
   property_tax: string;
   co_ownership_fee: string;
+  co_ownership_included: boolean;
+  co_ownership_description: string;
+  additional_charges: AdditionalCharge[];
 } & Record<AptBoolField, boolean>;
+
+export type AdditionalCharge = {
+  id: string;
+  label: string;
+  amount: string;
+  description: string;
+  is_included: boolean;
+  _persisted?: boolean;
+};
 
 export const emptyForm: ApartmentFormState = {
   title_fr: "", type: "", status: "available", available_from: "",
