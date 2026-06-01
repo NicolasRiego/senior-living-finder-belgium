@@ -140,7 +140,7 @@ export type ApartmentFormState = {
 export const emptyForm: ApartmentFormState = {
   title_fr: "", type: "", status: "available", available_from: "",
   surface_m2: "", floor: "", address_complement: "",
-  transaction_type: "", rent_price: "", charges_monthly: "", charges_description: "", sale_price: "",
+  transaction_type: "", rent_price: "", charges_monthly: "", charges_description: "Eau, chauffage, parties communes", sale_price: "",
   description_fr: "",
   bedrooms: "", bathrooms: "", toilets: "", living_room_m2: "",
   kitchen_type: "", build_year: "", building_floors: "", building_state: "",
