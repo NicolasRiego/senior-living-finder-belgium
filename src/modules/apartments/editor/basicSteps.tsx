@@ -1,0 +1,211 @@
+import { Link, useParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Camera } from "lucide-react";
+import { Field } from "./Field";
+import { useAptForm, useApartmentStep } from "./ApartmentFormContext";
+import { APT_STEPS } from "./stepDefs";
+import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
+import { APT_BOOL_FIELDS, type ApartmentFormState } from "./types";
+
+const setterFromCtx = () => {
+  const { form, setForm } = useAptForm();
+  const set = <K extends keyof ApartmentFormState>(k: K, v: ApartmentFormState[K]) =>
+    setForm((f) => ({ ...f, [k]: v }));
+  return { form, set };
+};
+
+function findStep(key: string) {
+  const s = APT_STEPS.find((x) => x.key === key);
+  if (!s) throw new Error(`Unknown step ${key}`);
+  return s;
+}
+
+export function IdentificationStep() {
+  const def = findStep("identification");
+  useApartmentStep(def.key, def.fields);
+  const { form, set } = setterFromCtx();
+  return (
+    <Card>
+      <CardHeader><CardTitle>Identification</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <Field label="Titre (français)" required>
+          <Input value={form.title_fr} onChange={(e) => set("title_fr", e.target.value)}
+            placeholder="ex : Appartement 2 chambres vue parc" maxLength={150} />
+        </Field>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Field label="Type de bien" required>
+            <Select value={form.type} onValueChange={(v) => set("type", v)}>
+              <SelectTrigger><SelectValue placeholder="Choisir…" /></SelectTrigger>
+              <SelectContent>
+                {UNIT_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field label="Statut" required>
+            <Select value={form.status} onValueChange={(v) => set("status", v as ApartmentFormState["status"])}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="available">Disponible</SelectItem>
+                <SelectItem value="reserved">Réservé</SelectItem>
+                <SelectItem value="unavailable">Indisponible</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
+        </div>
+        <Field label="Disponible à partir du">
+          <Input type="date" value={form.available_from} onChange={(e) => set("available_from", e.target.value)} />
+        </Field>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function LocationStep() {
+  const def = findStep("location");
+  useApartmentStep(def.key, def.fields);
+  const { form, set } = setterFromCtx();
+  return (
+    <Card>
+      <CardHeader><CardTitle>Superficie & localisation</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Field label="Surface (m²)" required>
+            <Input type="number" min={1} value={form.surface_m2}
+              onChange={(e) => set("surface_m2", e.target.value)} />
+          </Field>
+          <Field label="Étage" required hint="0 pour le rez-de-chaussée">
+            <Input type="number" min={0} value={form.floor}
+              onChange={(e) => set("floor", e.target.value)} />
+          </Field>
+        </div>
+        <Field label="Complément d'adresse">
+          <Input value={form.address_complement}
+            onChange={(e) => set("address_complement", e.target.value)}
+            placeholder="ex : Bâtiment B, porte 12" maxLength={150} />
+        </Field>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function TransactionStep() {
+  const def = findStep("transaction");
+  useApartmentStep(def.key, def.fields);
+  const { form, set } = setterFromCtx();
+  const showRent = form.transaction_type === "rent" || form.transaction_type === "both";
+  const showSale = form.transaction_type === "sale" || form.transaction_type === "both";
+  return (
+    <Card>
+      <CardHeader><CardTitle>Transaction & prix</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <Field label="Type de transaction" required>
+          <RadioGroup value={form.transaction_type}
+            onValueChange={(v) => set("transaction_type", v as ApartmentFormState["transaction_type"])}
+            className="flex flex-col gap-2">
+            <label className="flex items-center gap-2 cursor-pointer"><RadioGroupItem value="rent" /> À louer uniquement</label>
+            <label className="flex items-center gap-2 cursor-pointer"><RadioGroupItem value="sale" /> À vendre uniquement</label>
+            <label className="flex items-center gap-2 cursor-pointer"><RadioGroupItem value="both" /> Les deux (location et vente)</label>
+          </RadioGroup>
+        </Field>
+        {showRent && (
+          <div className="grid sm:grid-cols-2 gap-4">
+            <Field label="Loyer mensuel (€)" required>
+              <Input type="number" min={0} value={form.rent_price}
+                onChange={(e) => set("rent_price", e.target.value)} placeholder="ex : 1850" />
+            </Field>
+            <Field label="Charges mensuelles (€)" hint="Eau, chauffage, parties communes">
+              <Input type="number" min={0} value={form.charges_monthly}
+                onChange={(e) => set("charges_monthly", e.target.value)} placeholder="ex : 250" />
+            </Field>
+          </div>
+        )}
+        {showSale && (
+          <Field label="Prix de vente (€)" required>
+            <Input type="number" min={0} value={form.sale_price}
+              onChange={(e) => set("sale_price", e.target.value)} placeholder="ex : 245000" />
+          </Field>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function EquipmentsStep() {
+  const def = findStep("equipments");
+  useApartmentStep(def.key, def.fields);
+  const { form, set } = setterFromCtx();
+  return (
+    <Card>
+      <CardHeader><CardTitle>Équipements complémentaires</CardTitle></CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-3">
+          {APT_BOOL_FIELDS.filter(([k]) =>
+            !["parking", "terrace", "garden", "elevator"].includes(k)
+          ).map(([k, label]) => (
+            <label key={k} className="flex items-center gap-3 cursor-pointer">
+              <Checkbox checked={form[k]} onCheckedChange={(v) => set(k, v === true)} aria-label={label} />
+              <span>{label}</span>
+            </label>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function DescriptionStep() {
+  const def = findStep("description");
+  useApartmentStep(def.key, def.fields);
+  const { form, set } = setterFromCtx();
+  return (
+    <Card>
+      <CardHeader><CardTitle>Description</CardTitle></CardHeader>
+      <CardContent>
+        <Field label="Description (français)">
+          <Textarea value={form.description_fr}
+            onChange={(e) => set("description_fr", e.target.value.slice(0, 1000))}
+            placeholder="Décrivez l'appartement : vue, finitions, points forts…"
+            style={{ minHeight: 120 }} />
+          <p className="text-xs text-muted-foreground mt-1 text-right">
+            {form.description_fr.length}/1000
+          </p>
+        </Field>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function PhotosStep() {
+  const def = findStep("photos");
+  useApartmentStep(def.key, def.fields);
+  const { residenceId } = useParams<{ residenceId: string }>();
+  return (
+    <Card>
+      <CardHeader><CardTitle>Photos</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-start gap-3 rounded-lg bg-muted/50 p-4">
+          <Camera className="h-5 w-5 mt-0.5 text-muted-foreground shrink-0" />
+          <div className="space-y-2">
+            <p>
+              Les photos sont gérées au niveau de la résidence et sont partagées
+              entre tous les appartements.
+            </p>
+            <Button variant="outline" asChild>
+              <Link to={`/partenaire/residences/${residenceId}/edition`}>
+                Gérer les photos de la résidence
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
