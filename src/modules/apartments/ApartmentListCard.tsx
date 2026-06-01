@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Pencil, Trash2, Pin } from "lucide-react";
+import { Pencil, Trash2, Pin, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -65,6 +65,17 @@ export default function ApartmentListCard({ apartment: a, residenceId, onToggleP
           {a.title_fr || "Sans titre"}
         </h3>
         <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            aria-label="Aperçu de l'appartement"
+          >
+            <a href={`/appartements/${a.id}`} target="_blank" rel="noopener noreferrer">
+              <Eye className="h-4 w-4" />
+              <span className="ml-1 hidden sm:inline whitespace-nowrap">Aperçu</span>
+            </a>
+          </Button>
           <span
             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap ${sm.className}`}
           >
