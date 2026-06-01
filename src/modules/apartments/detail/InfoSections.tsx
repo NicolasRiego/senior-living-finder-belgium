@@ -185,13 +185,23 @@ export function EnergyInfo({ a }: { a: A }) {
   );
 }
 
-export function FinancesInfo({ a }: { a: A }) {
+export function FinancesInfo({
+  a,
+  additionalCharges = [],
+}: {
+  a: A;
+  additionalCharges?: { id: string; label: string; amount: number; description: string | null; is_included: boolean }[];
+}) {
   const showRent = a.transaction_type === "rent" || a.transaction_type === "both";
   const showSale = a.transaction_type === "sale" || a.transaction_type === "both";
   const fmt = (n: number) => `${n.toLocaleString("fr-BE")} €`;
-  const monthlyTotal = showRent
-    ? (a.rent_price ?? 0) + (a.charges_monthly ?? 0) + (a.co_ownership_fee ?? 0)
-    : null;
+  const coExtra = !a.co_ownership_included ? (a.co_ownership_fee ?? 0) : 0;
+  const additionalExtra = additionalCharges
+    .filter((c) => !c.is_included)
+    .reduce((acc, c) => acc + (c.amount || 0), 0);
+  const chargesTotal = (a.charges_monthly ?? 0) + coExtra + additionalExtra;
+  const monthlyTotal = showRent ? (a.rent_price ?? 0) + chargesTotal : null;
+
   return (
     <section>
       <h2 className="mb-3 font-display font-semibold">Finances</h2>
@@ -203,8 +213,39 @@ export function FinancesInfo({ a }: { a: A }) {
             {a.charges_description && (
               <div className="text-xs text-muted-foreground -mt-1">{a.charges_description}</div>
             )}
-            <div className="flex justify-between"><span>Copropriété / mois</span><span className="font-medium">{a.co_ownership_fee ? fmt(a.co_ownership_fee) : "—"}</span></div>
+            {(a.co_ownership_fee ?? 0) > 0 && (
+              <div className="flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <span>Copropriété / mois</span>
+                  {a.co_ownership_description && (
+                    <div className="text-xs text-muted-foreground">{a.co_ownership_description}</div>
+                  )}
+                  <div className="text-xs text-muted-foreground italic">
+                    {a.co_ownership_included ? "Inclus dans les charges" : `+ ${fmt(a.co_ownership_fee ?? 0)}/mois`}
+                  </div>
+                </div>
+                <span className="font-medium whitespace-nowrap">{fmt(a.co_ownership_fee ?? 0)}</span>
+              </div>
+            )}
+            {additionalCharges.map((c) => (
+              <div key={c.id} className="flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <span>{c.label}</span>
+                  {c.description && (
+                    <div className="text-xs text-muted-foreground">{c.description}</div>
+                  )}
+                  <div className="text-xs text-muted-foreground italic">
+                    {c.is_included ? "Inclus dans les charges" : `+ ${fmt(c.amount)}/mois`}
+                  </div>
+                </div>
+                <span className="font-medium whitespace-nowrap">{fmt(c.amount)}</span>
+              </div>
+            ))}
             <div className="flex justify-between border-t border-border/60 pt-2">
+              <span className="font-semibold">Total charges estimées</span>
+              <span className="font-medium">{fmt(chargesTotal)}/mois</span>
+            </div>
+            <div className="flex justify-between">
               <span className="font-semibold">Total mensuel estimé</span>
               <span className="font-display font-bold text-primary">{monthlyTotal ? fmt(monthlyTotal) : "—"}</span>
             </div>
