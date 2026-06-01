@@ -15,12 +15,12 @@ import { APT_STEPS } from "./stepDefs";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import { APT_BOOL_FIELDS, type ApartmentFormState } from "./types";
 
-const setterFromCtx = () => {
+function useFormSetter() {
   const { form, setForm } = useAptForm();
   const set = <K extends keyof ApartmentFormState>(k: K, v: ApartmentFormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
   return { form, set };
-};
+}
 
 function findStep(key: string) {
   const s = APT_STEPS.find((x) => x.key === key);
