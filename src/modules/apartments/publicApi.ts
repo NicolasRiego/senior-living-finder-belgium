@@ -178,6 +178,11 @@ export type AdditionalChargeRow = {
   is_included: boolean;
 };
 
+export type CustomEquipmentRow = {
+  id: string;
+  label: string;
+};
+
 export type ApartmentDetail = {
   apartment: ApartmentSearchRow & ApartmentExtraFields;
   residence: {
@@ -190,6 +195,7 @@ export type ApartmentDetail = {
   };
   photos: { id: string; url: string; alt: string; cover: boolean }[];
   additional_charges: AdditionalChargeRow[];
+  custom_equipment: CustomEquipmentRow[];
 };
 
 export async function getApartmentById(id: string): Promise<ApartmentDetail | null> {
