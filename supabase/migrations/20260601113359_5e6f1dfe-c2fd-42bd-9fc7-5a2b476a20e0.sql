@@ -1,0 +1,2 @@
+ALTER TABLE public.apartments ADD COLUMN IF NOT EXISTS is_pinned boolean NOT NULL DEFAULT false;
+CREATE INDEX IF NOT EXISTS idx_apartments_residence_pinned ON public.apartments(residence_id, is_pinned);
