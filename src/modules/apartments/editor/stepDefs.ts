@@ -78,7 +78,7 @@ export const APT_STEPS: StepDef[] = [
   {
     key: "finances",
     label: "Finances complémentaires",
-    fields: ["agency_fee", "property_tax", "co_ownership_fee"],
+    fields: ["agency_fee", "property_tax", "co_ownership_fee", "co_ownership_included", "co_ownership_description", "additional_charges"],
   },
   {
     key: "equipments",
