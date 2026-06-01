@@ -262,37 +262,56 @@ function ServiceRow({ s, label }: { s: any; label: string }) {
   const isFree = s.is_free === true;
   const isOptional = s.optional === true;
   const price = s.price ?? null;
+
+  const includedPill = (text: string) => (
+    <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 whitespace-nowrap">{text}</span>
+  );
+  const optionalPill = (
+    <span className="rounded-full border border-border bg-transparent px-2.5 py-0.5 text-xs font-medium text-muted-foreground whitespace-nowrap">Optionnel</span>
+  );
+
+  let right: ReactNode = null;
+  if (isFromCharges) {
+    right = includedPill("Inclus dans les charges");
+  } else if (isFree) {
+    right = includedPill("Inclus");
+  } else if (s.lunch_price || s.dinner_price) {
+    right = (
+      <>
+        {optionalPill}
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          {s.lunch_price ? `Déj. ~${s.lunch_price}€` : ""}
+          {s.lunch_price && s.dinner_price ? " / " : ""}
+          {s.dinner_price ? `Dîn. ~${s.dinner_price}€` : ""} /repas
+        </span>
+      </>
+    );
+  } else if (isOptional && price) {
+    right = (
+      <>
+        {optionalPill}
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          {Number(price).toLocaleString("fr-BE")} € {s.price_unit ?? "par mois"}
+        </span>
+      </>
+    );
+  } else if (isOptional) {
+    right = optionalPill;
+  }
+
   return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card px-4 py-3">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-border/60 bg-card px-4 py-3 min-h-[64px] overflow-hidden">
+      <div className="flex flex-1 min-w-0 items-center gap-3">
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Check className="h-4 w-4" />
         </span>
-        <span className="font-medium text-sm">{label}</span>
+        <span className="font-semibold text-sm break-words min-w-0">{label}</span>
       </div>
-      <div className="shrink-0">
-        {isFromCharges ? (
-          <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium whitespace-nowrap">Inclus dans les charges</span>
-        ) : isFree ? (
-          <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs text-green-700 font-medium">Inclus</span>
-        ) : s.lunch_price || s.dinner_price ? (
-          <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Optionnel</span>
-            <span className="text-sm font-semibold whitespace-nowrap">
-              {s.lunch_price ? `Déjeuner ~${s.lunch_price}€` : ""}
-              {s.lunch_price && s.dinner_price ? " / " : ""}
-              {s.dinner_price ? `Dîner ~${s.dinner_price}€` : ""} par repas
-            </span>
-          </div>
-        ) : isOptional && price ? (
-          <div className="flex items-center gap-1.5">
-            <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Optionnel</span>
-            <span className="text-sm font-semibold">{Number(price).toLocaleString("fr-BE")} € {s.price_unit ?? "par mois"}</span>
-          </div>
-        ) : isOptional ? (
-          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">Optionnel</span>
-        ) : null}
-      </div>
+      {right && (
+        <div className="ml-auto flex items-center gap-2 shrink-0">
+          {right}
+        </div>
+      )}
     </div>
   );
 }
