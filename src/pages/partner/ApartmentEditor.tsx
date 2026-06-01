@@ -47,6 +47,12 @@ export default function ApartmentEditor() {
           .eq("apartment_id", apartmentId)
           .order("sort_order")
           .order("created_at");
+        const { data: customEq } = await supabase
+          .from("apartment_custom_equipment")
+          .select("id, label, is_checked")
+          .eq("apartment_id", apartmentId)
+          .order("sort_order")
+          .order("created_at");
         const next = rowToForm({
           ...(a as Record<string, unknown>),
           additional_charges: (charges ?? []).map((c) => ({
@@ -55,6 +61,12 @@ export default function ApartmentEditor() {
             amount: c.amount != null ? String(c.amount) : "",
             description: c.description ?? "",
             is_included: !!c.is_included,
+            _persisted: true,
+          })),
+          custom_equipment: (customEq ?? []).map((c) => ({
+            id: c.id,
+            label: c.label ?? "",
+            is_checked: !!c.is_checked,
             _persisted: true,
           })),
         });
