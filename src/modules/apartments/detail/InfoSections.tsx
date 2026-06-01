@@ -1,9 +1,12 @@
+import { useState } from "react";
 import {
   Bed, Bath, Toilet, Ruler, ChefHat, CalendarDays, Building, Wrench,
   Layers, Archive, Shirt, Briefcase, Sun, Compass, Car, ArrowUpDown,
   PhoneCall, Video, Bell, KeyRound, Flame, Droplets, Wifi, Zap,
-  Leaf, ShieldCheck, Sparkles,
+  Leaf, ShieldCheck, Sparkles, FileText, Download, Eye,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import PebPreviewModal from "../PebPreviewModal";
 import type { ApartmentDetail } from "../publicApi";
 import {
   KITCHEN_LABELS, BUILDING_STATE_LABELS, FLOORING_LABELS,
