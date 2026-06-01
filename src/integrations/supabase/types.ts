@@ -311,6 +311,10 @@ export type Database = {
           parking: boolean
           parking_count: number | null
           parking_type: string | null
+          peb_certificate_name: string | null
+          peb_certificate_uploaded_at: string | null
+          peb_certificate_url: string | null
+          peb_certificate_visible: boolean
           primary_energy: number | null
           property_tax: number | null
           rent_price: number | null
@@ -378,6 +382,10 @@ export type Database = {
           parking?: boolean
           parking_count?: number | null
           parking_type?: string | null
+          peb_certificate_name?: string | null
+          peb_certificate_uploaded_at?: string | null
+          peb_certificate_url?: string | null
+          peb_certificate_visible?: boolean
           primary_energy?: number | null
           property_tax?: number | null
           rent_price?: number | null
@@ -445,6 +453,10 @@ export type Database = {
           parking?: boolean
           parking_count?: number | null
           parking_type?: string | null
+          peb_certificate_name?: string | null
+          peb_certificate_uploaded_at?: string | null
+          peb_certificate_url?: string | null
+          peb_certificate_visible?: boolean
           primary_energy?: number | null
           property_tax?: number | null
           rent_price?: number | null
