@@ -31,7 +31,7 @@ function findStep(key: string) {
 export function IdentificationStep() {
   const def = findStep("identification");
   useApartmentStep(def.key, def.fields);
-  const { form, set } = setterFromCtx();
+  const { form, set } = useFormSetter();
   return (
     <Card>
       <CardHeader><CardTitle>Identification</CardTitle></CardHeader>
@@ -71,7 +71,7 @@ export function IdentificationStep() {
 export function LocationStep() {
   const def = findStep("location");
   useApartmentStep(def.key, def.fields);
-  const { form, set } = setterFromCtx();
+  const { form, set } = useFormSetter();
   return (
     <Card>
       <CardHeader><CardTitle>Superficie & localisation</CardTitle></CardHeader>
@@ -99,7 +99,7 @@ export function LocationStep() {
 export function TransactionStep() {
   const def = findStep("transaction");
   useApartmentStep(def.key, def.fields);
-  const { form, set } = setterFromCtx();
+  const { form, set } = useFormSetter();
   const showRent = form.transaction_type === "rent" || form.transaction_type === "both";
   const showSale = form.transaction_type === "sale" || form.transaction_type === "both";
   return (
@@ -141,7 +141,7 @@ export function TransactionStep() {
 export function EquipmentsStep() {
   const def = findStep("equipments");
   useApartmentStep(def.key, def.fields);
-  const { form, set } = setterFromCtx();
+  const { form, set } = useFormSetter();
   return (
     <Card>
       <CardHeader><CardTitle>Équipements complémentaires</CardTitle></CardHeader>
@@ -164,7 +164,7 @@ export function EquipmentsStep() {
 export function DescriptionStep() {
   const def = findStep("description");
   useApartmentStep(def.key, def.fields);
-  const { form, set } = setterFromCtx();
+  const { form, set } = useFormSetter();
   return (
     <Card>
       <CardHeader><CardTitle>Description</CardTitle></CardHeader>
