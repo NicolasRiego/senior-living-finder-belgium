@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Camera } from "lucide-react";
 import { Field } from "./Field";
-import { useAptForm, useApartmentStep } from "./ApartmentFormContext";
-import { APT_STEPS } from "./stepDefs";
+import { useAptForm } from "./ApartmentFormContext";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import { APT_BOOL_FIELDS, type ApartmentFormState } from "./types";
 
@@ -29,8 +28,6 @@ function findStep(key: string) {
 }
 
 export function IdentificationStep() {
-  const def = findStep("identification");
-  useApartmentStep(def.key, def.fields);
   const { form, set } = useFormSetter();
   return (
     <Card>
@@ -69,8 +66,6 @@ export function IdentificationStep() {
 }
 
 export function LocationStep() {
-  const def = findStep("location");
-  useApartmentStep(def.key, def.fields);
   const { form, set } = useFormSetter();
   return (
     <Card>
@@ -97,8 +92,6 @@ export function LocationStep() {
 }
 
 export function TransactionStep() {
-  const def = findStep("transaction");
-  useApartmentStep(def.key, def.fields);
   const { form, set } = useFormSetter();
   const showRent = form.transaction_type === "rent" || form.transaction_type === "both";
   const showSale = form.transaction_type === "sale" || form.transaction_type === "both";
@@ -139,8 +132,6 @@ export function TransactionStep() {
 }
 
 export function EquipmentsStep() {
-  const def = findStep("equipments");
-  useApartmentStep(def.key, def.fields);
   const { form, set } = useFormSetter();
   return (
     <Card>
@@ -162,8 +153,6 @@ export function EquipmentsStep() {
 }
 
 export function DescriptionStep() {
-  const def = findStep("description");
-  useApartmentStep(def.key, def.fields);
   const { form, set } = useFormSetter();
   return (
     <Card>
@@ -184,8 +173,6 @@ export function DescriptionStep() {
 }
 
 export function PhotosStep() {
-  const def = findStep("photos");
-  useApartmentStep(def.key, def.fields);
   const { residenceId } = useParams<{ residenceId: string }>();
   return (
     <Card>
