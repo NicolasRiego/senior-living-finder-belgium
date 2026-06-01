@@ -225,6 +225,11 @@ export function rowToForm(a: Record<string, unknown>): ApartmentFormState {
     agency_fee: s(a.agency_fee),
     property_tax: s(a.property_tax),
     co_ownership_fee: s(a.co_ownership_fee),
+    co_ownership_included: b(a.co_ownership_included),
+    co_ownership_description: s(a.co_ownership_description),
+    additional_charges: Array.isArray(a.additional_charges)
+      ? (a.additional_charges as AdditionalCharge[])
+      : [],
     parking: b(a.parking),
     cave: b(a.cave),
     terrace: b(a.terrace),
