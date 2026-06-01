@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import {
   FileText, Upload, Eye, EyeOff, Trash2, Loader2,
 } from "lucide-react";
-import PebPreviewModal from "./PebPreviewModal";
+import PebPreviewModal from "../PebPreviewModal";
 
 type PebState = {
   url: string | null;
