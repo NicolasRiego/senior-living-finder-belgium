@@ -189,6 +189,7 @@ export type ApartmentDetail = {
     region: string | null;
   };
   photos: { id: string; url: string; alt: string; cover: boolean }[];
+  additional_charges: AdditionalChargeRow[];
 };
 
 export async function getApartmentById(id: string): Promise<ApartmentDetail | null> {
