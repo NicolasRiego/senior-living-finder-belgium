@@ -61,7 +61,7 @@ export default function PebCertificate() {
         <CardHeader><CardTitle>Certificat PEB</CardTitle></CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Enregistrez d'abord l'appartement pour pouvoir téléverser un certificat PEB.
+            Enregistrez d'abord l'appartement pour pouvoir télécharger un certificat PEB.
           </p>
         </CardContent>
       </Card>
@@ -110,7 +110,7 @@ export default function PebCertificate() {
     setState({ url, name: file.name, uploadedAt, visible: true });
     setProgress(100);
     setTimeout(() => { setUploading(false); setProgress(0); }, 400);
-    toast.success("Certificat PEB téléversé");
+    toast.success("Certificat téléchargé");
   };
 
   const onToggleVisible = async (visible: boolean) => {
@@ -169,11 +169,11 @@ export default function PebCertificate() {
         ) : !state.url ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Téléversez le certificat PEB officiel (PDF, JPG ou PNG, 10 Mo max).
+              Téléchargez le certificat PEB officiel de l'appartement (PDF, JPG ou PNG, 10 Mo max).
             </p>
             <Button onClick={onPickFile} disabled={uploading}>
               {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
-              {uploading ? `Envoi… ${progress}%` : "Téléverser un certificat"}
+              {uploading ? `Envoi… ${progress}%` : "Télécharger un certificat"}
             </Button>
             {uploading && (
               <div className="h-2 w-full bg-muted rounded overflow-hidden">
@@ -192,7 +192,7 @@ export default function PebCertificate() {
                 <p className="font-medium truncate">{state.name ?? "Certificat PEB"}</p>
                 {state.uploadedAt && (
                   <p className="text-xs text-muted-foreground">
-                    Téléversé le {new Date(state.uploadedAt).toLocaleDateString("fr-BE", {
+                    Téléchargé le {new Date(state.uploadedAt).toLocaleDateString("fr-BE", {
                       day: "2-digit", month: "long", year: "numeric",
                     })}
                   </p>
