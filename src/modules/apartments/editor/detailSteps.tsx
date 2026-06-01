@@ -2,13 +2,10 @@ import {
   GeneralSection, InteriorSection, ExteriorSection,
   InstallationsSection, EnergySection, FinancesExtraSection,
 } from "./sections";
-import { useAptForm, useApartmentStep } from "./ApartmentFormContext";
-import { APT_STEPS } from "./stepDefs";
+import { useAptForm } from "./ApartmentFormContext";
 import type { ApartmentFormState } from "./types";
 
-function useStepFor(key: string) {
-  const def = APT_STEPS.find((s) => s.key === key)!;
-  useApartmentStep(def.key, def.fields);
+function useFormSetter() {
   const { form, setForm } = useAptForm();
   const set = <K extends keyof ApartmentFormState>(k: K, v: ApartmentFormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -16,26 +13,26 @@ function useStepFor(key: string) {
 }
 
 export function GeneralStep() {
-  const { form, set } = useStepFor("general");
+  const { form, set } = useFormSetter();
   return <GeneralSection form={form} set={set} />;
 }
 export function InteriorStep() {
-  const { form, set } = useStepFor("interior");
+  const { form, set } = useFormSetter();
   return <InteriorSection form={form} set={set} />;
 }
 export function ExteriorStep() {
-  const { form, set } = useStepFor("exterior");
+  const { form, set } = useFormSetter();
   return <ExteriorSection form={form} set={set} />;
 }
 export function InstallationsStep() {
-  const { form, set } = useStepFor("installations");
+  const { form, set } = useFormSetter();
   return <InstallationsSection form={form} set={set} />;
 }
 export function EnergyStep() {
-  const { form, set } = useStepFor("energy");
+  const { form, set } = useFormSetter();
   return <EnergySection form={form} set={set} />;
 }
 export function FinancesStep() {
-  const { form, set } = useStepFor("finances");
+  const { form, set } = useFormSetter();
   return <FinancesExtraSection form={form} set={set} />;
 }
