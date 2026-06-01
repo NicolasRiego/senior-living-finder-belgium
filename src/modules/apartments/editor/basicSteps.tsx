@@ -21,11 +21,6 @@ function useFormSetter() {
   return { form, set };
 }
 
-function findStep(key: string) {
-  const s = APT_STEPS.find((x) => x.key === key);
-  if (!s) throw new Error(`Unknown step ${key}`);
-  return s;
-}
 
 export function IdentificationStep() {
   const { form, set } = useFormSetter();
