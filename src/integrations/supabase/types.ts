@@ -302,6 +302,7 @@ export type Database = {
           id: string
           internet: string | null
           is_demo: boolean
+          is_pinned: boolean
           kitchen_equipped: boolean
           kitchen_type: string | null
           living_room_m2: number | null
@@ -367,6 +368,7 @@ export type Database = {
           id?: string
           internet?: string | null
           is_demo?: boolean
+          is_pinned?: boolean
           kitchen_equipped?: boolean
           kitchen_type?: string | null
           living_room_m2?: number | null
@@ -432,6 +434,7 @@ export type Database = {
           id?: string
           internet?: string | null
           is_demo?: boolean
+          is_pinned?: boolean
           kitchen_equipped?: boolean
           kitchen_type?: string | null
           living_room_m2?: number | null
