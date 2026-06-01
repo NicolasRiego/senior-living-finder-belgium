@@ -138,6 +138,7 @@ export type ApartmentFormState = {
   co_ownership_included: boolean;
   co_ownership_description: string;
   additional_charges: AdditionalCharge[];
+  custom_equipment: CustomEquipment[];
 } & Record<AptBoolField, boolean>;
 
 export type AdditionalCharge = {
@@ -146,6 +147,13 @@ export type AdditionalCharge = {
   amount: string;
   description: string;
   is_included: boolean;
+  _persisted?: boolean;
+};
+
+export type CustomEquipment = {
+  id: string;
+  label: string;
+  is_checked: boolean;
   _persisted?: boolean;
 };
 
