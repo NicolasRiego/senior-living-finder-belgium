@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import {
-  FileText, Upload, Eye, EyeOff, Trash2, Download, Loader2,
+  FileText, Upload, Eye, EyeOff, Trash2, Loader2,
 } from "lucide-react";
 import PebPreviewModal from "./PebPreviewModal";
 
