@@ -141,10 +141,39 @@ export function TransactionStep() {
 
 export function EquipmentsStep() {
   const { form, set } = useFormSetter();
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  const addItem = () => {
+    const label = draft.trim();
+    if (!label) { setAdding(false); return; }
+    const newItem = {
+      id: `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      label,
+      is_checked: true,
+    };
+    set("custom_equipment", [...form.custom_equipment, newItem]);
+    setDraft("");
+    setAdding(false);
+  };
+
+  const toggleCustom = (id: string, v: boolean) => {
+    set(
+      "custom_equipment",
+      form.custom_equipment.map((c) => (c.id === id ? { ...c, is_checked: v } : c)),
+    );
+  };
+
+  const removeCustom = (id: string) => {
+    set("custom_equipment", form.custom_equipment.filter((c) => c.id !== id));
+    setConfirmDelete(null);
+  };
+
   return (
     <Card>
       <CardHeader><CardTitle>Équipements complémentaires</CardTitle></CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           {APT_BOOL_FIELDS.filter(([k]) =>
             !["parking", "terrace", "garden", "elevator"].includes(k)
@@ -154,7 +183,70 @@ export function EquipmentsStep() {
               <span>{label}</span>
             </label>
           ))}
+          {form.custom_equipment.map((item) => (
+            <div key={item.id} className="group flex items-center gap-3">
+              <label className="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                <Checkbox
+                  checked={item.is_checked}
+                  onCheckedChange={(v) => toggleCustom(item.id, v === true)}
+                  aria-label={item.label}
+                />
+                <span className="truncate">{item.label}</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(item.id)}
+                className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
+                aria-label={`Supprimer ${item.label}`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
         </div>
+
+        {adding ? (
+          <div className="flex items-center gap-2">
+            <Input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); addItem(); }
+                if (e.key === "Escape") { setDraft(""); setAdding(false); }
+              }}
+              placeholder="ex : Climatisation, Sauna…"
+              maxLength={80}
+            />
+            <Button type="button" size="sm" onClick={addItem} aria-label="Confirmer">
+              <CheckIcon className="h-4 w-4" />
+            </Button>
+            <Button type="button" size="sm" variant="ghost" onClick={() => { setDraft(""); setAdding(false); }}>
+              Annuler
+            </Button>
+          </div>
+        ) : (
+          <Button type="button" variant="outline" size="sm" onClick={() => setAdding(true)}>
+            + Ajouter un équipement
+          </Button>
+        )}
+
+        <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Supprimer cet équipement ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cette action est définitive.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction onClick={() => confirmDelete && removeCustom(confirmDelete)}>
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );
