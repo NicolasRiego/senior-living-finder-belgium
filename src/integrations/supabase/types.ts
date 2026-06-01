@@ -273,6 +273,7 @@ export type Database = {
           building_floors: number | null
           building_state: string | null
           cave: boolean
+          charges_description: string | null
           charges_monthly: number | null
           co_ownership_fee: number | null
           co2_emission: string | null
@@ -339,6 +340,7 @@ export type Database = {
           building_floors?: number | null
           building_state?: string | null
           cave?: boolean
+          charges_description?: string | null
           charges_monthly?: number | null
           co_ownership_fee?: number | null
           co2_emission?: string | null
@@ -405,6 +407,7 @@ export type Database = {
           building_floors?: number | null
           building_state?: string | null
           cave?: boolean
+          charges_description?: string | null
           charges_monthly?: number | null
           co_ownership_fee?: number | null
           co2_emission?: string | null

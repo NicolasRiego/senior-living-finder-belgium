@@ -104,16 +104,29 @@ export function TransactionStep() {
           </RadioGroup>
         </Field>
         {showRent && (
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Field label="Loyer mensuel (€)" required>
-              <Input type="number" min={0} value={form.rent_price}
-                onChange={(e) => set("rent_price", e.target.value)} placeholder="ex : 1850" />
+          <>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Field label="Loyer mensuel (€)" required>
+                <Input type="number" min={0} value={form.rent_price}
+                  onChange={(e) => set("rent_price", e.target.value)} placeholder="ex : 1850" />
+              </Field>
+              <Field label="Charges mensuelles (€)">
+                <Input type="number" min={0} value={form.charges_monthly}
+                  onChange={(e) => set("charges_monthly", e.target.value)} placeholder="ex : 250" />
+              </Field>
+            </div>
+            <Field label="Description des charges">
+              <Input
+                value={form.charges_description}
+                onChange={(e) => set("charges_description", e.target.value.slice(0, 200))}
+                placeholder="ex: Eau, chauffage, parties communes, entretien des jardins..."
+                maxLength={200}
+              />
+              <p className="text-xs text-muted-foreground mt-1 text-right">
+                {form.charges_description.length} / 200
+              </p>
             </Field>
-            <Field label="Charges mensuelles (€)" hint="Eau, chauffage, parties communes">
-              <Input type="number" min={0} value={form.charges_monthly}
-                onChange={(e) => set("charges_monthly", e.target.value)} placeholder="ex : 250" />
-            </Field>
-          </div>
+          </>
         )}
         {showSale && (
           <Field label="Prix de vente (€)" required>

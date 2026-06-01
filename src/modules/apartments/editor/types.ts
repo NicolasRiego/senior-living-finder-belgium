@@ -91,6 +91,7 @@ export type ApartmentFormState = {
   transaction_type: "rent" | "sale" | "both" | "";
   rent_price: string;
   charges_monthly: string;
+  charges_description: string;
   sale_price: string;
   description_fr: string;
   // Général
@@ -139,7 +140,7 @@ export type ApartmentFormState = {
 export const emptyForm: ApartmentFormState = {
   title_fr: "", type: "", status: "available", available_from: "",
   surface_m2: "", floor: "", address_complement: "",
-  transaction_type: "", rent_price: "", charges_monthly: "", sale_price: "",
+  transaction_type: "", rent_price: "", charges_monthly: "", charges_description: "Eau, chauffage, parties communes", sale_price: "",
   description_fr: "",
   bedrooms: "", bathrooms: "", toilets: "", living_room_m2: "",
   kitchen_type: "", build_year: "", building_floors: "", building_state: "",
@@ -173,6 +174,7 @@ export function rowToForm(a: Record<string, unknown>): ApartmentFormState {
     transaction_type: (a.transaction_type as ApartmentFormState["transaction_type"]) ?? "",
     rent_price: s(a.rent_price),
     charges_monthly: s(a.charges_monthly),
+    charges_description: s(a.charges_description),
     sale_price: s(a.sale_price),
     description_fr: s(a.description_fr),
     bedrooms: s(a.bedrooms),
@@ -238,6 +240,7 @@ export function formToPayload(form: ApartmentFormState, residenceId: string) {
     transaction_type: tx,
     rent_price: tx !== "sale" && form.rent_price ? Number(form.rent_price) : null,
     charges_monthly: tx !== "sale" && form.charges_monthly ? Number(form.charges_monthly) : null,
+    charges_description: tx !== "sale" ? strOrNull(form.charges_description) : null,
     sale_price: tx !== "rent" && form.sale_price ? Number(form.sale_price) : null,
     description_fr: strOrNull(form.description_fr),
     parking: form.parking, cave: form.cave, terrace: form.terrace, garden: form.garden,

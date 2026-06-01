@@ -34,7 +34,7 @@ export const APT_STEPS: StepDef[] = [
   {
     key: "transaction",
     label: "Transaction & prix",
-    fields: ["transaction_type", "rent_price", "charges_monthly", "sale_price"],
+    fields: ["transaction_type", "rent_price", "charges_monthly", "charges_description", "sale_price"],
   },
   {
     key: "general",
