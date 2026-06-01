@@ -300,5 +300,7 @@ export function formToPayload(form: ApartmentFormState, residenceId: string) {
     agency_fee: numOrNull(form.agency_fee),
     property_tax: numOrNull(form.property_tax),
     co_ownership_fee: numOrNull(form.co_ownership_fee),
+    co_ownership_included: form.co_ownership_included,
+    co_ownership_description: strOrNull(form.co_ownership_description),
   };
 }
