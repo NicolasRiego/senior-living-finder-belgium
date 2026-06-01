@@ -9,8 +9,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ApartmentFormProvider } from "./ApartmentFormContext";
-import { APT_STEPS, type StepKey } from "./stepDefs";
+import { ApartmentFormProvider, useApartmentStep } from "./ApartmentFormContext";
+import { APT_STEPS, type StepKey, type StepDef } from "./stepDefs";
 import {
   IdentificationStep, LocationStep, TransactionStep,
   EquipmentsStep, DescriptionStep, PhotosStep,
@@ -20,6 +20,21 @@ import {
   InstallationsStep, EnergyStep, FinancesStep,
 } from "./detailSteps";
 import type { ApartmentFormState } from "./types";
+
+function StepRegistrar({ def }: { def: StepDef }) {
+  useApartmentStep(def.key, def.fields);
+  return null;
+}
+
+function AllStepRegistrars() {
+  return (
+    <>
+      {APT_STEPS.map((def) => (
+        <StepRegistrar key={def.key} def={def} />
+      ))}
+    </>
+  );
+}
 
 const COMPONENTS: Record<StepKey, ComponentType> = {
   identification: IdentificationStep,
