@@ -276,7 +276,7 @@ export default function ApartmentsList() {
                           </div>
                         </td>
                       </tr>
-                    </>
+                    </Fragment>
                   );
                 })}
               </tbody>
