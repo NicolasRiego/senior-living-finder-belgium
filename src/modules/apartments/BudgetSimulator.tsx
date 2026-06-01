@@ -186,6 +186,27 @@ export function BudgetSimulator({
   const lines = useMemo(() => {
     const items: { key: string; label: string; total: number; detail?: string; isFree?: boolean; isCharge?: boolean }[] = [];
     items.push({ key: "base", label: baseLabel, total: baseAmount });
+    if (aptExtras.charges_monthly > 0) {
+      items.push({ key: "apt-charges", label: "Charges mensuelles", total: aptExtras.charges_monthly, isCharge: true });
+    }
+    if (aptExtras.co_ownership_fee > 0 && !aptExtras.co_ownership_included) {
+      items.push({
+        key: "apt-co",
+        label: aptExtras.co_ownership_description || "Charges de copropriété",
+        total: aptExtras.co_ownership_fee,
+        isCharge: true,
+      });
+    }
+    for (const c of aptExtras.additional) {
+      if (c.is_included) continue;
+      items.push({
+        key: `apt-add-${c.id}`,
+        label: c.label,
+        total: c.amount,
+        detail: c.description ?? undefined,
+        isCharge: true,
+      });
+    }
     for (const c of charges) {
       items.push({ key: `charge-${c.id}`, label: c.label, total: c.amount, isCharge: true });
     }
