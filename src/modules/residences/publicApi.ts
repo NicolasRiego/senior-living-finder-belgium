@@ -123,6 +123,20 @@ export async function getResidenceFullBySlug(slug: string) {
     .eq("status", "published")
     .maybeSingle();
   if (!r) return null;
+  return getResidenceFullByRow(r);
+}
+
+export async function getResidenceFullById(id: string) {
+  const { data: r } = await supabase
+    .from("residences")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (!r) return null;
+  return getResidenceFullByRow(r);
+}
+
+async function getResidenceFullByRow(r: any) {
   const [units, services, activities, photos, apts, chargesRes, apartmentCountRes] = await Promise.all([
     supabase.from("unit_types").select("*").eq("residence_id", r.id),
     supabase.from("residence_services").select("*, services_catalog(*)").eq("residence_id", r.id).eq("included", true).eq("is_available", true).is("deleted_at", null),
