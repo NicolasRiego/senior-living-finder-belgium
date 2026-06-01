@@ -110,14 +110,19 @@ export default function ResidencePreview() {
       }
       setUnitSummaries(Object.values(map).sort((a, b) => a.type.localeCompare(b.type)));
 
-      // Photos
+      // Photos — même logique que la page publique
       const out: { url: string; alt: string; cover: boolean }[] = [];
       for (const p of ph.data ?? []) {
-        const { data: signed } = await supabase.storage
-          .from("residence-photos")
-          .createSignedUrl(p.storage_path, 3600);
-        if (signed?.signedUrl)
-          out.push({ url: signed.signedUrl, alt: p.alt_text ?? "", cover: p.category === "cover" });
+        let url: string | null = null;
+        if (/^https?:\/\//i.test(p.storage_path)) {
+          url = p.storage_path;
+        } else {
+          const { data: signed } = await supabase.storage
+            .from("residence-photos")
+            .createSignedUrl(p.storage_path, 3600);
+          url = signed?.signedUrl ?? null;
+        }
+        if (url) out.push({ url, alt: p.alt_text ?? "", cover: p.category === "cover" });
       }
       setPhotos(out);
     })();
