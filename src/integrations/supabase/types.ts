@@ -309,6 +309,33 @@ export type Database = {
           },
         ]
       }
+      apartment_custom_equipment: {
+        Row: {
+          apartment_id: string
+          created_at: string
+          id: string
+          is_checked: boolean
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          apartment_id: string
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          apartment_id?: string
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          label?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       apartments: {
         Row: {
           address_complement: string | null
