@@ -240,6 +240,7 @@ export function formToPayload(form: ApartmentFormState, residenceId: string) {
     transaction_type: tx,
     rent_price: tx !== "sale" && form.rent_price ? Number(form.rent_price) : null,
     charges_monthly: tx !== "sale" && form.charges_monthly ? Number(form.charges_monthly) : null,
+    charges_description: tx !== "sale" ? strOrNull(form.charges_description) : null,
     sale_price: tx !== "rent" && form.sale_price ? Number(form.sale_price) : null,
     description_fr: strOrNull(form.description_fr),
     parking: form.parking, cave: form.cave, terrace: form.terrace, garden: form.garden,
