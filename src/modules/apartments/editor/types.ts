@@ -174,6 +174,7 @@ export function rowToForm(a: Record<string, unknown>): ApartmentFormState {
     transaction_type: (a.transaction_type as ApartmentFormState["transaction_type"]) ?? "",
     rent_price: s(a.rent_price),
     charges_monthly: s(a.charges_monthly),
+    charges_description: s(a.charges_description),
     sale_price: s(a.sale_price),
     description_fr: s(a.description_fr),
     bedrooms: s(a.bedrooms),
