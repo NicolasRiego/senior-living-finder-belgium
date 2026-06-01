@@ -138,6 +138,7 @@ export type ApartmentFormState = {
   co_ownership_included: boolean;
   co_ownership_description: string;
   additional_charges: AdditionalCharge[];
+  custom_equipment: CustomEquipment[];
 } & Record<AptBoolField, boolean>;
 
 export type AdditionalCharge = {
@@ -146,6 +147,13 @@ export type AdditionalCharge = {
   amount: string;
   description: string;
   is_included: boolean;
+  _persisted?: boolean;
+};
+
+export type CustomEquipment = {
+  id: string;
+  label: string;
+  is_checked: boolean;
   _persisted?: boolean;
 };
 
@@ -164,7 +172,7 @@ export const emptyForm: ApartmentFormState = {
   heating_type: "", hot_water: "", internet: "",
   energy_class: "", primary_energy: "", double_glazing: false, co2_emission: "",
   agency_fee: "", property_tax: "", co_ownership_fee: "",
-  co_ownership_included: false, co_ownership_description: "", additional_charges: [],
+  co_ownership_included: false, co_ownership_description: "", additional_charges: [], custom_equipment: [],
   parking: false, cave: false, terrace: false, garden: false,
   furnished: false, kitchen_equipped: false, elevator: false, wheelchair_accessible: false,
 };
@@ -229,6 +237,9 @@ export function rowToForm(a: Record<string, unknown>): ApartmentFormState {
     co_ownership_description: s(a.co_ownership_description),
     additional_charges: Array.isArray(a.additional_charges)
       ? (a.additional_charges as AdditionalCharge[])
+      : [],
+    custom_equipment: Array.isArray(a.custom_equipment)
+      ? (a.custom_equipment as CustomEquipment[])
       : [],
     parking: b(a.parking),
     cave: b(a.cave),

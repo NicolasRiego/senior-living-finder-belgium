@@ -178,6 +178,11 @@ export type AdditionalChargeRow = {
   is_included: boolean;
 };
 
+export type CustomEquipmentRow = {
+  id: string;
+  label: string;
+};
+
 export type ApartmentDetail = {
   apartment: ApartmentSearchRow & ApartmentExtraFields;
   residence: {
@@ -190,6 +195,7 @@ export type ApartmentDetail = {
   };
   photos: { id: string; url: string; alt: string; cover: boolean }[];
   additional_charges: AdditionalChargeRow[];
+  custom_equipment: CustomEquipmentRow[];
 };
 
 export async function getApartmentById(id: string): Promise<ApartmentDetail | null> {
@@ -239,6 +245,13 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
     .eq("apartment_id", id)
     .order("sort_order");
 
+  const { data: customEq } = await supabase
+    .from("apartment_custom_equipment")
+    .select("id, label, is_checked, sort_order")
+    .eq("apartment_id", id)
+    .eq("is_checked", true)
+    .order("sort_order");
+
   const extra = (extraRow ?? {}) as Partial<ApartmentExtraFields>;
   const merged = { ...a, ...extra } as ApartmentSearchRow & ApartmentExtraFields;
   return {
@@ -251,6 +264,10 @@ export async function getApartmentById(id: string): Promise<ApartmentDetail | nu
       amount: c.amount,
       description: c.description,
       is_included: c.is_included,
+    })),
+    custom_equipment: (customEq ?? []).map((c) => ({
+      id: c.id,
+      label: c.label,
     })),
   };
 }

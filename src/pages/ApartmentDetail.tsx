@@ -47,7 +47,7 @@ export default function ApartmentDetailPage() {
     );
   }
 
-  const { apartment: a, residence: r, photos, additional_charges: addCharges } = data;
+  const { apartment: a, residence: r, photos, additional_charges: addCharges, custom_equipment: customEq } = data;
   const residenceName = tr(r.nom_fr, r.nom_nl);
   const description = tr(a.description_fr, a.description_nl);
   const typeLabel = a.type ? (TYPE_LABEL[a.type] ?? a.type) : "Logement";
@@ -196,22 +196,33 @@ export default function ApartmentDetailPage() {
           <FinancesInfo a={a} additionalCharges={addCharges} />
 
           {/* Équipements */}
-          <section>
-            <h2 className="mb-3 font-display font-semibold">Équipements</h2>
-            <div className="flex flex-wrap gap-2">
-              {APT_BOOL_FIELDS.filter((f) => a[f]).map((f) => (
-                <span
-                  key={f}
-                  className="badge-fixed inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 font-medium text-primary"
-                >
-                  <Check className="h-3.5 w-3.5" /> {APT_BOOL_LABELS[f]}
-                </span>
-              ))}
-              {APT_BOOL_FIELDS.every((f) => !a[f]) && (
-                <span className="text-muted-foreground">Aucun équipement renseigné.</span>
-              )}
-            </div>
-          </section>
+          {(() => {
+            const checkedDefaults = APT_BOOL_FIELDS.filter((f) => a[f]);
+            if (checkedDefaults.length === 0 && customEq.length === 0) return null;
+            return (
+              <section>
+                <h2 className="mb-3 font-display font-semibold">Équipements</h2>
+                <div className="flex flex-wrap gap-2">
+                  {checkedDefaults.map((f) => (
+                    <span
+                      key={f}
+                      className="badge-fixed inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 font-medium text-primary"
+                    >
+                      <Check className="h-3.5 w-3.5" /> {APT_BOOL_LABELS[f]}
+                    </span>
+                  ))}
+                  {customEq.map((c) => (
+                    <span
+                      key={c.id}
+                      className="badge-fixed inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 font-medium text-primary"
+                    >
+                      <Check className="h-3.5 w-3.5" /> {c.label}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            );
+          })()}
         </div>
 
         {/* 6 — Encadré prix + actions */}

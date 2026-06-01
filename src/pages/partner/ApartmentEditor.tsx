@@ -47,6 +47,12 @@ export default function ApartmentEditor() {
           .eq("apartment_id", apartmentId)
           .order("sort_order")
           .order("created_at");
+        const { data: customEq } = await supabase
+          .from("apartment_custom_equipment")
+          .select("id, label, is_checked")
+          .eq("apartment_id", apartmentId)
+          .order("sort_order")
+          .order("created_at");
         const next = rowToForm({
           ...(a as Record<string, unknown>),
           additional_charges: (charges ?? []).map((c) => ({
@@ -55,6 +61,12 @@ export default function ApartmentEditor() {
             amount: c.amount != null ? String(c.amount) : "",
             description: c.description ?? "",
             is_included: !!c.is_included,
+            _persisted: true,
+          })),
+          custom_equipment: (customEq ?? []).map((c) => ({
+            id: c.id,
+            label: c.label ?? "",
+            is_checked: !!c.is_checked,
             _persisted: true,
           })),
         });
@@ -122,7 +134,55 @@ export default function ApartmentEditor() {
       is_included: !!c.is_included,
       _persisted: true,
     }));
-    const newForm = { ...form, additional_charges: refreshedCharges };
+
+    // Sync custom equipment
+    const { data: existingEq } = await supabase
+      .from("apartment_custom_equipment")
+      .select("id")
+      .eq("apartment_id", apartmentId);
+    const keptEqIds = new Set(
+      form.custom_equipment.filter((c) => c._persisted).map((c) => c.id),
+    );
+    const eqToDelete = (existingEq ?? [])
+      .map((r) => r.id)
+      .filter((id) => !keptEqIds.has(id));
+    if (eqToDelete.length > 0) {
+      await supabase.from("apartment_custom_equipment").delete().in("id", eqToDelete);
+    }
+    for (let i = 0; i < form.custom_equipment.length; i++) {
+      const c = form.custom_equipment[i];
+      const row = {
+        apartment_id: apartmentId,
+        label: c.label.trim(),
+        is_checked: c.is_checked,
+        sort_order: i,
+      };
+      if (c._persisted) {
+        await supabase
+          .from("apartment_custom_equipment")
+          .update(row)
+          .eq("id", c.id);
+      } else {
+        await supabase.from("apartment_custom_equipment").insert(row);
+      }
+    }
+    const { data: refreshedEq } = await supabase
+      .from("apartment_custom_equipment")
+      .select("id, label, is_checked")
+      .eq("apartment_id", apartmentId)
+      .order("sort_order")
+      .order("created_at");
+    const refreshedCustomEq = (refreshedEq ?? []).map((c) => ({
+      id: c.id,
+      label: c.label ?? "",
+      is_checked: !!c.is_checked,
+      _persisted: true,
+    }));
+    const newForm = {
+      ...form,
+      additional_charges: refreshedCharges,
+      custom_equipment: refreshedCustomEq,
+    };
     setForm(newForm);
     setSavedForm(newForm);
   };
