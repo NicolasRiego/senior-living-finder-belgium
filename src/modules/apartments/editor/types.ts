@@ -91,6 +91,7 @@ export type ApartmentFormState = {
   transaction_type: "rent" | "sale" | "both" | "";
   rent_price: string;
   charges_monthly: string;
+  charges_description: string;
   sale_price: string;
   description_fr: string;
   // Général
