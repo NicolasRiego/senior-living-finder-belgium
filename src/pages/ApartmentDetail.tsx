@@ -193,7 +193,7 @@ export default function ApartmentDetailPage() {
           <ExteriorInfo a={a} />
           <InstallationsInfo a={a} />
           <EnergyInfo a={a} />
-          <FinancesInfo a={a} />
+          <FinancesInfo a={a} additionalCharges={addCharges} />
 
           {/* Équipements */}
           <section>
