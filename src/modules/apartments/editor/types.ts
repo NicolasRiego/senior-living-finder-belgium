@@ -238,6 +238,9 @@ export function rowToForm(a: Record<string, unknown>): ApartmentFormState {
     additional_charges: Array.isArray(a.additional_charges)
       ? (a.additional_charges as AdditionalCharge[])
       : [],
+    custom_equipment: Array.isArray(a.custom_equipment)
+      ? (a.custom_equipment as CustomEquipment[])
+      : [],
     parking: b(a.parking),
     cave: b(a.cave),
     terrace: b(a.terrace),
