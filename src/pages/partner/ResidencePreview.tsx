@@ -124,11 +124,14 @@ export default function ResidencePreview() {
   }, [id]);
 
   if (!data) return <div className="container py-12">Chargement…</div>;
+  const FALLBACK = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200";
   const cover = photos.find((p) => p.cover) ?? photos[0];
+  const heroUrl = cover?.url ?? FALLBACK;
+  const heroAlt = cover?.alt || data.nom_fr;
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-amber-50 border-b border-amber-200 py-3">
+      <div className="bg-amber-50 border-b border-amber-200 py-3 relative z-50">
         <div className="container flex items-center justify-between">
           <p className="text-amber-900">
             👁 Aperçu privé — cette fiche n'est pas encore publiée
@@ -141,23 +144,26 @@ export default function ResidencePreview() {
         </div>
       </div>
 
-      {cover && (
-        <div className="relative h-[420px] bg-muted">
-          <img src={cover.url} alt={cover.alt} className="w-full h-full object-cover" />
+      <div className="relative h-[420px] bg-muted overflow-hidden">
+        <img src={heroUrl} alt={heroAlt} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0">
+          <div className="container max-w-4xl pb-8 text-white">
+            <h1 className="font-display text-5xl drop-shadow-lg">{data.nom_fr}</h1>
+            {data.tagline_fr && (
+              <p className="text-2xl mt-2 drop-shadow-md">{data.tagline_fr}</p>
+            )}
+            {data.adresse && (
+              <p className="mt-3 flex items-center gap-2 text-lg drop-shadow-md">
+                <MapPin className="h-5 w-5" />
+                {data.adresse}, {data.code_postal} {data.ville}
+              </p>
+            )}
+          </div>
         </div>
-      )}
+      </div>
 
       <div className="container py-10 space-y-8 max-w-4xl">
-        <header>
-          <h1 className="font-display text-5xl">{data.nom_fr}</h1>
-          {data.tagline_fr && <p className="text-2xl text-muted-foreground mt-2">{data.tagline_fr}</p>}
-          {data.adresse && (
-            <p className="mt-3 flex items-center gap-2 text-lg">
-              <MapPin className="h-5 w-5 text-primary" />
-              {data.adresse}, {data.code_postal} {data.ville}
-            </p>
-          )}
-        </header>
 
         {data.description_fr && (
           <section className="prose max-w-none">
