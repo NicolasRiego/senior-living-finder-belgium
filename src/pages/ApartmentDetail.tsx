@@ -47,7 +47,7 @@ export default function ApartmentDetailPage() {
     );
   }
 
-  const { apartment: a, residence: r, photos } = data;
+  const { apartment: a, residence: r, photos, additional_charges: addCharges } = data;
   const residenceName = tr(r.nom_fr, r.nom_nl);
   const description = tr(a.description_fr, a.description_nl);
   const typeLabel = a.type ? (TYPE_LABEL[a.type] ?? a.type) : "Logement";
@@ -193,7 +193,7 @@ export default function ApartmentDetailPage() {
           <ExteriorInfo a={a} />
           <InstallationsInfo a={a} />
           <EnergyInfo a={a} />
-          <FinancesInfo a={a} />
+          <FinancesInfo a={a} additionalCharges={addCharges} />
 
           {/* Équipements */}
           <section>

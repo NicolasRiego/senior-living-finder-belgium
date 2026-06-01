@@ -261,6 +261,54 @@ export type Database = {
         }
         Relationships: []
       }
+      apartment_additional_charges: {
+        Row: {
+          amount: number
+          apartment_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_included: boolean
+          label: string
+          sort_order: number
+        }
+        Insert: {
+          amount?: number
+          apartment_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_included?: boolean
+          label: string
+          sort_order?: number
+        }
+        Update: {
+          amount?: number
+          apartment_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_included?: boolean
+          label?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "apartment_additional_charges_apartment_id_fkey"
+            columns: ["apartment_id"]
+            isOneToOne: false
+            referencedRelation: "apartment_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "apartment_additional_charges_apartment_id_fkey"
+            columns: ["apartment_id"]
+            isOneToOne: false
+            referencedRelation: "apartments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       apartments: {
         Row: {
           address_complement: string | null
@@ -275,7 +323,9 @@ export type Database = {
           cave: boolean
           charges_description: string | null
           charges_monthly: number | null
+          co_ownership_description: string | null
           co_ownership_fee: number | null
+          co_ownership_included: boolean
           co2_emission: string | null
           created_at: string
           description_fr: string | null
@@ -346,7 +396,9 @@ export type Database = {
           cave?: boolean
           charges_description?: string | null
           charges_monthly?: number | null
+          co_ownership_description?: string | null
           co_ownership_fee?: number | null
+          co_ownership_included?: boolean
           co2_emission?: string | null
           created_at?: string
           description_fr?: string | null
@@ -417,7 +469,9 @@ export type Database = {
           cave?: boolean
           charges_description?: string | null
           charges_monthly?: number | null
+          co_ownership_description?: string | null
           co_ownership_fee?: number | null
+          co_ownership_included?: boolean
           co2_emission?: string | null
           created_at?: string
           description_fr?: string | null

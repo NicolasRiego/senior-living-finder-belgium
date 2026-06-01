@@ -135,7 +135,19 @@ export type ApartmentFormState = {
   agency_fee: string;
   property_tax: string;
   co_ownership_fee: string;
+  co_ownership_included: boolean;
+  co_ownership_description: string;
+  additional_charges: AdditionalCharge[];
 } & Record<AptBoolField, boolean>;
+
+export type AdditionalCharge = {
+  id: string;
+  label: string;
+  amount: string;
+  description: string;
+  is_included: boolean;
+  _persisted?: boolean;
+};
 
 export const emptyForm: ApartmentFormState = {
   title_fr: "", type: "", status: "available", available_from: "",
@@ -152,6 +164,7 @@ export const emptyForm: ApartmentFormState = {
   heating_type: "", hot_water: "", internet: "",
   energy_class: "", primary_energy: "", double_glazing: false, co2_emission: "",
   agency_fee: "", property_tax: "", co_ownership_fee: "",
+  co_ownership_included: false, co_ownership_description: "", additional_charges: [],
   parking: false, cave: false, terrace: false, garden: false,
   furnished: false, kitchen_equipped: false, elevator: false, wheelchair_accessible: false,
 };
@@ -212,6 +225,11 @@ export function rowToForm(a: Record<string, unknown>): ApartmentFormState {
     agency_fee: s(a.agency_fee),
     property_tax: s(a.property_tax),
     co_ownership_fee: s(a.co_ownership_fee),
+    co_ownership_included: b(a.co_ownership_included),
+    co_ownership_description: s(a.co_ownership_description),
+    additional_charges: Array.isArray(a.additional_charges)
+      ? (a.additional_charges as AdditionalCharge[])
+      : [],
     parking: b(a.parking),
     cave: b(a.cave),
     terrace: b(a.terrace),
@@ -282,5 +300,7 @@ export function formToPayload(form: ApartmentFormState, residenceId: string) {
     agency_fee: numOrNull(form.agency_fee),
     property_tax: numOrNull(form.property_tax),
     co_ownership_fee: numOrNull(form.co_ownership_fee),
+    co_ownership_included: form.co_ownership_included,
+    co_ownership_description: strOrNull(form.co_ownership_description),
   };
 }

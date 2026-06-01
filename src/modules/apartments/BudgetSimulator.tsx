@@ -99,11 +99,25 @@ export function BudgetSimulator({
   const [loadingSvc, setLoadingSvc] = useState(false);
   const [selected, setSelected] = useState<SelectedState>({});
 
+  const [aptExtras, setAptExtras] = useState<{
+    charges_monthly: number;
+    co_ownership_fee: number;
+    co_ownership_included: boolean;
+    co_ownership_description: string | null;
+    additional: { id: string; label: string; amount: number; description: string | null; is_included: boolean }[];
+  }>({
+    charges_monthly: 0,
+    co_ownership_fee: 0,
+    co_ownership_included: false,
+    co_ownership_description: null,
+    additional: [],
+  });
+
   useEffect(() => {
-    if (!apt) { setServices([]); setCharges([]); return; }
+    if (!apt) { setServices([]); setCharges([]); setAptExtras({ charges_monthly: 0, co_ownership_fee: 0, co_ownership_included: false, co_ownership_description: null, additional: [] }); return; }
     setLoadingSvc(true);
     (async () => {
-      const [svcData, chargesData] = await Promise.all([
+      const [svcData, chargesData, aptRow, additional] = await Promise.all([
         supabase
           .from("residence_services")
           .select("id, service_id, price, price_unit, lunch_price, dinner_price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
@@ -118,10 +132,39 @@ export function BudgetSimulator({
           .eq("is_mandatory", true)
           .gt("amount", 0)
           .neq("label", "Nouveau service"),
+        supabase
+          .from("apartments")
+          .select("charges_monthly, co_ownership_fee, co_ownership_included, co_ownership_description")
+          .eq("id", apt.id)
+          .maybeSingle(),
+        supabase
+          .from("apartment_additional_charges")
+          .select("id, label, amount, description, is_included, sort_order")
+          .eq("apartment_id", apt.id)
+          .order("sort_order"),
       ]);
       const rows = (svcData.data ?? []) as unknown as ServiceRow[];
       setServices(rows);
       setCharges((chargesData.data ?? []) as ChargeRow[]);
+      const aptr = (aptRow.data ?? {}) as {
+        charges_monthly?: number | null;
+        co_ownership_fee?: number | null;
+        co_ownership_included?: boolean | null;
+        co_ownership_description?: string | null;
+      };
+      setAptExtras({
+        charges_monthly: aptr.charges_monthly ?? 0,
+        co_ownership_fee: aptr.co_ownership_fee ?? 0,
+        co_ownership_included: !!aptr.co_ownership_included,
+        co_ownership_description: aptr.co_ownership_description ?? null,
+        additional: (additional.data ?? []).map((c) => ({
+          id: c.id,
+          label: c.label,
+          amount: c.amount,
+          description: c.description,
+          is_included: c.is_included,
+        })),
+      });
 
       // Pre-select "Inclus" services (non-removable)
       const initial: SelectedState = {};
@@ -143,6 +186,27 @@ export function BudgetSimulator({
   const lines = useMemo(() => {
     const items: { key: string; label: string; total: number; detail?: string; isFree?: boolean; isCharge?: boolean }[] = [];
     items.push({ key: "base", label: baseLabel, total: baseAmount });
+    if (aptExtras.charges_monthly > 0) {
+      items.push({ key: "apt-charges", label: "Charges mensuelles", total: aptExtras.charges_monthly, isCharge: true });
+    }
+    if (aptExtras.co_ownership_fee > 0 && !aptExtras.co_ownership_included) {
+      items.push({
+        key: "apt-co",
+        label: aptExtras.co_ownership_description || "Charges de copropriété",
+        total: aptExtras.co_ownership_fee,
+        isCharge: true,
+      });
+    }
+    for (const c of aptExtras.additional) {
+      if (c.is_included) continue;
+      items.push({
+        key: `apt-add-${c.id}`,
+        label: c.label,
+        total: c.amount,
+        detail: c.description ?? undefined,
+        isCharge: true,
+      });
+    }
     for (const c of charges) {
       items.push({ key: `charge-${c.id}`, label: c.label, total: c.amount, isCharge: true });
     }
@@ -188,7 +252,7 @@ export function BudgetSimulator({
       items.push({ key: s.id, label, total, detail });
     }
     return items;
-  }, [services, charges, selected, baseAmount, baseLabel]);
+  }, [services, charges, selected, baseAmount, baseLabel, aptExtras]);
 
   const totalMonth = useMemo(() => lines.reduce((acc, l) => acc + l.total, 0), [lines]);
   const totalYear = useMemo(() => totalMonth * 12, [totalMonth]);

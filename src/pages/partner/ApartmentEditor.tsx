@@ -41,7 +41,23 @@ export default function ApartmentEditor() {
           navigate(`/partenaire/residences/${residenceId}/appartements`);
           return;
         }
-        const next = rowToForm(a as Record<string, unknown>);
+        const { data: charges } = await supabase
+          .from("apartment_additional_charges")
+          .select("id, label, amount, description, is_included")
+          .eq("apartment_id", apartmentId)
+          .order("sort_order")
+          .order("created_at");
+        const next = rowToForm({
+          ...(a as Record<string, unknown>),
+          additional_charges: (charges ?? []).map((c) => ({
+            id: c.id,
+            label: c.label ?? "",
+            amount: c.amount != null ? String(c.amount) : "",
+            description: c.description ?? "",
+            is_included: !!c.is_included,
+            _persisted: true,
+          })),
+        });
         setForm(next);
         setSavedForm(next);
       }
@@ -57,7 +73,58 @@ export default function ApartmentEditor() {
       .update(payload)
       .eq("id", apartmentId);
     if (error) throw new Error(error.message);
-    setSavedForm(form);
+
+    // Sync additional charges: delete removed, upsert current
+    const { data: existing } = await supabase
+      .from("apartment_additional_charges")
+      .select("id")
+      .eq("apartment_id", apartmentId);
+    const keptIds = new Set(
+      form.additional_charges.filter((c) => c._persisted).map((c) => c.id),
+    );
+    const toDelete = (existing ?? [])
+      .map((r) => r.id)
+      .filter((id) => !keptIds.has(id));
+    if (toDelete.length > 0) {
+      await supabase.from("apartment_additional_charges").delete().in("id", toDelete);
+    }
+    for (let i = 0; i < form.additional_charges.length; i++) {
+      const c = form.additional_charges[i];
+      const row = {
+        apartment_id: apartmentId,
+        label: c.label.trim(),
+        amount: Number(c.amount) || 0,
+        description: c.description.trim() || null,
+        is_included: c.is_included,
+        sort_order: i,
+      };
+      if (c._persisted) {
+        await supabase
+          .from("apartment_additional_charges")
+          .update(row)
+          .eq("id", c.id);
+      } else {
+        await supabase.from("apartment_additional_charges").insert(row);
+      }
+    }
+    // Reload to sync persisted ids
+    const { data: refreshed } = await supabase
+      .from("apartment_additional_charges")
+      .select("id, label, amount, description, is_included")
+      .eq("apartment_id", apartmentId)
+      .order("sort_order")
+      .order("created_at");
+    const refreshedCharges = (refreshed ?? []).map((c) => ({
+      id: c.id,
+      label: c.label ?? "",
+      amount: c.amount != null ? String(c.amount) : "",
+      description: c.description ?? "",
+      is_included: !!c.is_included,
+      _persisted: true,
+    }));
+    const newForm = { ...form, additional_charges: refreshedCharges };
+    setForm(newForm);
+    setSavedForm(newForm);
   };
 
   if (loading) return <p className="text-muted-foreground">Chargement…</p>;
