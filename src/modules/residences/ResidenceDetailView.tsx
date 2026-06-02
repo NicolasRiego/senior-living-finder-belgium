@@ -96,7 +96,10 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
                     )}
                   </div>
                 )}
-                {!disableCompare && <CompareToggle id={r.id} />}
+                <div className="flex flex-col items-end gap-2">
+                  <SaveResidenceButton id={r.id} />
+                  {!disableCompare && <CompareToggle id={r.id} />}
+                </div>
               </div>
             </div>
 
