@@ -40,35 +40,68 @@ type RawRow = {
 
 
 async function loadAll(userId: string): Promise<SavedApartment[]> {
-  const { data, error } = await supabase
+  const { data: savedRows, error: savedErr } = await supabase
     .from("saved_apartments")
-    .select(
-      "apartment_id, created_at, apartments:apartments(id, residence_id, type, surface_m2, sale_price, rent_price, transaction_type, residences:residences(slug, nom_fr, ville))"
-    )
+    .select("apartment_id, created_at")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
-  if (error) {
-    console.error(error);
+  if (savedErr) {
+    console.error(savedErr);
     return [];
   }
-  const rows = (data ?? []) as unknown as RawRow[];
-  return rows
-    .filter((r) => r.apartments && r.apartments.residences)
-    .map((r) => ({
-      id: r.apartments!.id,
-      residence_id: r.apartments!.residence_id,
-      residence_slug: r.apartments!.residences!.slug,
-      residence_nom_fr: r.apartments!.residences!.nom_fr,
-      type: r.apartments!.type,
-      surface_m2: r.apartments!.surface_m2,
-      sale_price: r.apartments!.sale_price,
-      rent_price: r.apartments!.rent_price,
-      transaction_type: r.apartments!.transaction_type,
-      cover_path: null,
-      ville: r.apartments!.residences!.ville,
-      saved_at: r.created_at,
-    }));
+  const ids = (savedRows ?? []).map((r) => r.apartment_id as string);
+  if (ids.length === 0) return [];
+
+  const { data: apts, error: aptErr } = await supabase
+    .from("apartments")
+    .select(
+      "id, residence_id, type, surface_m2, sale_price, rent_price, transaction_type, residences:residences!inner(slug, nom_fr, ville)"
+    )
+    .in("id", ids);
+  if (aptErr) {
+    console.error(aptErr);
+    return [];
+  }
+
+  const { data: photoRows } = await supabase
+    .from("photos")
+    .select("residence_id, storage_path, category, display_order")
+    .in("residence_id", (apts ?? []).map((a: any) => a.residence_id))
+    .order("display_order", { ascending: true });
+
+  const coverByRes = new Map<string, string>();
+  for (const p of photoRows ?? []) {
+    const rid = (p as any).residence_id as string;
+    if (!coverByRes.has(rid) || (p as any).category === "cover") {
+      coverByRes.set(rid, (p as any).storage_path as string);
+    }
+  }
+
+  const aptById = new Map<string, any>();
+  for (const a of apts ?? []) aptById.set((a as any).id, a);
+
+  return (savedRows ?? [])
+    .map((sr) => {
+      const a: any = aptById.get(sr.apartment_id as string);
+      if (!a || !a.residences) return null;
+      return {
+        id: a.id,
+        residence_id: a.residence_id,
+        residence_slug: a.residences.slug,
+        residence_nom_fr: a.residences.nom_fr,
+        type: a.type,
+        surface_m2: a.surface_m2,
+        sale_price: a.sale_price,
+        rent_price: a.rent_price,
+        transaction_type: a.transaction_type,
+        cover_path: coverByRes.get(a.residence_id) ?? null,
+        ville: a.residences.ville,
+        saved_at: sr.created_at as string,
+      } as SavedApartment;
+    })
+    .filter((x): x is SavedApartment => x !== null);
 }
+
 
 let cache: SavedApartment[] = [];
 const listeners = new Set<(v: SavedApartment[]) => void>();
