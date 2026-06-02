@@ -151,7 +151,7 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
 
           <div className="flex flex-wrap gap-2">
             <Button asChild size="sm" className="flex-1 min-w-[140px] whitespace-nowrap">
-              <Link to={`/appartements/${row.id}`}>Voir l'appartement</Link>
+              <Link to={`/appartements/${row.id}`}>Voir le logement</Link>
             </Button>
             <Button
               type="button"
