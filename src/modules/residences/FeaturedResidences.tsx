@@ -17,6 +17,9 @@ function truncate(s: string | null | undefined, n: number) {
 function FeaturedCard({ row }: { row: SearchRow }) {
   const { t } = useI18n();
   const [cover, setCover] = useState<string | null>(null);
+  const { has: hasFav, toggle: toggleFav } = useFavorites();
+  const saved = hasFav(row.id);
+
 
   useEffect(() => {
     let cancelled = false;
