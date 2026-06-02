@@ -298,9 +298,6 @@ export function BudgetSimulator({
       total_monthly: Math.round(totalMonth),
       total_annual: Math.round(totalYear),
     };
-      total_monthly: Math.round(totalMonth),
-      total_annual: Math.round(totalYear),
-    };
     let error;
     if (editing?.id) {
       ({ error } = await supabase
