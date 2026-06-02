@@ -340,3 +340,21 @@ function CompareToggle({ id }: { id: string }) {
     </Button>
   );
 }
+
+function SaveResidenceButton({ id }: { id: string }) {
+  const { has, toggle } = useFavorites();
+  const isFav = has(id);
+  return (
+    <Button
+      type="button"
+      variant={isFav ? "soft" : "default"}
+      size="sm"
+      onClick={() => toggle(id)}
+      aria-pressed={isFav}
+    >
+      {isFav ? <Check className="h-4 w-4 text-success" /> : <Heart className="h-4 w-4" />}
+      {isFav ? "Résidence enregistrée" : "Enregistrer cette résidence"}
+    </Button>
+  );
+}
+
