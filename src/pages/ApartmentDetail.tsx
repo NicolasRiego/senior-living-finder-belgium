@@ -277,7 +277,7 @@ export default function ApartmentDetailPage() {
             onClick={onToggleSave}
             aria-pressed={isSaved}
           >
-            <Heart className={"h-5 w-5 shrink-0 " + (isSaved ? "fill-current" : "")} />
+            {isSaved ? <Check className="h-5 w-5 shrink-0 text-success" /> : <Heart className="h-5 w-5 shrink-0" />}
             <span className="text-left">{isSaved ? "Enregistré" : "Enregistrer cet appartement"}</span>
           </Button>
           <Button asChild variant="outline" className="w-full whitespace-normal py-3 px-4 h-auto leading-tight">
