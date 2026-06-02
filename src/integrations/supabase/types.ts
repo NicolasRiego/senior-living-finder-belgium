@@ -674,6 +674,42 @@ export type Database = {
         }
         Relationships: []
       }
+      budget_simulations: {
+        Row: {
+          apartment_id: string
+          created_at: string
+          id: string
+          name: string
+          selected_services: Json
+          total_annual: number
+          total_monthly: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          apartment_id: string
+          created_at?: string
+          id?: string
+          name: string
+          selected_services?: Json
+          total_annual?: number
+          total_monthly?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          apartment_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          selected_services?: Json
+          total_annual?: number
+          total_monthly?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
