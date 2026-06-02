@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Building2, Save, X } from "lucide-react";
+import { Building2, Save, X, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
@@ -17,7 +17,14 @@ import {
 } from "@/components/ui/dialog";
 import type { SavedApartment } from "./savedApartments";
 import { SIMULATOR_MAX } from "./simulatorLogements";
-import { notifySimulationsChanged, type BudgetSimulationRow } from "./budgetSimulations";
+import {
+  notifySimulationsChanged,
+  upsertSimulation,
+  type BudgetSimulationRow,
+  type SelectedServicesPayload,
+} from "./budgetSimulations";
+
+const LAST_SELECTED_KEY = "budget-simulator:last-selected";
 
 type PriceUnit =
   | "par séance" | "par repas" | "par mois" | "par semaine"
@@ -85,26 +92,44 @@ type SelectedState = Record<string, {
 export function BudgetSimulator({
   apartments,
   initialId,
-  editing,
-  onSaved,
   onRemove,
 }: {
   apartments: SavedApartment[];
   initialId?: string | null;
-  editing?: BudgetSimulationRow | null;
-  onSaved?: () => void;
   onRemove?: (apartmentId: string) => void | Promise<void>;
 }) {
   const { user } = useAuth();
-  const [selectedId, setSelectedId] = useState<string | null>(
-    editing?.apartment_id ?? initialId ?? apartments[0]?.id ?? null,
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    if (initialId) return initialId;
+    try {
+      const saved = localStorage.getItem(LAST_SELECTED_KEY);
+      if (saved && apartments.some((a) => a.id === saved)) return saved;
+    } catch { /* ignore */ }
+    return apartments[0]?.id ?? null;
+  });
+  // React to incoming initialId (e.g. "Ouvrir" from history)
   useEffect(() => {
-    if (editing) setSelectedId(editing.apartment_id);
-  }, [editing]);
+    if (initialId && initialId !== selectedId) setSelectedId(initialId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialId]);
   useEffect(() => {
     if (!selectedId && apartments[0]) setSelectedId(apartments[0].id);
+    if (selectedId && !apartments.some((a) => a.id === selectedId)) {
+      setSelectedId(apartments[0]?.id ?? null);
+    }
   }, [apartments, selectedId]);
+  // Persist last selection
+  useEffect(() => {
+    if (selectedId) {
+      try { localStorage.setItem(LAST_SELECTED_KEY, selectedId); } catch { /* ignore */ }
+    }
+  }, [selectedId]);
+
+  // Existing simulation row for the currently selected apartment
+  const [simRow, setSimRow] = useState<BudgetSimulationRow | null>(null);
+  const [simName, setSimName] = useState("");
+  const [autoSaveState, setAutoSaveState] = useState<"idle" | "dirty" | "saving" | "saved">("idle");
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
 
   const apt = useMemo(
@@ -132,10 +157,17 @@ export function BudgetSimulator({
   });
 
   useEffect(() => {
-    if (!apt) { setServices([]); setCharges([]); setAptExtras({ charges_monthly: 0, co_ownership_fee: 0, co_ownership_included: false, co_ownership_description: null, additional: [] }); return; }
+    if (!apt || !user) {
+      setServices([]); setCharges([]);
+      setAptExtras({ charges_monthly: 0, co_ownership_fee: 0, co_ownership_included: false, co_ownership_description: null, additional: [] });
+      setSimRow(null); setSimName(""); setSelected({});
+      setAutoSaveState("idle"); setLastSavedAt(null);
+      return;
+    }
     setLoadingSvc(true);
+    skipNextAutoSaveRef.current = true;
     (async () => {
-      const [svcData, chargesData, aptRow, additional] = await Promise.all([
+      const [svcData, chargesData, aptRow, additional, simData] = await Promise.all([
         supabase
           .from("residence_services")
           .select("id, service_id, price, price_unit, lunch_price, dinner_price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
@@ -160,6 +192,12 @@ export function BudgetSimulator({
           .select("id, label, amount, description, is_included, sort_order")
           .eq("apartment_id", apt.id)
           .order("sort_order"),
+        supabase
+          .from("budget_simulations")
+          .select("id, name, apartment_id, selected_services, total_monthly, total_annual, created_at, updated_at")
+          .eq("user_id", user.id)
+          .eq("apartment_id", apt.id)
+          .maybeSingle(),
       ]);
       const rows = (svcData.data ?? []) as unknown as ServiceRow[];
       setServices(rows);
@@ -191,16 +229,26 @@ export function BudgetSimulator({
           initial[r.service_id] = { enabled: true };
         }
       }
-      // Restore from an edited simulation if the apartment matches
-      if (editing && editing.apartment_id === apt.id) {
-        for (const [svcId, state] of Object.entries(editing.selected_services ?? {})) {
-          initial[svcId] = { ...(initial[svcId] ?? { enabled: false }), ...state };
+      // Restore saved simulation for this apartment, if any
+      const existing = (simData.data ?? null) as unknown as BudgetSimulationRow | null;
+      setSimRow(existing);
+      setSimName(existing?.name ?? "");
+      if (existing) {
+        for (const [svcId, state] of Object.entries(existing.selected_services ?? {})) {
+          initial[svcId] = { ...(initial[svcId] ?? { enabled: false }), ...(state as SelectedState[string]) };
         }
+        setLastSavedAt(new Date(existing.updated_at));
+        setAutoSaveState("saved");
+      } else {
+        setLastSavedAt(null);
+        setAutoSaveState("idle");
       }
+      // Suppress auto-save until user interacts
+      skipNextAutoSaveRef.current = true;
       setSelected(initial);
       setLoadingSvc(false);
     })();
-  }, [apt, editing]);
+  }, [apt, user]);
 
   const baseAmount = apt?.rent_price ?? apt?.sale_price ?? 0;
   const baseLabel = apt?.rent_price
@@ -281,41 +329,98 @@ export function BudgetSimulator({
   const totalMonth = useMemo(() => lines.reduce((acc, l) => acc + l.total, 0), [lines]);
   const totalYear = useMemo(() => totalMonth * 12, [totalMonth]);
 
-  // ----- Save simulation -----
+  // ----- Auto-save (debounced) + manual named save -----
   const [saveOpen, setSaveOpen] = useState(false);
-  const [simName, setSimName] = useState(editing?.name ?? "");
   const [saving, setSaving] = useState(false);
-  useEffect(() => { setSimName(editing?.name ?? ""); }, [editing?.id]);
+  const skipNextAutoSaveRef = useRef(true);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestRef = useRef({ selected, totalMonth, totalYear, simName, simRow, apt, user });
+  latestRef.current = { selected, totalMonth, totalYear, simName, simRow, apt, user };
 
-  const handleSave = async () => {
+  const defaultName = useMemo(() => {
+    if (!apt) return "";
+    const parts = [apt.residence_nom_fr];
+    if (apt.type) parts.push(apt.type);
+    if (apt.surface_m2) parts.push(`${apt.surface_m2} m²`);
+    return parts.join(" — ");
+  }, [apt]);
+
+  const runAutoSave = async () => {
+    const { selected, totalMonth, totalYear, simName, simRow, apt, user } = latestRef.current;
+    if (!user || !apt) return;
+    setAutoSaveState("saving");
+    const { data, error } = await upsertSimulation({
+      user_id: user.id,
+      apartment_id: apt.id,
+      name: (simName.trim() || simRow?.name || defaultName || "Sans nom"),
+      selected_services: JSON.parse(JSON.stringify(selected)) as SelectedServicesPayload,
+      total_monthly: Math.round(totalMonth),
+      total_annual: Math.round(totalYear),
+    });
+    if (error) {
+      setAutoSaveState("dirty");
+      return;
+    }
+    if (data) {
+      setSimRow(data);
+      if (!simName) setSimName(data.name);
+    }
+    setLastSavedAt(new Date());
+    setAutoSaveState("saved");
+    notifySimulationsChanged();
+  };
+
+  // Trigger auto-save 2s after the last change
+  useEffect(() => {
+    if (skipNextAutoSaveRef.current) {
+      skipNextAutoSaveRef.current = false;
+      return;
+    }
+    if (!apt || !user) return;
+    setAutoSaveState("dirty");
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => { void runAutoSave(); }, 2000);
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, totalMonth, totalYear, apt?.id]);
+
+  const handleNamedSave = async () => {
     if (!user || !apt) return;
     const name = simName.trim();
     if (!name) { toast.error("Donnez un nom à votre simulation"); return; }
     setSaving(true);
-    // Strip non-serializable empty values
-    const payload = {
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    const wasExisting = !!simRow;
+    const { data, error } = await upsertSimulation({
       user_id: user.id,
-      name,
       apartment_id: apt.id,
-      selected_services: JSON.parse(JSON.stringify(selected)),
+      name,
+      selected_services: JSON.parse(JSON.stringify(selected)) as SelectedServicesPayload,
       total_monthly: Math.round(totalMonth),
       total_annual: Math.round(totalYear),
-    };
-    let error;
-    if (editing?.id) {
-      ({ error } = await supabase
-        .from("budget_simulations")
-        .update({ ...payload, updated_at: new Date().toISOString() })
-        .eq("id", editing.id));
-    } else {
-      ({ error } = await supabase.from("budget_simulations").insert(payload));
-    }
+    });
     setSaving(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Simulation enregistrée ✓");
+    if (data) setSimRow(data);
+    setLastSavedAt(new Date());
+    setAutoSaveState("saved");
+    toast.success(wasExisting ? "Simulation mise à jour ✓" : "Simulation enregistrée ✓");
     setSaveOpen(false);
     notifySimulationsChanged();
-    onSaved?.();
+  };
+
+  // Switch logement, flushing pending auto-save first
+  const switchLogement = async (newId: string) => {
+    if (newId === selectedId) return;
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = null;
+      // Flush save for the current logement (uses latestRef which still points to current apt)
+      await runAutoSave();
+    }
+    setSelectedId(newId);
   };
 
   if (apartments.length === 0) {
@@ -365,7 +470,7 @@ export function BudgetSimulator({
                       type="button"
                       role="radio"
                       aria-checked={isSel}
-                      onClick={() => setSelectedId(a.id)}
+                      onClick={() => { void switchLogement(a.id); }}
                       className="flex-1 min-w-0 text-left p-4 flex items-start gap-3"
                     >
                       <span
@@ -561,17 +666,31 @@ export function BudgetSimulator({
             <p className="text-xs text-muted-foreground italic pt-2">
               Estimation indicative, à confirmer avec la résidence.
             </p>
+            <div className="text-xs text-muted-foreground pt-1 flex items-center gap-1.5 min-h-[1.25rem]">
+              {autoSaveState === "saving" && (
+                <><Loader2 className="h-3 w-3 animate-spin" /> Sauvegarde en cours…</>
+              )}
+              {autoSaveState === "dirty" && (
+                <>Modifications non sauvegardées…</>
+              )}
+              {autoSaveState === "saved" && lastSavedAt && (
+                <><Check className="h-3 w-3 text-green-600" /> Sauvegardé automatiquement à {lastSavedAt.toLocaleTimeString("fr-BE", { hour: "2-digit", minute: "2-digit" })}</>
+              )}
+              {autoSaveState === "idle" && (
+                <span className="opacity-0">·</span>
+              )}
+            </div>
             <Button
               type="button"
               className="w-full mt-2"
               disabled={!apt || !user}
               onClick={() => {
-                setSimName(editing?.name ?? simName);
+                setSimName(simName || simRow?.name || defaultName);
                 setSaveOpen(true);
               }}
             >
               <Save className="h-4 w-4" />
-              {editing ? "Mettre à jour la simulation" : "Enregistrer cette simulation"}
+              💾 {simRow ? "Mettre à jour la simulation" : "Sauvegarder la simulation"}
             </Button>
           </CardContent>
         </Card>
@@ -581,7 +700,7 @@ export function BudgetSimulator({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Mettre à jour la simulation" : "Enregistrer cette simulation"}
+              {simRow ? "Mettre à jour la simulation" : "Sauvegarder la simulation"}
             </DialogTitle>
             <DialogDescription>
               Donnez un nom à votre simulation pour la retrouver dans l'historique.
@@ -602,8 +721,8 @@ export function BudgetSimulator({
             <Button variant="outline" onClick={() => setSaveOpen(false)} disabled={saving}>
               Annuler
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Enregistrement…" : "Enregistrer"}
+            <Button onClick={handleNamedSave} disabled={saving}>
+              {saving ? "Enregistrement…" : simRow ? "Mettre à jour" : "Enregistrer"}
             </Button>
           </DialogFooter>
         </DialogContent>

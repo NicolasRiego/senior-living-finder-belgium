@@ -27,7 +27,6 @@ export default function MyAccountPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("favorites");
   const [simulateId, setSimulateId] = useState<string | null>(null);
-  const [editingSim, setEditingSim] = useState<BudgetSimulationRow | null>(null);
   const [fullErrorOpen, setFullErrorOpen] = useState(false);
   const { items: savedApartments } = useSavedApartments();
   const { items: simulatorItems, add: addToSim, remove: removeFromSim } = useSimulatorLogements();
@@ -54,15 +53,13 @@ export default function MyAccountPage() {
       if (res === "full") return; // toast already shown
       if (res === "error") return;
     }
-    setEditingSim(null);
     setSimulateId(id);
     setTab("simulation");
   };
 
-  const handleEditSimulation = async (sim: BudgetSimulationRow) => {
+  const handleOpenSimulation = async (sim: BudgetSimulationRow) => {
     const alreadyIn = simulatorItems.some((a) => a.id === sim.apartment_id);
     if (!alreadyIn) {
-      // Need to re-add
       if (simulatorItems.length >= SIMULATOR_MAX) {
         setFullErrorOpen(true);
         return;
@@ -78,7 +75,6 @@ export default function MyAccountPage() {
         return;
       }
     }
-    setEditingSim(sim);
     setSimulateId(sim.apartment_id);
     setTab("simulation");
   };
@@ -137,14 +133,12 @@ export default function MyAccountPage() {
           <BudgetSimulator
             apartments={simulatorItems}
             initialId={simulateId}
-            editing={editingSim}
-            onSaved={() => setEditingSim(null)}
             onRemove={(id) => { void removeFromSim(id); }}
           />
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">
-          <SimulationHistory apartments={savedApartments} onEdit={handleEditSimulation} />
+          <SimulationHistory apartments={savedApartments} onOpen={handleOpenSimulation} />
         </TabsContent>
 
         <TabsContent value="leads" className="mt-6">
