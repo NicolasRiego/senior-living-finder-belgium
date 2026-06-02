@@ -6,11 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Mail, Building2, Shield, Home, Calculator } from "lucide-react";
+import { Heart, Mail, Building2, Shield, Home, Calculator, History } from "lucide-react";
 import { SavedApartmentsList } from "@/modules/apartments/SavedApartmentsList";
 import { SavedResidencesList } from "@/modules/residences/SavedResidencesList";
 import { BudgetSimulator } from "@/modules/apartments/BudgetSimulator";
+import { SimulationHistory } from "@/modules/apartments/SimulationHistory";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
+import type { BudgetSimulationRow } from "@/modules/apartments/budgetSimulations";
 
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
 
