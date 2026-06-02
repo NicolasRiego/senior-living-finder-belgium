@@ -328,41 +328,86 @@ export function BudgetSimulator({
   const totalMonth = useMemo(() => lines.reduce((acc, l) => acc + l.total, 0), [lines]);
   const totalYear = useMemo(() => totalMonth * 12, [totalMonth]);
 
-  // ----- Save simulation -----
+  // ----- Auto-save (debounced) + manual named save -----
   const [saveOpen, setSaveOpen] = useState(false);
-  const [simName, setSimName] = useState(editing?.name ?? "");
   const [saving, setSaving] = useState(false);
-  useEffect(() => { setSimName(editing?.name ?? ""); }, [editing?.id]);
+  const skipNextAutoSaveRef = useRef(true);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestRef = useRef({ selected, totalMonth, totalYear, simName, simRow, apt, user });
+  latestRef.current = { selected, totalMonth, totalYear, simName, simRow, apt, user };
 
-  const handleSave = async () => {
+  const defaultName = useMemo(() => {
+    if (!apt) return "";
+    const parts = [apt.residence_nom_fr];
+    if (apt.type) parts.push(apt.type);
+    if (apt.surface_m2) parts.push(`${apt.surface_m2} m²`);
+    return parts.join(" — ");
+  }, [apt]);
+
+  const runAutoSave = async () => {
+    const { selected, totalMonth, totalYear, simName, simRow, apt, user } = latestRef.current;
+    if (!user || !apt) return;
+    setAutoSaveState("saving");
+    const { data, error } = await upsertSimulation({
+      user_id: user.id,
+      apartment_id: apt.id,
+      name: (simName.trim() || simRow?.name || defaultName || "Sans nom"),
+      selected_services: JSON.parse(JSON.stringify(selected)) as SelectedServicesPayload,
+      total_monthly: Math.round(totalMonth),
+      total_annual: Math.round(totalYear),
+    });
+    if (error) {
+      setAutoSaveState("dirty");
+      return;
+    }
+    if (data) {
+      setSimRow(data);
+      if (!simName) setSimName(data.name);
+    }
+    setLastSavedAt(new Date());
+    setAutoSaveState("saved");
+    notifySimulationsChanged();
+  };
+
+  // Trigger auto-save 2s after the last change
+  useEffect(() => {
+    if (skipNextAutoSaveRef.current) {
+      skipNextAutoSaveRef.current = false;
+      return;
+    }
+    if (!apt || !user) return;
+    setAutoSaveState("dirty");
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => { void runAutoSave(); }, 2000);
+    return () => {
+      if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, totalMonth, totalYear, apt?.id]);
+
+  const handleNamedSave = async () => {
     if (!user || !apt) return;
     const name = simName.trim();
     if (!name) { toast.error("Donnez un nom à votre simulation"); return; }
     setSaving(true);
-    // Strip non-serializable empty values
-    const payload = {
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    const wasExisting = !!simRow;
+    const { data, error } = await upsertSimulation({
       user_id: user.id,
-      name,
       apartment_id: apt.id,
-      selected_services: JSON.parse(JSON.stringify(selected)),
+      name,
+      selected_services: JSON.parse(JSON.stringify(selected)) as SelectedServicesPayload,
       total_monthly: Math.round(totalMonth),
       total_annual: Math.round(totalYear),
-    };
-    let error;
-    if (editing?.id) {
-      ({ error } = await supabase
-        .from("budget_simulations")
-        .update({ ...payload, updated_at: new Date().toISOString() })
-        .eq("id", editing.id));
-    } else {
-      ({ error } = await supabase.from("budget_simulations").insert(payload));
-    }
+    });
     setSaving(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Simulation enregistrée ✓");
+    if (data) setSimRow(data);
+    setLastSavedAt(new Date());
+    setAutoSaveState("saved");
+    toast.success(wasExisting ? "Simulation mise à jour ✓" : "Simulation enregistrée ✓");
     setSaveOpen(false);
     notifySimulationsChanged();
-    onSaved?.();
   };
 
   if (apartments.length === 0) {
