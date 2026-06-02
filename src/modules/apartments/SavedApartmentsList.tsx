@@ -19,6 +19,7 @@ export function SavedApartmentsList({
   onSimulate?: (id: string) => void;
 }) {
   const { items, remove } = useSavedApartments();
+  const { has: isInSimulator } = useSimulatorLogements();
 
   if (items.length === 0) {
     return (
