@@ -532,12 +532,57 @@ export function BudgetSimulator({
             <p className="text-xs text-muted-foreground italic pt-2">
               Estimation indicative, à confirmer avec la résidence.
             </p>
+            <Button
+              type="button"
+              className="w-full mt-2"
+              disabled={!apt || !user}
+              onClick={() => {
+                setSimName(editing?.name ?? simName);
+                setSaveOpen(true);
+              }}
+            >
+              <Save className="h-4 w-4" />
+              {editing ? "Mettre à jour la simulation" : "Enregistrer cette simulation"}
+            </Button>
           </CardContent>
         </Card>
       </aside>
+
+      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editing ? "Mettre à jour la simulation" : "Enregistrer cette simulation"}
+            </DialogTitle>
+            <DialogDescription>
+              Donnez un nom à votre simulation pour la retrouver dans l'historique.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="sim-name">Nom de la simulation</Label>
+            <Input
+              id="sim-name"
+              value={simName}
+              maxLength={120}
+              placeholder="ex: Studio Les Roses - budget serré"
+              onChange={(e) => setSimName(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveOpen(false)} disabled={saving}>
+              Annuler
+            </Button>
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? "Enregistrement…" : "Enregistrer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
 
 function FrequencySelector({
   unit, freq, freqKind, onChange,
