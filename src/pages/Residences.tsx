@@ -322,9 +322,10 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
   const { t, tr } = useI18n();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const { has, toggle, isFull } = useCompare();
+  const { has: isFav, toggle: toggleFav } = useFavorites();
   const inCompare = has(row.id);
+  const saved = isFav(row.id);
   const name = tr(row.nom_fr, row.nom_nl);
-  const tagline = tr(row.tagline_fr, row.tagline_nl);
 
   useEffect(() => {
     let active = true;
