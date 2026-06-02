@@ -141,7 +141,7 @@ export default function ApartmentsPage() {
     <div className="container py-12 lg:py-16">
       <header className="mb-8">
         <h1 className="font-display text-3xl font-semibold md:text-4xl text-balance">
-          Appartements seniors
+          Logements seniors
         </h1>
         <p className="mt-2 text-lg text-muted-foreground">
           {search.isLoading ? "…" : `${total} logement${total > 1 ? "s" : ""} disponible${total > 1 ? "s" : ""}`}
