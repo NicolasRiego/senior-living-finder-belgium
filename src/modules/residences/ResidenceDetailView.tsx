@@ -1,7 +1,8 @@
 import { useMemo, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare, Heart } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
+import { useFavorites } from "@/modules/favorites/useFavorites";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
