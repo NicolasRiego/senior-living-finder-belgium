@@ -155,6 +155,8 @@ export function useSavedApartments() {
       cache = [{ ...apt, saved_at: new Date().toISOString() }, ...cache.filter((a) => a.id !== apt.id)];
       notify();
       toast.success("Logement enregistré");
+      // Auto-add to simulator silently (no toast if full)
+      void addToSimulator(user.id, apt.id, { silent: true });
     },
     [user]
   );
