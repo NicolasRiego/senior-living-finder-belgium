@@ -156,13 +156,31 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             <Button
               type="button"
               size="sm"
-              variant={isFav ? "soft" : "outline"}
-              onClick={() => toggle(row.residence_id)}
-              aria-pressed={isFav}
-              aria-label={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+              variant={isSaved ? "soft" : "outline"}
+              onClick={() => {
+                if (isSaved) {
+                  removeSaved(row.id);
+                } else {
+                  addSaved({
+                    id: row.id,
+                    residence_id: row.residence_id,
+                    residence_slug: row.residence_slug,
+                    residence_nom_fr: row.residence_nom_fr,
+                    type: row.type,
+                    surface_m2: row.surface_m2,
+                    sale_price: row.sale_price,
+                    rent_price: row.rent_price,
+                    transaction_type: row.transaction_type,
+                    cover_path: row.cover_path,
+                    ville: row.ville,
+                  });
+                }
+              }}
+              aria-pressed={isSaved}
+              aria-label={isSaved ? "Retirer de mes logements" : "Enregistrer ce logement"}
               className="px-3"
             >
-              <Heart className={"h-4 w-4 " + (isFav ? "fill-current" : "")} />
+              <Heart className={"h-4 w-4 " + (isSaved ? "fill-current text-success" : "")} />
             </Button>
           </div>
 
