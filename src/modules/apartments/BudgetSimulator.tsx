@@ -84,16 +84,25 @@ type SelectedState = Record<string, {
 export function BudgetSimulator({
   apartments,
   initialId,
+  editing,
+  onSaved,
 }: {
   apartments: SavedApartment[];
   initialId?: string | null;
+  editing?: BudgetSimulationRow | null;
+  onSaved?: () => void;
 }) {
+  const { user } = useAuth();
   const [selectedId, setSelectedId] = useState<string | null>(
-    initialId ?? apartments[0]?.id ?? null,
+    editing?.apartment_id ?? initialId ?? apartments[0]?.id ?? null,
   );
+  useEffect(() => {
+    if (editing) setSelectedId(editing.apartment_id);
+  }, [editing]);
   useEffect(() => {
     if (!selectedId && apartments[0]) setSelectedId(apartments[0].id);
   }, [apartments, selectedId]);
+
 
   const apt = useMemo(
     () => apartments.find((a) => a.id === selectedId) ?? null,
