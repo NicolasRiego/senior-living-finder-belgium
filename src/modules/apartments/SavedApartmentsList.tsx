@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCoverUrl } from "./publicApi";
 import { useSavedApartments, type SavedApartment } from "./savedApartments";
+import { useSimulatorLogements } from "./simulatorLogements";
 
 const TYPE_LABEL: Record<string, string> = {
   appartement: "Appartement",
@@ -18,6 +19,7 @@ export function SavedApartmentsList({
   onSimulate?: (id: string) => void;
 }) {
   const { items, remove } = useSavedApartments();
+  const { has: isInSimulator } = useSimulatorLogements();
 
   if (items.length === 0) {
     return (
@@ -39,18 +41,25 @@ export function SavedApartmentsList({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {items.map((a) => (
-        <SavedRow key={a.id} apt={a} onRemove={() => remove(a.id)} onSimulate={onSimulate} />
+        <SavedRow
+          key={a.id}
+          apt={a}
+          onRemove={() => remove(a.id)}
+          onSimulate={onSimulate}
+          inSimulator={isInSimulator(a.id)}
+        />
       ))}
     </div>
   );
 }
 
 function SavedRow({
-  apt, onRemove, onSimulate,
+  apt, onRemove, onSimulate, inSimulator,
 }: {
   apt: SavedApartment;
   onRemove: () => void;
   onSimulate?: (id: string) => void;
+  inSimulator: boolean;
 }) {
   const [cover, setCover] = useState<string | null>(null);
   useEffect(() => {
@@ -97,7 +106,11 @@ function SavedRow({
           </div>
           <div className="flex flex-wrap gap-2">
             {onSimulate && (
-              <Button size="sm" variant="default" onClick={() => onSimulate(apt.id)}>
+              <Button
+                size="sm"
+                variant={inSimulator ? "default" : "outline"}
+                onClick={() => onSimulate(apt.id)}
+              >
                 <Calculator className="h-4 w-4" /> Simuler
               </Button>
             )}
