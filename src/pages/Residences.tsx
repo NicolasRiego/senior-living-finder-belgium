@@ -371,20 +371,8 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
             </span>
           )}
         </Link>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleFav(row.id);
-          }}
-          aria-pressed={saved}
-          aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
-          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/90 backdrop-blur-sm shadow-soft transition hover:bg-background"
-        >
-          <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "text-foreground")} />
-        </button>
       </div>
+
 
 
       <div className="flex flex-1 flex-col gap-3 p-6">
