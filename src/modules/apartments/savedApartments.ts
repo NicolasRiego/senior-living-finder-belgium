@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { openLoginGate } from "@/modules/auth/loginGate";
 import { toast } from "sonner";
+import { addToSimulator } from "./simulatorLogements";
 
 export type SavedApartment = {
   id: string;
