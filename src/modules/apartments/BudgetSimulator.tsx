@@ -278,13 +278,54 @@ export function BudgetSimulator({
   const totalMonth = useMemo(() => lines.reduce((acc, l) => acc + l.total, 0), [lines]);
   const totalYear = useMemo(() => totalMonth * 12, [totalMonth]);
 
+  // ----- Save simulation -----
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [simName, setSimName] = useState(editing?.name ?? "");
+  const [saving, setSaving] = useState(false);
+  useEffect(() => { setSimName(editing?.name ?? ""); }, [editing?.id]);
+
+  const handleSave = async () => {
+    if (!user || !apt) return;
+    const name = simName.trim();
+    if (!name) { toast.error("Donnez un nom à votre simulation"); return; }
+    setSaving(true);
+    // Strip non-serializable empty values
+    const payload = {
+      user_id: user.id,
+      name,
+      apartment_id: apt.id,
+      selected_services: selected as unknown as Record<string, unknown>,
+      total_monthly: Math.round(totalMonth),
+      total_annual: Math.round(totalYear),
+    };
+    let error;
+    if (editing?.id) {
+      ({ error } = await supabase
+        .from("budget_simulations")
+        .update({ ...payload, updated_at: new Date().toISOString() })
+        .eq("id", editing.id));
+    } else {
+      ({ error } = await supabase.from("budget_simulations").insert(payload));
+    }
+    setSaving(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Simulation enregistrée ✓");
+    setSaveOpen(false);
+    notifySimulationsChanged();
+    onSaved?.();
+  };
+
   if (apartments.length === 0) {
     return (
       <Card>
         <CardContent className="py-10 text-center space-y-3">
           <Building2 className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="text-base">Vous devez d'abord enregistrer un appartement pour le simuler.</p>
-          <Button asChild><Link to="/appartements">Voir les appartements</Link></Button>
+          <p className="text-base">
+            Enregistrez des logements depuis la recherche pour les simuler ici.
+          </p>
+          <Button asChild>
+            <Link to="/appartements">Explorer les logements →</Link>
+          </Button>
         </CardContent>
       </Card>
     );
@@ -295,34 +336,53 @@ export function BudgetSimulator({
       <div className="space-y-6 min-w-0">
         <Card>
           <CardHeader><CardTitle className="text-lg">Logement à simuler</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <Select value={selectedId ?? ""} onValueChange={(v) => setSelectedId(v)}>
-              <SelectTrigger className="w-full"><SelectValue placeholder="Choisir un appartement" /></SelectTrigger>
-              <SelectContent>
-                {apartments.map((a) => (
-                  <SelectItem key={a.id} value={a.id}>
-                    {a.residence_nom_fr} — {a.type ?? "logement"} {a.surface_m2 ? `${a.surface_m2} m²` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {apt && (
-              <div className="rounded-lg bg-muted/40 p-4 text-sm space-y-1">
-                <div className="font-semibold text-base">{apt.residence_nom_fr}</div>
-                <div className="text-muted-foreground">
-                  {[apt.type, apt.surface_m2 && `${apt.surface_m2} m²`, apt.ville].filter(Boolean).join(" · ")}
-                </div>
-                <div className="mt-1">
-                  {apt.rent_price
-                    ? <>Loyer : <strong>{apt.rent_price.toLocaleString("fr-BE")} €</strong> par mois</>
-                    : apt.sale_price
-                    ? <>Prix : <strong>{apt.sale_price.toLocaleString("fr-BE")} €</strong></>
-                    : <span className="text-muted-foreground">Prix sur demande</span>}
-                </div>
-              </div>
-            )}
+          <CardContent>
+            <div role="radiogroup" aria-label="Logement à simuler" className="space-y-2">
+              {apartments.map((a) => {
+                const isSel = a.id === selectedId;
+                const priceLine = a.rent_price
+                  ? `Loyer : ${a.rent_price.toLocaleString("fr-BE")} €/mois`
+                  : a.sale_price
+                  ? `Prix : ${a.sale_price.toLocaleString("fr-BE")} €`
+                  : "Prix sur demande";
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSel}
+                    onClick={() => setSelectedId(a.id)}
+                    className={`w-full text-left rounded-lg border p-4 transition-colors flex items-start gap-3 ${
+                      isSel
+                        ? "border-l-4 border-l-primary border-primary/40 bg-primary/5"
+                        : "bg-background hover:bg-muted/40"
+                    }`}
+                  >
+                    <span
+                      className={`mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                        isSel ? "border-primary" : "border-muted-foreground/40"
+                      }`}
+                    >
+                      {isSel && <span className="h-2.5 w-2.5 rounded-full bg-primary" />}
+                    </span>
+                    <span className="min-w-0 flex-1 space-y-0.5">
+                      <span className="block font-semibold break-words">
+                        {a.residence_nom_fr}
+                        {a.type ? ` — ${a.type}` : ""}
+                        {a.surface_m2 ? ` ${a.surface_m2} m²` : ""}
+                      </span>
+                      <span className="block text-sm text-muted-foreground break-words">
+                        {[a.ville].filter(Boolean).join(" · ")}
+                      </span>
+                      <span className="block text-sm">{priceLine}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
+
 
         <Card>
           <CardHeader><CardTitle className="text-lg">Services</CardTitle></CardHeader>
