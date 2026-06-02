@@ -653,17 +653,31 @@ export function BudgetSimulator({
             <p className="text-xs text-muted-foreground italic pt-2">
               Estimation indicative, à confirmer avec la résidence.
             </p>
+            <div className="text-xs text-muted-foreground pt-1 flex items-center gap-1.5 min-h-[1.25rem]">
+              {autoSaveState === "saving" && (
+                <><Loader2 className="h-3 w-3 animate-spin" /> Sauvegarde en cours…</>
+              )}
+              {autoSaveState === "dirty" && (
+                <>Modifications non sauvegardées…</>
+              )}
+              {autoSaveState === "saved" && lastSavedAt && (
+                <><Check className="h-3 w-3 text-green-600" /> Sauvegardé automatiquement à {lastSavedAt.toLocaleTimeString("fr-BE", { hour: "2-digit", minute: "2-digit" })}</>
+              )}
+              {autoSaveState === "idle" && (
+                <span className="opacity-0">·</span>
+              )}
+            </div>
             <Button
               type="button"
               className="w-full mt-2"
               disabled={!apt || !user}
               onClick={() => {
-                setSimName(editing?.name ?? simName);
+                setSimName(simName || simRow?.name || defaultName);
                 setSaveOpen(true);
               }}
             >
               <Save className="h-4 w-4" />
-              {editing ? "Mettre à jour la simulation" : "Enregistrer cette simulation"}
+              💾 {simRow ? "Mettre à jour la simulation" : "Sauvegarder la simulation"}
             </Button>
           </CardContent>
         </Card>
@@ -673,7 +687,7 @@ export function BudgetSimulator({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Mettre à jour la simulation" : "Enregistrer cette simulation"}
+              {simRow ? "Mettre à jour la simulation" : "Sauvegarder la simulation"}
             </DialogTitle>
             <DialogDescription>
               Donnez un nom à votre simulation pour la retrouver dans l'historique.
@@ -694,8 +708,8 @@ export function BudgetSimulator({
             <Button variant="outline" onClick={() => setSaveOpen(false)} disabled={saving}>
               Annuler
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
-              {saving ? "Enregistrement…" : "Enregistrer"}
+            <Button onClick={handleNamedSave} disabled={saving}>
+              {saving ? "Enregistrement…" : simRow ? "Mettre à jour" : "Enregistrer"}
             </Button>
           </DialogFooter>
         </DialogContent>
