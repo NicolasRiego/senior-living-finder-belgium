@@ -6,11 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Mail, Building2, Shield, Home, Calculator } from "lucide-react";
+import { Heart, Mail, Building2, Shield, Home, Calculator, History } from "lucide-react";
 import { SavedApartmentsList } from "@/modules/apartments/SavedApartmentsList";
 import { SavedResidencesList } from "@/modules/residences/SavedResidencesList";
 import { BudgetSimulator } from "@/modules/apartments/BudgetSimulator";
+import { SimulationHistory } from "@/modules/apartments/SimulationHistory";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
+import type { BudgetSimulationRow } from "@/modules/apartments/budgetSimulations";
 
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
 
@@ -20,6 +22,7 @@ export default function MyAccountPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("favorites");
   const [simulateId, setSimulateId] = useState<string | null>(null);
+  const [editingSim, setEditingSim] = useState<BudgetSimulationRow | null>(null);
   const { items: savedApartments } = useSavedApartments();
 
   useEffect(() => {
@@ -37,7 +40,14 @@ export default function MyAccountPage() {
 
 
   const handleSimulate = (id: string) => {
+    setEditingSim(null);
     setSimulateId(id);
+    setTab("simulation");
+  };
+
+  const handleEditSimulation = (sim: BudgetSimulationRow) => {
+    setEditingSim(sim);
+    setSimulateId(sim.apartment_id);
     setTab("simulation");
   };
 
@@ -78,6 +88,9 @@ export default function MyAccountPage() {
           <TabsTrigger value="leads" className="gap-2">
             <Mail className="h-4 w-4" /> Mes demandes
           </TabsTrigger>
+          <TabsTrigger value="history" className="gap-2">
+            <History className="h-4 w-4" /> Historique de simulations
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="favorites" className="mt-6">
@@ -89,7 +102,16 @@ export default function MyAccountPage() {
         </TabsContent>
 
         <TabsContent value="simulation" className="mt-6">
-          <BudgetSimulator apartments={savedApartments} initialId={simulateId} />
+          <BudgetSimulator
+            apartments={savedApartments}
+            initialId={simulateId}
+            editing={editingSim}
+            onSaved={() => setEditingSim(null)}
+          />
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-6">
+          <SimulationHistory apartments={savedApartments} onEdit={handleEditSimulation} />
         </TabsContent>
 
         <TabsContent value="leads" className="mt-6">
