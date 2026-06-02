@@ -16,9 +16,9 @@ const TYPE_LABEL: Record<string, string> = Object.fromEntries(
 export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
   const { tr } = useI18n();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
-  const { has, toggle } = useFavorites();
+  const { has: hasSaved, add: addSaved, remove: removeSaved } = useSavedApartments();
   const { hasApt, toggleApt, isAptFull } = useCompare();
-  const isFav = has(row.residence_id);
+  const isSaved = hasSaved(row.id);
   const inCompare = hasApt(row.id);
   const name = tr(row.residence_nom_fr, row.residence_nom_nl);
 
