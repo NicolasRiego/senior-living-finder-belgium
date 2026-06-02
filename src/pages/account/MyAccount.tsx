@@ -76,10 +76,10 @@ export default function MyAccountPage() {
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="flex h-auto flex-wrap justify-start gap-1 bg-muted p-1">
           <TabsTrigger value="favorites" className="gap-2">
-            <Heart className="h-4 w-4" /> Mes favoris
+            <Heart className="h-4 w-4" /> Mes résidences
           </TabsTrigger>
           <TabsTrigger value="apartments" className="gap-2">
-            <Home className="h-4 w-4" /> Mes appartements
+            <Home className="h-4 w-4" /> Mes logements
           </TabsTrigger>
           <TabsTrigger value="simulation" className="gap-2">
             <Calculator className="h-4 w-4" /> Simulation budget
@@ -90,32 +90,7 @@ export default function MyAccountPage() {
         </TabsList>
 
         <TabsContent value="favorites" className="mt-6">
-          {loading ? (
-            <p className="text-muted-foreground">Chargement…</p>
-          ) : favorites.length === 0 ? (
-            <Card>
-              <CardContent className="py-10 text-center space-y-3">
-                <Building2 className="mx-auto h-10 w-10 text-muted-foreground" />
-                <p className="text-base">Aucune résidence sauvegardée pour l'instant.</p>
-                <Button asChild><Link to="/residences">Découvrir les résidences</Link></Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {favorites.map((f) => f.residences && (
-                <Card key={f.residence_id}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      <Link to={`/residences/${f.residences.slug}`} className="hover:underline">
-                        {f.residences.nom_fr}
-                      </Link>
-                    </CardTitle>
-                    <p className="text-muted-foreground">{f.residences.ville ?? "—"}</p>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          )}
+          <SavedResidencesList />
         </TabsContent>
 
         <TabsContent value="apartments" className="mt-6">
