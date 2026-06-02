@@ -41,7 +41,13 @@ export function SavedApartmentsList({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {items.map((a) => (
-        <SavedRow key={a.id} apt={a} onRemove={() => remove(a.id)} onSimulate={onSimulate} />
+        <SavedRow
+          key={a.id}
+          apt={a}
+          onRemove={() => remove(a.id)}
+          onSimulate={onSimulate}
+          inSimulator={isInSimulator(a.id)}
+        />
       ))}
     </div>
   );
