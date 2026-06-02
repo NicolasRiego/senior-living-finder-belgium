@@ -12,12 +12,10 @@ import { SavedResidencesList } from "@/modules/residences/SavedResidencesList";
 import { BudgetSimulator } from "@/modules/apartments/BudgetSimulator";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
 
-type FavRow = { residence_id: string; residences: { nom_fr: string; ville: string | null; slug: string } | null };
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
 
 export default function MyAccountPage() {
   const { user, isAdmin, isPartner } = useAuth();
-  const [favorites, setFavorites] = useState<FavRow[]>([]);
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("favorites");
@@ -27,23 +25,16 @@ export default function MyAccountPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: favs }, { data: ls }] = await Promise.all([
-        supabase
-          .from("favorites")
-          .select("residence_id, residences:residences(nom_fr, ville, slug)")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("leads")
-          .select("id, created_at, status, residence_id, residences:residences(nom_fr, slug)")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-      ]);
-      setFavorites((favs ?? []) as any);
+      const { data: ls } = await supabase
+        .from("leads")
+        .select("id, created_at, status, residence_id, residences:residences(nom_fr, slug)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
       setLeads((ls ?? []) as any);
       setLoading(false);
     })();
   }, [user]);
+
 
   const handleSimulate = (id: string) => {
     setSimulateId(id);
