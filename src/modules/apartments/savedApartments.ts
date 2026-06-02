@@ -156,7 +156,7 @@ export function useSavedApartments() {
       notify();
       toast.success("Logement enregistré");
       // Auto-add to simulator silently (no toast if full)
-      void addToSimulator(user.id, apt.id, { silent: true });
+      void addToSimulator(user.id, apt.id);
     },
     [user]
   );
