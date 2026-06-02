@@ -54,11 +54,12 @@ export function SavedApartmentsList({
 }
 
 function SavedRow({
-  apt, onRemove, onSimulate,
+  apt, onRemove, onSimulate, inSimulator,
 }: {
   apt: SavedApartment;
   onRemove: () => void;
   onSimulate?: (id: string) => void;
+  inSimulator: boolean;
 }) {
   const [cover, setCover] = useState<string | null>(null);
   useEffect(() => {
