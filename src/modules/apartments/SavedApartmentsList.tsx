@@ -116,7 +116,7 @@ function SavedRow({
             )}
             <Button size="sm" variant="outline" asChild>
               <Link to={`/appartements/${apt.id}`}>
-                <Maximize className="h-4 w-4" /> Voir l'appartement
+                <Maximize className="h-4 w-4" /> Voir le logement
               </Link>
             </Button>
             <Button size="sm" variant="outline" asChild>
