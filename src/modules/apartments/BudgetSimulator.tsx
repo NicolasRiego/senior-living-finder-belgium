@@ -690,7 +690,7 @@ export function BudgetSimulator({
               }}
             >
               <Save className="h-4 w-4" />
-              💾 {simRow ? "Mettre à jour la simulation" : "Sauvegarder la simulation"}
+              {simRow ? "Mettre à jour la simulation" : "Sauvegarder la simulation"}
             </Button>
           </CardContent>
         </Card>
