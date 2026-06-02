@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { searchResidences, getCoverUrl, type SearchRow } from "@/modules/residences/publicApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useFavorites } from "@/modules/favorites/useFavorites";
 
 function truncate(s: string | null | undefined, n: number) {
   if (!s) return "";
   return s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s;
 }
+
 
 function FeaturedCard({ row }: { row: SearchRow }) {
   const { t } = useI18n();
