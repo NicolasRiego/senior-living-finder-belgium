@@ -38,15 +38,6 @@ type RawRow = {
   } | null;
 };
 
-async function fetchCover(apartmentId: string): Promise<string | null> {
-  const { data } = await supabase
-    .from("photos")
-    .select("storage_path, residence_id")
-    .eq("category", "cover")
-    .limit(1)
-    .maybeSingle();
-  return data?.storage_path ?? null;
-}
 
 async function loadAll(userId: string): Promise<SavedApartment[]> {
   const { data, error } = await supabase
