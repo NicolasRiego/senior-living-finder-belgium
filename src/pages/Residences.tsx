@@ -344,32 +344,48 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant">
-      <Link to={`/residences/${row.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-muted">
-        {coverUrl ? (
-          <img
-            src={coverUrl}
-            alt={name}
-            loading="lazy"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200";
-            }}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-            <MapPin className="h-8 w-8" />
-          </div>
-        )}
-        <span className="badge-fixed absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-background/80 backdrop-blur-sm px-3 py-1.5 font-medium text-foreground shadow-soft">
-          {t(`residenceTypes.${row.type_etablissement}`)}
-        </span>
-        {row.is_complete && (
-          <span className="badge-fixed absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-primary/80 backdrop-blur-sm px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
-            <BadgeCheck className="h-3.5 w-3.5" /> Profil complet
+      <div className="relative">
+        <Link to={`/residences/${row.slug}`} className="relative block aspect-[4/3] overflow-hidden bg-muted">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={name}
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200";
+              }}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+              <MapPin className="h-8 w-8" />
+            </div>
+          )}
+          <span className="badge-fixed absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-background/80 backdrop-blur-sm px-3 py-1.5 font-medium text-foreground shadow-soft">
+            {t(`residenceTypes.${row.type_etablissement}`)}
           </span>
-        )}
-      </Link>
+          {row.is_complete && (
+            <span className="badge-fixed absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-primary/80 backdrop-blur-sm px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
+              <BadgeCheck className="h-3.5 w-3.5" /> Profil complet
+            </span>
+          )}
+        </Link>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFav(row.id);
+          }}
+          aria-pressed={saved}
+          aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+          className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/90 backdrop-blur-sm shadow-soft transition hover:bg-background"
+        >
+          <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "text-foreground")} />
+        </button>
+      </div>
+
 
       <div className="flex flex-1 flex-col gap-3 p-6">
         <h3 className="font-display text-xl font-semibold leading-tight break-words">
