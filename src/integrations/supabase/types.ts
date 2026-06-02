@@ -1589,6 +1589,27 @@ export type Database = {
           },
         ]
       }
+      saved_apartments: {
+        Row: {
+          apartment_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          apartment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          apartment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       services_catalog: {
         Row: {
           category: string | null

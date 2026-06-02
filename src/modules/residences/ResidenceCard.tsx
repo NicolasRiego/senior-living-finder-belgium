@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
-import { MapPin, Users, Star, Check } from "lucide-react";
+import { MapPin, Users, Star, Check, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useCompare } from "@/modules/compare/CompareProvider";
+import { useFavorites } from "@/modules/favorites/useFavorites";
 import type { Residence } from "@/modules/residences/data";
 
 export function ResidenceCard({ residence }: { residence: Residence }) {
   const { t } = useI18n();
   const { has, toggle, isFull } = useCompare();
+  const { has: hasFav, toggle: toggleFav } = useFavorites();
   const inCompare = has(residence.id);
+  const isFav = hasFav(residence.id);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant">
@@ -81,6 +84,17 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
             <span className="hidden sm:inline">
               {inCompare ? t("common.removeFromCompare") : t("common.compare")}
             </span>
+          </Button>
+          <Button
+            type="button"
+            variant={isFav ? "soft" : "outline"}
+            size="sm"
+            onClick={() => toggleFav(residence.id)}
+            aria-pressed={isFav}
+            aria-label={isFav ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+            className="px-3"
+          >
+            <Heart className={"h-4 w-4 " + (isFav ? "fill-current text-success" : "")} />
           </Button>
         </div>
       </div>

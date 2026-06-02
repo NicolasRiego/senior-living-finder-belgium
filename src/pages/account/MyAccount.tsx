@@ -2,21 +2,20 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Mail, Building2, ShieldCheck, Shield, Home, Calculator } from "lucide-react";
+import { Heart, Mail, Building2, Shield, Home, Calculator } from "lucide-react";
 import { SavedApartmentsList } from "@/modules/apartments/SavedApartmentsList";
+import { SavedResidencesList } from "@/modules/residences/SavedResidencesList";
 import { BudgetSimulator } from "@/modules/apartments/BudgetSimulator";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
 
-type FavRow = { residence_id: string; residences: { nom_fr: string; ville: string | null; slug: string } | null };
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
 
 export default function MyAccountPage() {
   const { user, isAdmin, isPartner } = useAuth();
-  const [favorites, setFavorites] = useState<FavRow[]>([]);
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("favorites");
@@ -26,23 +25,16 @@ export default function MyAccountPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: favs }, { data: ls }] = await Promise.all([
-        supabase
-          .from("favorites")
-          .select("residence_id, residences:residences(nom_fr, ville, slug)")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("leads")
-          .select("id, created_at, status, residence_id, residences:residences(nom_fr, slug)")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-      ]);
-      setFavorites((favs ?? []) as any);
+      const { data: ls } = await supabase
+        .from("leads")
+        .select("id, created_at, status, residence_id, residences:residences(nom_fr, slug)")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
       setLeads((ls ?? []) as any);
       setLoading(false);
     })();
   }, [user]);
+
 
   const handleSimulate = (id: string) => {
     setSimulateId(id);
@@ -75,10 +67,10 @@ export default function MyAccountPage() {
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="flex h-auto flex-wrap justify-start gap-1 bg-muted p-1">
           <TabsTrigger value="favorites" className="gap-2">
-            <Heart className="h-4 w-4" /> Mes favoris
+            <Heart className="h-4 w-4" /> Mes résidences
           </TabsTrigger>
           <TabsTrigger value="apartments" className="gap-2">
-            <Home className="h-4 w-4" /> Mes appartements
+            <Home className="h-4 w-4" /> Mes logements
           </TabsTrigger>
           <TabsTrigger value="simulation" className="gap-2">
             <Calculator className="h-4 w-4" /> Simulation budget
@@ -89,32 +81,7 @@ export default function MyAccountPage() {
         </TabsList>
 
         <TabsContent value="favorites" className="mt-6">
-          {loading ? (
-            <p className="text-muted-foreground">Chargement…</p>
-          ) : favorites.length === 0 ? (
-            <Card>
-              <CardContent className="py-10 text-center space-y-3">
-                <Building2 className="mx-auto h-10 w-10 text-muted-foreground" />
-                <p className="text-base">Aucune résidence sauvegardée pour l'instant.</p>
-                <Button asChild><Link to="/residences">Découvrir les résidences</Link></Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {favorites.map((f) => f.residences && (
-                <Card key={f.residence_id}>
-                  <CardHeader>
-                    <CardTitle className="text-lg">
-                      <Link to={`/residences/${f.residences.slug}`} className="hover:underline">
-                        {f.residences.nom_fr}
-                      </Link>
-                    </CardTitle>
-                    <p className="text-muted-foreground">{f.residences.ville ?? "—"}</p>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
-          )}
+          <SavedResidencesList />
         </TabsContent>
 
         <TabsContent value="apartments" className="mt-6">

@@ -1,7 +1,8 @@
 import { useMemo, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare } from "lucide-react";
+import { ArrowLeft, MapPin, Users, Check, Phone, Mail, CalendarDays, FileText, GitCompare, Heart } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
+import { useFavorites } from "@/modules/favorites/useFavorites";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog";
@@ -95,7 +96,10 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
                     )}
                   </div>
                 )}
-                {!disableCompare && <CompareToggle id={r.id} />}
+                <div className="flex flex-col items-end gap-2">
+                  <SaveResidenceButton id={r.id} />
+                  {!disableCompare && <CompareToggle id={r.id} />}
+                </div>
               </div>
             </div>
 
@@ -336,3 +340,21 @@ function CompareToggle({ id }: { id: string }) {
     </Button>
   );
 }
+
+function SaveResidenceButton({ id }: { id: string }) {
+  const { has, toggle } = useFavorites();
+  const isFav = has(id);
+  return (
+    <Button
+      type="button"
+      variant={isFav ? "soft" : "default"}
+      size="sm"
+      onClick={() => toggle(id)}
+      aria-pressed={isFav}
+    >
+      {isFav ? <Check className="h-4 w-4 text-success" /> : <Heart className="h-4 w-4" />}
+      {isFav ? "Résidence enregistrée" : "Enregistrer cette résidence"}
+    </Button>
+  );
+}
+
