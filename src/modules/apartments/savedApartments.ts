@@ -19,24 +19,8 @@ export type SavedApartment = {
   saved_at: string;
 };
 
-type RawRow = {
-  apartment_id: string;
-  created_at: string;
-  apartments: {
-    id: string;
-    residence_id: string;
-    type: string | null;
-    surface_m2: number | null;
-    sale_price: number | null;
-    rent_price: number | null;
-    transaction_type: string | null;
-    residences: {
-      slug: string;
-      nom_fr: string;
-      ville: string | null;
-    } | null;
-  } | null;
-};
+
+
 
 
 async function loadAll(userId: string): Promise<SavedApartment[]> {
