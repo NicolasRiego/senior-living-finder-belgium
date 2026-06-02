@@ -13,6 +13,7 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { PartnerLayout } from "@/components/layout/PartnerLayout";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
 import { PasswordGate } from "@/components/PasswordGate";
+import { LoginGateDialog } from "@/modules/auth/loginGate";
 
 import HomePage from "./pages/Home";
 import ResidencesPage from "./pages/Residences";
