@@ -416,10 +416,23 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
             )}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button asChild size="sm" className="w-auto whitespace-nowrap px-4">
-              <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
-            </Button>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-nowrap items-center gap-2">
+              <Button asChild size="sm" className="flex-1 min-w-0 whitespace-nowrap px-4">
+                <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={saved ? "soft" : "outline"}
+                onClick={() => toggleFav(row.id)}
+                aria-pressed={saved}
+                aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+                className="shrink-0 px-3"
+              >
+                <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "")} />
+              </Button>
+            </div>
             <Button
               type="button"
               size="sm"
@@ -428,7 +441,7 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
               onClick={() => toggle(row.id)}
               aria-pressed={inCompare}
               title={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
-              className="px-4"
+              className="w-full px-4"
             >
               {inCompare ? (
                 <>
@@ -440,18 +453,6 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
                 </>
               )}
             </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant={saved ? "soft" : "outline"}
-              onClick={() => toggleFav(row.id)}
-              aria-pressed={saved}
-              aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
-              className="px-3"
-            >
-              <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "")} />
-            </Button>
-
           </div>
         </div>
       </div>
