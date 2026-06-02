@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Building2, MapPin, Trash2 } from "lucide-react";
 import { useFavorites } from "@/modules/favorites/useFavorites";
+import { getCoverUrl } from "@/modules/residences/publicApi";
 
 type Row = {
   residence_id: string;
@@ -22,10 +23,36 @@ type Row = {
 const FALLBACK_COVER =
   "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800";
 
+async function fetchCoverFor(residenceId: string): Promise<string> {
+  const { data: coverRow } = await supabase
+    .from("photos")
+    .select("storage_path")
+    .eq("residence_id", residenceId)
+    .eq("category", "cover")
+    .order("display_order", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  let path = coverRow?.storage_path as string | undefined;
+  if (!path) {
+    const { data: firstRow } = await supabase
+      .from("photos")
+      .select("storage_path")
+      .eq("residence_id", residenceId)
+      .order("display_order", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    path = firstRow?.storage_path as string | undefined;
+  }
+  if (!path) return FALLBACK_COVER;
+  const url = await getCoverUrl(path);
+  return url ?? FALLBACK_COVER;
+}
+
 export function SavedResidencesList() {
   const { user } = useAuth();
   const { toggle, refresh } = useFavorites();
   const [rows, setRows] = useState<Row[]>([]);
+  const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,8 +69,16 @@ export function SavedResidencesList() {
         )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setRows(((data ?? []) as unknown) as Row[]);
+      const list = ((data ?? []) as unknown) as Row[];
+      setRows(list);
       setLoading(false);
+
+      const entries = await Promise.all(
+        list
+          .filter((r) => r.residences)
+          .map(async (r) => [r.residence_id, await fetchCoverFor(r.residence_id)] as const)
+      );
+      setCovers(Object.fromEntries(entries));
     })();
   }, [user]);
 
@@ -77,8 +112,13 @@ export function SavedResidencesList() {
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="h-40 w-full sm:h-auto sm:w-40 shrink-0 bg-muted">
                 <img
-                  src={FALLBACK_COVER}
+                  src={covers[r.residence_id] ?? FALLBACK_COVER}
                   alt={r.residences.nom_fr}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = FALLBACK_COVER;
+                  }}
                   className="h-full w-full object-cover"
                 />
               </div>
