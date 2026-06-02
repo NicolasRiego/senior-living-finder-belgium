@@ -188,10 +188,16 @@ export function BudgetSimulator({
           initial[r.service_id] = { enabled: true };
         }
       }
+      // Restore from an edited simulation if the apartment matches
+      if (editing && editing.apartment_id === apt.id) {
+        for (const [svcId, state] of Object.entries(editing.selected_services ?? {})) {
+          initial[svcId] = { ...(initial[svcId] ?? { enabled: false }), ...state };
+        }
+      }
       setSelected(initial);
       setLoadingSvc(false);
     })();
-  }, [apt]);
+  }, [apt, editing]);
 
   const baseAmount = apt?.rent_price ?? apt?.sale_price ?? 0;
   const baseLabel = apt?.rent_price
