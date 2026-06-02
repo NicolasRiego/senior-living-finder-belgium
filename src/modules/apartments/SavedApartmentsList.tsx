@@ -24,11 +24,10 @@ export function SavedApartmentsList({
       <Card>
         <CardContent className="py-10 text-center space-y-3">
           <Building2 className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="text-base">Vous n'avez pas encore enregistré d'appartement.</p>
+          <p className="text-base">Vous n'avez pas encore enregistré de logement.</p>
           <p className="text-sm text-muted-foreground">
-            Parcourez les annonces et cliquez sur « Enregistrer » pour les retrouver ici.
+            Parcourez les annonces et cliquez sur le cœur pour les retrouver ici.
           </p>
-          <Button asChild>
           <Button asChild>
             <Link to="/appartements">Explorer les logements →</Link>
           </Button>
