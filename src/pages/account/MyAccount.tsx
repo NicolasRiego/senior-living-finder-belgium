@@ -40,7 +40,14 @@ export default function MyAccountPage() {
 
 
   const handleSimulate = (id: string) => {
+    setEditingSim(null);
     setSimulateId(id);
+    setTab("simulation");
+  };
+
+  const handleEditSimulation = (sim: BudgetSimulationRow) => {
+    setEditingSim(sim);
+    setSimulateId(sim.apartment_id);
     setTab("simulation");
   };
 
