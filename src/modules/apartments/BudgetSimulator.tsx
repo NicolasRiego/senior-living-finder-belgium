@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Building2, Save } from "lucide-react";
+import { Building2, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
@@ -16,6 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import type { SavedApartment } from "./savedApartments";
+import { SIMULATOR_MAX } from "./simulatorLogements";
 import { notifySimulationsChanged, type BudgetSimulationRow } from "./budgetSimulations";
 
 type PriceUnit =
