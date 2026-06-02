@@ -411,6 +411,18 @@ export function BudgetSimulator({
     notifySimulationsChanged();
   };
 
+  // Switch logement, flushing pending auto-save first
+  const switchLogement = async (newId: string) => {
+    if (newId === selectedId) return;
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = null;
+      // Flush save for the current logement (uses latestRef which still points to current apt)
+      await runAutoSave();
+    }
+    setSelectedId(newId);
+  };
+
   if (apartments.length === 0) {
     return (
       <Card>
