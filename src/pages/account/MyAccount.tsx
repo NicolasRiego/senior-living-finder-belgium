@@ -139,7 +139,7 @@ export default function MyAccountPage() {
             initialId={simulateId}
             editing={editingSim}
             onSaved={() => setEditingSim(null)}
-            onRemove={removeFromSim}
+            onRemove={(id) => { void removeFromSim(id); }}
           />
         </TabsContent>
 
