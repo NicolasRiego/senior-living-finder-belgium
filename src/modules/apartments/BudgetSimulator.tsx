@@ -338,7 +338,11 @@ export function BudgetSimulator({
     <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
       <div className="space-y-6 min-w-0">
         <Card>
-          <CardHeader><CardTitle className="text-lg">Logement à simuler</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-lg">
+              Logement à simuler ({apartments.length}/{SIMULATOR_MAX})
+            </CardTitle>
+          </CardHeader>
           <CardContent>
             <div role="radiogroup" aria-label="Logement à simuler" className="space-y-2">
               {apartments.map((a) => {
@@ -349,42 +353,64 @@ export function BudgetSimulator({
                   ? `Prix : ${a.sale_price.toLocaleString("fr-BE")} €`
                   : "Prix sur demande";
                 return (
-                  <button
+                  <div
                     key={a.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={isSel}
-                    onClick={() => setSelectedId(a.id)}
-                    className={`w-full text-left rounded-lg border p-4 transition-colors flex items-start gap-3 ${
+                    className={`relative w-full rounded-lg border transition-colors flex items-start gap-3 ${
                       isSel
                         ? "border-l-4 border-l-primary border-primary/40 bg-primary/5"
                         : "bg-background hover:bg-muted/40"
                     }`}
                   >
-                    <span
-                      className={`mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
-                        isSel ? "border-primary" : "border-muted-foreground/40"
-                      }`}
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={isSel}
+                      onClick={() => setSelectedId(a.id)}
+                      className="flex-1 min-w-0 text-left p-4 flex items-start gap-3"
                     >
-                      {isSel && <span className="h-2.5 w-2.5 rounded-full bg-primary" />}
-                    </span>
-                    <span className="min-w-0 flex-1 space-y-0.5">
-                      <span className="block font-semibold break-words">
-                        {a.residence_nom_fr}
-                        {a.type ? ` — ${a.type}` : ""}
-                        {a.surface_m2 ? ` ${a.surface_m2} m²` : ""}
+                      <span
+                        className={`mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+                          isSel ? "border-primary" : "border-muted-foreground/40"
+                        }`}
+                      >
+                        {isSel && <span className="h-2.5 w-2.5 rounded-full bg-primary" />}
                       </span>
-                      <span className="block text-sm text-muted-foreground break-words">
-                        {[a.ville].filter(Boolean).join(" · ")}
+                      <span className="min-w-0 flex-1 space-y-0.5">
+                        <span className="block font-semibold break-words">
+                          {a.residence_nom_fr}
+                          {a.type ? ` — ${a.type}` : ""}
+                          {a.surface_m2 ? ` ${a.surface_m2} m²` : ""}
+                        </span>
+                        <span className="block text-sm text-muted-foreground break-words">
+                          {[a.ville].filter(Boolean).join(" · ")}
+                        </span>
+                        <span className="block text-sm">{priceLine}</span>
                       </span>
-                      <span className="block text-sm">{priceLine}</span>
-                    </span>
-                  </button>
+                    </button>
+                    {onRemove && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void onRemove(a.id);
+                        }}
+                        aria-label={`Retirer ${a.residence_nom_fr} du simulateur`}
+                        className="shrink-0 mr-2 mt-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Les logements retirés restent dans Mes logements.
+            </p>
           </CardContent>
         </Card>
+
+
 
 
         <Card>
