@@ -9,7 +9,9 @@ import type { Residence } from "@/modules/residences/data";
 export function ResidenceCard({ residence }: { residence: Residence }) {
   const { t } = useI18n();
   const { has, toggle, isFull } = useCompare();
+  const { has: hasFav, toggle: toggleFav } = useFavorites();
   const inCompare = has(residence.id);
+  const isFav = hasFav(residence.id);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant">
