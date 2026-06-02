@@ -87,11 +87,13 @@ export function BudgetSimulator({
   initialId,
   editing,
   onSaved,
+  onRemove,
 }: {
   apartments: SavedApartment[];
   initialId?: string | null;
   editing?: BudgetSimulationRow | null;
   onSaved?: () => void;
+  onRemove?: (apartmentId: string) => void | Promise<void>;
 }) {
   const { user } = useAuth();
   const [selectedId, setSelectedId] = useState<string | null>(
