@@ -440,6 +440,18 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
                 </>
               )}
             </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={saved ? "soft" : "outline"}
+              onClick={() => toggleFav(row.id)}
+              aria-pressed={saved}
+              aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+              className="px-3"
+            >
+              <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "")} />
+            </Button>
+
           </div>
         </div>
       </div>
