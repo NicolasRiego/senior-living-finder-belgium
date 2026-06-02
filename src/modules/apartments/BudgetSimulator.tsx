@@ -470,7 +470,7 @@ export function BudgetSimulator({
                       type="button"
                       role="radio"
                       aria-checked={isSel}
-                      onClick={() => setSelectedId(a.id)}
+                      onClick={() => { void switchLogement(a.id); }}
                       className="flex-1 min-w-0 text-left p-4 flex items-start gap-3"
                     >
                       <span
