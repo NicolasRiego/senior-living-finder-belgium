@@ -62,6 +62,7 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <LoginGateDialog />
             <PasswordGate>
             <BrowserRouter>
               <ScrollToTop />
