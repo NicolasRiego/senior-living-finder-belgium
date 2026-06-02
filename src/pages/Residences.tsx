@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check } from "lucide-react";
+import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check, Heart } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
+import { useFavorites } from "@/modules/favorites/useFavorites";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
