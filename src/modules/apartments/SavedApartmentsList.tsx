@@ -106,7 +106,11 @@ function SavedRow({
           </div>
           <div className="flex flex-wrap gap-2">
             {onSimulate && (
-              <Button size="sm" variant="default" onClick={() => onSimulate(apt.id)}>
+              <Button
+                size="sm"
+                variant={inSimulator ? "default" : "outline"}
+                onClick={() => onSimulate(apt.id)}
+              >
                 <Calculator className="h-4 w-4" /> Simuler
               </Button>
             )}
