@@ -326,6 +326,7 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
   const inCompare = has(row.id);
   const saved = isFav(row.id);
   const name = tr(row.nom_fr, row.nom_nl);
+  const tagline = tr(row.tagline_fr, row.tagline_nl);
 
   useEffect(() => {
     let active = true;
