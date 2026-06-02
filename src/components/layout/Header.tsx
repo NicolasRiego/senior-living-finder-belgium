@@ -219,7 +219,7 @@ export function Header() {
                 {l.to === "/residences" && (
                   <>
                     <div className="px-4 pt-3 pb-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                      Appartements
+                      Logements
                     </div>
                     <NavLink
                       to="/appartements?type=vente"
