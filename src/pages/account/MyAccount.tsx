@@ -133,14 +133,12 @@ export default function MyAccountPage() {
           <BudgetSimulator
             apartments={simulatorItems}
             initialId={simulateId}
-            editing={editingSim}
-            onSaved={() => setEditingSim(null)}
             onRemove={(id) => { void removeFromSim(id); }}
           />
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">
-          <SimulationHistory apartments={savedApartments} onEdit={handleEditSimulation} />
+          <SimulationHistory apartments={savedApartments} onOpen={handleOpenSimulation} />
         </TabsContent>
 
         <TabsContent value="leads" className="mt-6">
