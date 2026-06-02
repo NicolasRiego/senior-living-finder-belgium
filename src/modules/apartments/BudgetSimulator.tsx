@@ -294,7 +294,10 @@ export function BudgetSimulator({
       user_id: user.id,
       name,
       apartment_id: apt.id,
-      selected_services: selected as unknown as Record<string, unknown>,
+      selected_services: JSON.parse(JSON.stringify(selected)),
+      total_monthly: Math.round(totalMonth),
+      total_annual: Math.round(totalYear),
+    };
       total_monthly: Math.round(totalMonth),
       total_annual: Math.round(totalYear),
     };
