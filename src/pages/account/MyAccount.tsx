@@ -88,6 +88,9 @@ export default function MyAccountPage() {
           <TabsTrigger value="leads" className="gap-2">
             <Mail className="h-4 w-4" /> Mes demandes
           </TabsTrigger>
+          <TabsTrigger value="history" className="gap-2">
+            <History className="h-4 w-4" /> Historique de simulations
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="favorites" className="mt-6">
