@@ -1,40 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
-import { openLoginGate } from "@/modules/auth/loginGate";
 import { toast } from "sonner";
-import { addToSimulator } from "./simulatorLogements";
+import type { SavedApartment } from "./savedApartments";
 
-export type SavedApartment = {
-  id: string;
-  residence_id: string;
-  residence_slug: string;
-  residence_nom_fr: string;
-  type: string | null;
-  surface_m2: number | null;
-  sale_price: number | null;
-  rent_price: number | null;
-  transaction_type: string | null;
-  cover_path: string | null;
-  ville: string | null;
-  saved_at: string;
-};
-
-
-
-
+export const SIMULATOR_MAX = 10;
 
 async function loadAll(userId: string): Promise<SavedApartment[]> {
-  const { data: savedRows, error: savedErr } = await supabase
-    .from("saved_apartments")
-    .select("apartment_id, created_at")
+  const { data: rows, error } = await supabase
+    .from("simulator_logements")
+    .select("apartment_id, added_at")
     .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-  if (savedErr) {
-    console.error(savedErr);
+    .order("added_at", { ascending: false });
+  if (error) {
+    console.error(error);
     return [];
   }
-  const ids = (savedRows ?? []).map((r) => r.apartment_id as string);
+  const ids = (rows ?? []).map((r) => r.apartment_id as string);
   if (ids.length === 0) return [];
 
   const { data: apts, error: aptErr } = await supabase
@@ -65,7 +47,7 @@ async function loadAll(userId: string): Promise<SavedApartment[]> {
   const aptById = new Map<string, any>();
   for (const a of apts ?? []) aptById.set((a as any).id, a);
 
-  return (savedRows ?? [])
+  return (rows ?? [])
     .map((sr) => {
       const a: any = aptById.get(sr.apartment_id as string);
       if (!a || !a.residences) return null;
@@ -81,12 +63,11 @@ async function loadAll(userId: string): Promise<SavedApartment[]> {
         transaction_type: a.transaction_type,
         cover_path: coverByRes.get(a.residence_id) ?? null,
         ville: a.residences.ville,
-        saved_at: sr.created_at as string,
+        saved_at: sr.added_at as string,
       } as SavedApartment;
     })
     .filter((x): x is SavedApartment => x !== null);
 }
-
 
 let cache: SavedApartment[] = [];
 const listeners = new Set<(v: SavedApartment[]) => void>();
@@ -94,26 +75,70 @@ function notify() {
   listeners.forEach((l) => l(cache));
 }
 
-export function useSavedApartments() {
+export type AddResult = "ok" | "exists" | "full" | "error" | "no-user";
+
+export async function addToSimulator(
+  userId: string,
+  apartmentId: string,
+  options: { silent?: boolean } = {}
+): Promise<AddResult> {
+  // Pre-check count to avoid noisy toast on heart-save when full
+  const { count } = await supabase
+    .from("simulator_logements")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId);
+  if ((count ?? 0) >= SIMULATOR_MAX) {
+    if (!options.silent) {
+      toast.warning(
+        "Maximum 10 logements dans le simulateur. Retirez-en un pour en ajouter un nouveau."
+      );
+    }
+    return "full";
+  }
+  const { error } = await supabase
+    .from("simulator_logements")
+    .insert({ user_id: userId, apartment_id: apartmentId });
+  if (error) {
+    if (error.code === "23505") return "exists";
+    if (error.message?.includes("simulator_logements_max_reached")) {
+      if (!options.silent) {
+        toast.warning(
+          "Maximum 10 logements dans le simulateur. Retirez-en un pour en ajouter un nouveau."
+        );
+      }
+      return "full";
+    }
+    if (!options.silent) toast.error(error.message);
+    return "error";
+  }
+  // Refresh cache
+  cache = await loadAll(userId);
+  notify();
+  return "ok";
+}
+
+export function useSimulatorLogements() {
   const { user } = useAuth();
   const [items, setItems] = useState<SavedApartment[]>(cache);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     listeners.add(setItems);
-    return () => {
-      listeners.delete(setItems);
-    };
+    return () => { listeners.delete(setItems); };
   }, []);
 
   useEffect(() => {
     if (!user) {
       cache = [];
       notify();
+      setLoading(false);
       return;
     }
+    setLoading(true);
     loadAll(user.id).then((v) => {
       cache = v;
       notify();
+      setLoading(false);
     });
   }, [user]);
 
@@ -127,7 +152,7 @@ export function useSavedApartments() {
     async (apartmentId: string) => {
       if (!user) return;
       const { error } = await supabase
-        .from("saved_apartments")
+        .from("simulator_logements")
         .delete()
         .eq("user_id", user.id)
         .eq("apartment_id", apartmentId);
@@ -139,29 +164,14 @@ export function useSavedApartments() {
   );
 
   const add = useCallback(
-    async (apt: Omit<SavedApartment, "saved_at">) => {
-      if (!user) {
-        openLoginGate({
-          title: "Connectez-vous pour enregistrer ce logement",
-          description:
-            "Créez un compte ou connectez-vous pour retrouver vos logements enregistrés dans Mon espace.",
-        });
-        return;
-      }
-      const { error } = await supabase
-        .from("saved_apartments")
-        .insert({ user_id: user.id, apartment_id: apt.id });
-      if (error && error.code !== "23505") return toast.error(error.message);
-      cache = [{ ...apt, saved_at: new Date().toISOString() }, ...cache.filter((a) => a.id !== apt.id)];
-      notify();
-      toast.success("Logement enregistré");
-      // Auto-add to simulator silently (no toast if full)
-      void addToSimulator(user.id, apt.id);
+    async (apartmentId: string) => {
+      if (!user) return "no-user" as AddResult;
+      return addToSimulator(user.id, apartmentId);
     },
     [user]
   );
 
   const has = useCallback((id: string) => items.some((a) => a.id === id), [items]);
 
-  return { items, remove, add, has, refresh };
+  return { items, loading, add, remove, has, refresh };
 }
