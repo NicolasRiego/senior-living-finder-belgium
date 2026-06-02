@@ -102,7 +102,16 @@ export default function MyAccountPage() {
         </TabsContent>
 
         <TabsContent value="simulation" className="mt-6">
-          <BudgetSimulator apartments={savedApartments} initialId={simulateId} />
+          <BudgetSimulator
+            apartments={savedApartments}
+            initialId={simulateId}
+            editing={editingSim}
+            onSaved={() => setEditingSim(null)}
+          />
+        </TabsContent>
+
+        <TabsContent value="history" className="mt-6">
+          <SimulationHistory apartments={savedApartments} onEdit={handleEditSimulation} />
         </TabsContent>
 
         <TabsContent value="leads" className="mt-6">
