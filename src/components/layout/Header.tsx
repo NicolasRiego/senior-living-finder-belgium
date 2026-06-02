@@ -96,14 +96,14 @@ export function Header() {
                         : "text-foreground/80 hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    Appartements <ChevronDown className="h-[15px] w-[15px]" />
+                    Logements <ChevronDown className="h-[15px] w-[15px]" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="min-w-[240px]">
                     <DropdownMenuItem asChild>
-                      <Link to="/appartements?type=vente" className="text-[18.5px]">Appartements à vendre</Link>
+                      <Link to="/appartements?type=vente" className="text-[18.5px]">Logements à vendre</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/appartements?type=location" className="text-[18.5px]">Appartements à louer</Link>
+                      <Link to="/appartements?type=location" className="text-[18.5px]">Logements à louer</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
