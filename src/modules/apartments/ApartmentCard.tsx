@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { MapPin, Heart, Building2, Maximize, Layers, GitCompare, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
-import { useFavorites } from "@/modules/favorites/useFavorites";
+import { useSavedApartments } from "@/modules/apartments/savedApartments";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { getCoverUrl } from "./publicApi";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
