@@ -92,26 +92,44 @@ type SelectedState = Record<string, {
 export function BudgetSimulator({
   apartments,
   initialId,
-  editing,
-  onSaved,
   onRemove,
 }: {
   apartments: SavedApartment[];
   initialId?: string | null;
-  editing?: BudgetSimulationRow | null;
-  onSaved?: () => void;
   onRemove?: (apartmentId: string) => void | Promise<void>;
 }) {
   const { user } = useAuth();
-  const [selectedId, setSelectedId] = useState<string | null>(
-    editing?.apartment_id ?? initialId ?? apartments[0]?.id ?? null,
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(() => {
+    if (initialId) return initialId;
+    try {
+      const saved = localStorage.getItem(LAST_SELECTED_KEY);
+      if (saved && apartments.some((a) => a.id === saved)) return saved;
+    } catch { /* ignore */ }
+    return apartments[0]?.id ?? null;
+  });
+  // React to incoming initialId (e.g. "Ouvrir" from history)
   useEffect(() => {
-    if (editing) setSelectedId(editing.apartment_id);
-  }, [editing]);
+    if (initialId && initialId !== selectedId) setSelectedId(initialId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialId]);
   useEffect(() => {
     if (!selectedId && apartments[0]) setSelectedId(apartments[0].id);
+    if (selectedId && !apartments.some((a) => a.id === selectedId)) {
+      setSelectedId(apartments[0]?.id ?? null);
+    }
   }, [apartments, selectedId]);
+  // Persist last selection
+  useEffect(() => {
+    if (selectedId) {
+      try { localStorage.setItem(LAST_SELECTED_KEY, selectedId); } catch { /* ignore */ }
+    }
+  }, [selectedId]);
+
+  // Existing simulation row for the currently selected apartment
+  const [simRow, setSimRow] = useState<BudgetSimulationRow | null>(null);
+  const [simName, setSimName] = useState("");
+  const [autoSaveState, setAutoSaveState] = useState<"idle" | "dirty" | "saving" | "saved">("idle");
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
 
   const apt = useMemo(
