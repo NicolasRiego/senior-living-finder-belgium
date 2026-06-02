@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
+import { openLoginGate } from "@/modules/auth/loginGate";
 import { toast } from "sonner";
 
 export function useFavorites() {
@@ -25,7 +26,11 @@ export function useFavorites() {
 
   const toggle = async (residenceId: string) => {
     if (!user) {
-      toast.info("Connectez-vous pour sauvegarder vos favoris");
+      openLoginGate({
+        title: "Connectez-vous pour enregistrer cette résidence",
+        description:
+          "Créez un compte ou connectez-vous pour retrouver vos résidences enregistrées dans Mon espace.",
+      });
       return;
     }
     const isFav = ids.has(residenceId);
@@ -39,9 +44,10 @@ export function useFavorites() {
         .insert({ user_id: user.id, residence_id: residenceId });
       if (error) return toast.error(error.message);
       setIds((s) => new Set(s).add(residenceId));
-      toast.success("Ajouté à vos favoris");
+      toast.success("Résidence enregistrée");
     }
   };
 
   return { ids, has: (id: string) => ids.has(id), toggle, loading, refresh: load };
 }
+
