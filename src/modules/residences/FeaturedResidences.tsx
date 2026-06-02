@@ -1,19 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
+import { MapPin, Heart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { searchResidences, getCoverUrl, type SearchRow } from "@/modules/residences/publicApi";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useFavorites } from "@/modules/favorites/useFavorites";
 
 function truncate(s: string | null | undefined, n: number) {
   if (!s) return "";
   return s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s;
 }
 
+
 function FeaturedCard({ row }: { row: SearchRow }) {
   const { t } = useI18n();
   const [cover, setCover] = useState<string | null>(null);
+  const { has: hasFav, toggle: toggleFav } = useFavorites();
+  const saved = hasFav(row.id);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -71,10 +77,28 @@ function FeaturedCard({ row }: { row: SearchRow }) {
             <span className="text-sm text-muted-foreground">{t("common.perMonth")}</span>
           </div>
         )}
+
+        <div className={"flex gap-2 " + (row.price_from != null ? "mt-4" : "mt-auto pt-6")}>
+          <Button asChild size="sm" className="flex-1">
+            <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={saved ? "soft" : "outline"}
+            onClick={() => toggleFav(row.id)}
+            aria-pressed={saved}
+            aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+            className="px-3"
+          >
+            <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "")} />
+          </Button>
+        </div>
       </div>
     </article>
   );
 }
+
 
 export function FeaturedResidences() {
   const { data, isLoading } = useQuery({
