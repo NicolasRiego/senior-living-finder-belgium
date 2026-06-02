@@ -77,10 +77,28 @@ function FeaturedCard({ row }: { row: SearchRow }) {
             <span className="text-sm text-muted-foreground">{t("common.perMonth")}</span>
           </div>
         )}
+
+        <div className={"flex gap-2 " + (row.price_from != null ? "mt-4" : "mt-auto pt-6")}>
+          <Button asChild size="sm" className="flex-1">
+            <Link to={`/residences/${row.slug}`}>{t("common.learnMore")}</Link>
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={saved ? "soft" : "outline"}
+            onClick={() => toggleFav(row.id)}
+            aria-pressed={saved}
+            aria-label={saved ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+            className="px-3"
+          >
+            <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "")} />
+          </Button>
+        </div>
       </div>
     </article>
   );
 }
+
 
 export function FeaturedResidences() {
   const { data, isLoading } = useQuery({
