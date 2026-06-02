@@ -85,6 +85,17 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
               {inCompare ? t("common.removeFromCompare") : t("common.compare")}
             </span>
           </Button>
+          <Button
+            type="button"
+            variant={isFav ? "soft" : "outline"}
+            size="sm"
+            onClick={() => toggleFav(residence.id)}
+            aria-pressed={isFav}
+            aria-label={isFav ? "Retirer de mes résidences" : "Enregistrer cette résidence"}
+            className="px-3"
+          >
+            <Heart className={"h-4 w-4 " + (isFav ? "fill-current text-success" : "")} />
+          </Button>
         </div>
       </div>
     </article>
