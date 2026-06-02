@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit, Trash2, Calculator } from "lucide-react";
+import { FolderOpen, Trash2, Calculator } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,10 +12,10 @@ import type { SavedApartment } from "./savedApartments";
 
 export function SimulationHistory({
   apartments,
-  onEdit,
+  onOpen,
 }: {
   apartments: SavedApartment[];
-  onEdit: (sim: BudgetSimulationRow) => void;
+  onOpen: (sim: BudgetSimulationRow) => void;
 }) {
   const { items, loading } = useBudgetSimulations();
   const [toDelete, setToDelete] = useState<BudgetSimulationRow | null>(null);
@@ -48,7 +48,7 @@ export function SimulationHistory({
           <Calculator className="mx-auto h-10 w-10 text-muted-foreground" />
           <p className="text-base">Vous n'avez pas encore enregistré de simulation.</p>
           <p className="text-sm text-muted-foreground">
-            Créez une simulation et cliquez sur "Enregistrer cette simulation".
+            Créez une simulation et cliquez sur "Sauvegarder la simulation".
           </p>
         </CardContent>
       </Card>
@@ -72,22 +72,18 @@ export function SimulationHistory({
                   <p className="text-sm">
                     Total mensuel : <strong className="text-primary">{s.total_monthly.toLocaleString("fr-BE")} €/mois</strong>
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    Total annuel : {s.total_annual.toLocaleString("fr-BE")} €/an
-                  </p>
                   <p className="text-xs text-muted-foreground">
-                    Créée le {new Date(s.created_at).toLocaleDateString("fr-BE")}
+                    Dernière mise à jour : {new Date(s.updated_at).toLocaleDateString("fr-BE")}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(s)}
+                    onClick={() => onOpen(s)}
                     disabled={!apt}
                     title={!apt ? "Logement plus disponible" : undefined}
                   >
-                    <Edit className="h-4 w-4" /> Modifier
+                    <FolderOpen className="h-4 w-4" /> Ouvrir
                   </Button>
                   <Button
                     size="sm"
@@ -95,7 +91,7 @@ export function SimulationHistory({
                     onClick={() => setToDelete(s)}
                     aria-label="Supprimer cette simulation"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" /> Supprimer
                   </Button>
                 </div>
               </CardContent>
@@ -109,7 +105,8 @@ export function SimulationHistory({
           <DialogHeader>
             <DialogTitle>Supprimer cette simulation ?</DialogTitle>
             <DialogDescription>
-              Supprimer cette simulation définitivement ? Cette action est irréversible.
+              Les données de simulation pour ce logement seront supprimées définitivement.
+              Le logement reviendra à son état par défaut. Cette action est irréversible.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
