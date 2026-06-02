@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCoverUrl } from "./publicApi";
 import { useSavedApartments, type SavedApartment } from "./savedApartments";
+import { useSimulatorLogements } from "./simulatorLogements";
 
 const TYPE_LABEL: Record<string, string> = {
   appartement: "Appartement",
