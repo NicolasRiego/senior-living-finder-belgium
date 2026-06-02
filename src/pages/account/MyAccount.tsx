@@ -6,12 +6,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
 import { Heart, Mail, Building2, Shield, Home, Calculator, History } from "lucide-react";
+import { toast } from "sonner";
 import { SavedApartmentsList } from "@/modules/apartments/SavedApartmentsList";
 import { SavedResidencesList } from "@/modules/residences/SavedResidencesList";
 import { BudgetSimulator } from "@/modules/apartments/BudgetSimulator";
 import { SimulationHistory } from "@/modules/apartments/SimulationHistory";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
+import { useSimulatorLogements, SIMULATOR_MAX } from "@/modules/apartments/simulatorLogements";
 import type { BudgetSimulationRow } from "@/modules/apartments/budgetSimulations";
 
 type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
@@ -23,7 +28,9 @@ export default function MyAccountPage() {
   const [tab, setTab] = useState("favorites");
   const [simulateId, setSimulateId] = useState<string | null>(null);
   const [editingSim, setEditingSim] = useState<BudgetSimulationRow | null>(null);
+  const [fullErrorOpen, setFullErrorOpen] = useState(false);
   const { items: savedApartments } = useSavedApartments();
+  const { items: simulatorItems, add: addToSim, remove: removeFromSim } = useSimulatorLogements();
 
   useEffect(() => {
     if (!user) return;
@@ -39,13 +46,38 @@ export default function MyAccountPage() {
   }, [user]);
 
 
-  const handleSimulate = (id: string) => {
+  const handleSimulate = async (id: string) => {
+    // Ensure apartment is in simulator list (max 10)
+    const alreadyIn = simulatorItems.some((a) => a.id === id);
+    if (!alreadyIn) {
+      const res = await addToSim(id);
+      if (res === "full") return; // toast already shown
+      if (res === "error") return;
+    }
     setEditingSim(null);
     setSimulateId(id);
     setTab("simulation");
   };
 
-  const handleEditSimulation = (sim: BudgetSimulationRow) => {
+  const handleEditSimulation = async (sim: BudgetSimulationRow) => {
+    const alreadyIn = simulatorItems.some((a) => a.id === sim.apartment_id);
+    if (!alreadyIn) {
+      // Need to re-add
+      if (simulatorItems.length >= SIMULATOR_MAX) {
+        setFullErrorOpen(true);
+        return;
+      }
+      const res = await addToSim(sim.apartment_id);
+      if (res === "full") {
+        setFullErrorOpen(true);
+        return;
+      }
+      if (res === "ok") {
+        toast.info("Le logement a été remis dans votre simulateur");
+      } else if (res === "error") {
+        return;
+      }
+    }
     setEditingSim(sim);
     setSimulateId(sim.apartment_id);
     setTab("simulation");
@@ -103,10 +135,11 @@ export default function MyAccountPage() {
 
         <TabsContent value="simulation" className="mt-6">
           <BudgetSimulator
-            apartments={savedApartments}
+            apartments={simulatorItems}
             initialId={simulateId}
             editing={editingSim}
             onSaved={() => setEditingSim(null)}
+            onRemove={removeFromSim}
           />
         </TabsContent>
 
@@ -144,6 +177,31 @@ export default function MyAccountPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      <Dialog open={fullErrorOpen} onOpenChange={setFullErrorOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Impossible de charger cette simulation</DialogTitle>
+            <DialogDescription>
+              Votre simulateur contient déjà {SIMULATOR_MAX} logements. Retirez un
+              logement du simulateur pour modifier cette simulation.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setFullErrorOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                setFullErrorOpen(false);
+                setTab("simulation");
+              }}
+            >
+              Aller au simulateur
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
