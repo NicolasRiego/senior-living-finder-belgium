@@ -22,6 +22,7 @@ export default function MyAccountPage() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("favorites");
   const [simulateId, setSimulateId] = useState<string | null>(null);
+  const [editingSim, setEditingSim] = useState<BudgetSimulationRow | null>(null);
   const { items: savedApartments } = useSavedApartments();
 
   useEffect(() => {
