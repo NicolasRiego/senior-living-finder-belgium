@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/modules/auth/AuthProvider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Mail, Building2, ShieldCheck, Shield, Home, Calculator } from "lucide-react";
+import { Heart, Mail, Building2, Shield, Home, Calculator } from "lucide-react";
 import { SavedApartmentsList } from "@/modules/apartments/SavedApartmentsList";
+import { SavedResidencesList } from "@/modules/residences/SavedResidencesList";
 import { BudgetSimulator } from "@/modules/apartments/BudgetSimulator";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
 
