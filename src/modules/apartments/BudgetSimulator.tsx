@@ -157,10 +157,16 @@ export function BudgetSimulator({
   });
 
   useEffect(() => {
-    if (!apt) { setServices([]); setCharges([]); setAptExtras({ charges_monthly: 0, co_ownership_fee: 0, co_ownership_included: false, co_ownership_description: null, additional: [] }); return; }
+    if (!apt || !user) {
+      setServices([]); setCharges([]);
+      setAptExtras({ charges_monthly: 0, co_ownership_fee: 0, co_ownership_included: false, co_ownership_description: null, additional: [] });
+      setSimRow(null); setSimName(""); setSelected({});
+      setAutoSaveState("idle"); setLastSavedAt(null);
+      return;
+    }
     setLoadingSvc(true);
     (async () => {
-      const [svcData, chargesData, aptRow, additional] = await Promise.all([
+      const [svcData, chargesData, aptRow, additional, simData] = await Promise.all([
         supabase
           .from("residence_services")
           .select("id, service_id, price, price_unit, lunch_price, dinner_price, included, optional, is_free, from_charges, charges_label, service:services_catalog(code,label_fr,category)")
@@ -185,6 +191,12 @@ export function BudgetSimulator({
           .select("id, label, amount, description, is_included, sort_order")
           .eq("apartment_id", apt.id)
           .order("sort_order"),
+        supabase
+          .from("budget_simulations")
+          .select("id, name, apartment_id, selected_services, total_monthly, total_annual, created_at, updated_at")
+          .eq("user_id", user.id)
+          .eq("apartment_id", apt.id)
+          .maybeSingle(),
       ]);
       const rows = (svcData.data ?? []) as unknown as ServiceRow[];
       setServices(rows);
@@ -216,16 +228,26 @@ export function BudgetSimulator({
           initial[r.service_id] = { enabled: true };
         }
       }
-      // Restore from an edited simulation if the apartment matches
-      if (editing && editing.apartment_id === apt.id) {
-        for (const [svcId, state] of Object.entries(editing.selected_services ?? {})) {
-          initial[svcId] = { ...(initial[svcId] ?? { enabled: false }), ...state };
+      // Restore saved simulation for this apartment, if any
+      const existing = (simData.data ?? null) as unknown as BudgetSimulationRow | null;
+      setSimRow(existing);
+      setSimName(existing?.name ?? "");
+      if (existing) {
+        for (const [svcId, state] of Object.entries(existing.selected_services ?? {})) {
+          initial[svcId] = { ...(initial[svcId] ?? { enabled: false }), ...(state as SelectedState[string]) };
         }
+        setLastSavedAt(new Date(existing.updated_at));
+        setAutoSaveState("saved");
+      } else {
+        setLastSavedAt(null);
+        setAutoSaveState("idle");
       }
+      // Suppress auto-save until user interacts
+      skipNextAutoSaveRef.current = true;
       setSelected(initial);
       setLoadingSvc(false);
     })();
-  }, [apt, editing]);
+  }, [apt, user]);
 
   const baseAmount = apt?.rent_price ?? apt?.sale_price ?? 0;
   const baseLabel = apt?.rent_price
