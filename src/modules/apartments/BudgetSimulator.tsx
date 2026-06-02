@@ -165,6 +165,7 @@ export function BudgetSimulator({
       return;
     }
     setLoadingSvc(true);
+    skipNextAutoSaveRef.current = true;
     (async () => {
       const [svcData, chargesData, aptRow, additional, simData] = await Promise.all([
         supabase
