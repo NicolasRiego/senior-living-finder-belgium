@@ -29,7 +29,8 @@ export function SavedApartmentsList({
             Parcourez les annonces et cliquez sur « Enregistrer » pour les retrouver ici.
           </p>
           <Button asChild>
-            <Link to="/appartements">Découvrir les appartements</Link>
+          <Button asChild>
+            <Link to="/appartements">Explorer les logements →</Link>
           </Button>
         </CardContent>
       </Card>
