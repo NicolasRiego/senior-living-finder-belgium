@@ -16,6 +16,11 @@ import {
   Cog,
   Building2,
   User as UserIcon,
+  Briefcase,
+  LayoutDashboard,
+  Contact,
+  Kanban,
+  Megaphone,
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/version";
 import { ConstructionBanner } from "./ConstructionBanner";
@@ -66,6 +71,24 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     </AdminDropdownItem>
                     <AdminDropdownItem onSelect={go("/admin/demo", close)} icon={<Database className="h-4 w-4" />}>
                       Démo
+                    </AdminDropdownItem>
+                  </>
+                )}
+              </AdminDropdown>
+              <AdminDropdown label="Commercial" icon={<Briefcase className="h-4 w-4" />}>
+                {(close) => (
+                  <>
+                    <AdminDropdownItem onSelect={go("/admin/crm", close)} icon={<LayoutDashboard className="h-4 w-4" />}>
+                      Tableau de bord
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/contacts", close)} icon={<Contact className="h-4 w-4" />}>
+                      Contacts & Groupes
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/pipeline", close)} icon={<Kanban className="h-4 w-4" />}>
+                      Pipeline
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/campagnes", close)} icon={<Megaphone className="h-4 w-4" />}>
+                      Campagnes
                     </AdminDropdownItem>
                   </>
                 )}

@@ -710,6 +710,343 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_campaign_contacts: {
+        Row: {
+          campaign_id: string
+          contact_id: string
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["crm_campaign_contact_status"]
+        }
+        Insert: {
+          campaign_id: string
+          contact_id: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["crm_campaign_contact_status"]
+        }
+        Update: {
+          campaign_id?: string
+          contact_id?: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["crm_campaign_contact_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_campaign_contacts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "crm_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_campaign_contacts_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_campaigns: {
+        Row: {
+          budget_estimated: number | null
+          channel: Database["public"]["Enums"]["crm_campaign_channel"]
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          id: string
+          name: string
+          objective: string | null
+          results_contacts_reached: number
+          results_new_partners: number
+          results_positive_responses: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["crm_campaign_status"]
+          target_contacts: number
+          updated_at: string
+        }
+        Insert: {
+          budget_estimated?: number | null
+          channel?: Database["public"]["Enums"]["crm_campaign_channel"]
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          objective?: string | null
+          results_contacts_reached?: number
+          results_new_partners?: number
+          results_positive_responses?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["crm_campaign_status"]
+          target_contacts?: number
+          updated_at?: string
+        }
+        Update: {
+          budget_estimated?: number | null
+          channel?: Database["public"]["Enums"]["crm_campaign_channel"]
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          objective?: string | null
+          results_contacts_reached?: number
+          results_new_partners?: number
+          results_positive_responses?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["crm_campaign_status"]
+          target_contacts?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_contacts: {
+        Row: {
+          address: string | null
+          assigned_to: string | null
+          city: string | null
+          contact_firstname: string | null
+          contact_lastname: string | null
+          contact_role: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          group_id: string | null
+          id: string
+          name: string
+          next_followup_date: string | null
+          notes: string | null
+          phone: string | null
+          postal_code: string | null
+          region: string | null
+          residence_id: string | null
+          source: Database["public"]["Enums"]["crm_contact_source"]
+          status: Database["public"]["Enums"]["crm_contact_status"]
+          type: Database["public"]["Enums"]["crm_contact_type"]
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          assigned_to?: string | null
+          city?: string | null
+          contact_firstname?: string | null
+          contact_lastname?: string | null
+          contact_role?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          group_id?: string | null
+          id?: string
+          name: string
+          next_followup_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          region?: string | null
+          residence_id?: string | null
+          source?: Database["public"]["Enums"]["crm_contact_source"]
+          status?: Database["public"]["Enums"]["crm_contact_status"]
+          type?: Database["public"]["Enums"]["crm_contact_type"]
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          assigned_to?: string | null
+          city?: string | null
+          contact_firstname?: string | null
+          contact_lastname?: string | null
+          contact_role?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          group_id?: string | null
+          id?: string
+          name?: string
+          next_followup_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          region?: string | null
+          residence_id?: string | null
+          source?: Database["public"]["Enums"]["crm_contact_source"]
+          status?: Database["public"]["Enums"]["crm_contact_status"]
+          type?: Database["public"]["Enums"]["crm_contact_type"]
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_contacts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "crm_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_contacts_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_search_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_contacts_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residence_stats_30d"
+            referencedColumns: ["residence_id"]
+          },
+          {
+            foreignKeyName: "crm_contacts_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "residences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_contacts_residence_id_fkey"
+            columns: ["residence_id"]
+            isOneToOne: false
+            referencedRelation: "v_residence_price_summary"
+            referencedColumns: ["residence_id"]
+          },
+        ]
+      }
+      crm_groups: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          notes: string | null
+          sector: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          notes?: string | null
+          sector?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          notes?: string | null
+          sector?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      crm_interactions: {
+        Row: {
+          contact_id: string
+          created_at: string
+          created_by: string | null
+          date: string
+          id: string
+          result: Database["public"]["Enums"]["crm_interaction_result"] | null
+          summary: string
+          type: Database["public"]["Enums"]["crm_interaction_type"]
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          id?: string
+          result?: Database["public"]["Enums"]["crm_interaction_result"] | null
+          summary: string
+          type: Database["public"]["Enums"]["crm_interaction_type"]
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          id?: string
+          result?: Database["public"]["Enums"]["crm_interaction_result"] | null
+          summary?: string
+          type?: Database["public"]["Enums"]["crm_interaction_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_interactions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_tasks: {
+        Row: {
+          assigned_to: string | null
+          contact_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          due_time: string | null
+          id: string
+          priority: Database["public"]["Enums"]["crm_task_priority"]
+          status: Database["public"]["Enums"]["crm_task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["crm_task_priority"]
+          status?: Database["public"]["Enums"]["crm_task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          contact_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          due_time?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["crm_task_priority"]
+          status?: Database["public"]["Enums"]["crm_task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_tasks_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           created_at: string
@@ -2204,6 +2541,32 @@ export type Database = {
     }
     Enums: {
       app_role: "public" | "caregiver" | "partner_member" | "admin"
+      crm_campaign_channel:
+        | "email"
+        | "linkedin"
+        | "telephone"
+        | "evenement"
+        | "autre"
+      crm_campaign_contact_status: "cible" | "contacte" | "repondu" | "converti"
+      crm_campaign_status: "planifiee" | "en_cours" | "terminee"
+      crm_contact_source:
+        | "liste_interne"
+        | "linkedin"
+        | "recommandation"
+        | "evenement"
+        | "autre"
+      crm_contact_status:
+        | "a_contacter"
+        | "contacte"
+        | "en_discussion"
+        | "demo_envoyee"
+        | "partenaire"
+        | "refus"
+      crm_contact_type: "groupe" | "residence_independante"
+      crm_interaction_result: "positif" | "neutre" | "negatif"
+      crm_interaction_type: "appel" | "email" | "reunion" | "note"
+      crm_task_priority: "faible" | "normale" | "urgente"
+      crm_task_status: "a_faire" | "en_cours" | "termine"
       establishment_type:
         | "residence_services"
         | "seigneurie"
@@ -2365,6 +2728,35 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["public", "caregiver", "partner_member", "admin"],
+      crm_campaign_channel: [
+        "email",
+        "linkedin",
+        "telephone",
+        "evenement",
+        "autre",
+      ],
+      crm_campaign_contact_status: ["cible", "contacte", "repondu", "converti"],
+      crm_campaign_status: ["planifiee", "en_cours", "terminee"],
+      crm_contact_source: [
+        "liste_interne",
+        "linkedin",
+        "recommandation",
+        "evenement",
+        "autre",
+      ],
+      crm_contact_status: [
+        "a_contacter",
+        "contacte",
+        "en_discussion",
+        "demo_envoyee",
+        "partenaire",
+        "refus",
+      ],
+      crm_contact_type: ["groupe", "residence_independante"],
+      crm_interaction_result: ["positif", "neutre", "negatif"],
+      crm_interaction_type: ["appel", "email", "reunion", "note"],
+      crm_task_priority: ["faible", "normale", "urgente"],
+      crm_task_status: ["a_faire", "en_cours", "termine"],
       establishment_type: [
         "residence_services",
         "seigneurie",
