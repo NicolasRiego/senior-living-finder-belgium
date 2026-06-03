@@ -107,6 +107,26 @@ export default function ResidencesPage() {
           <h2 className="mb-5 font-display text-xl font-semibold">{t("residences.filters")}</h2>
 
           <div className="space-y-5">
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={savedOnly}
+                onCheckedChange={(v) => {
+                  if (v && !user) {
+                    openLoginGate({
+                      title: "Connectez-vous pour voir vos enregistrements",
+                      description:
+                        "Créez un compte ou connectez-vous pour retrouver les résidences que vous avez enregistrées.",
+                    });
+                    setSavedOnly(false);
+                    return;
+                  }
+                  setSavedOnly(!!v);
+                }}
+              />
+              <Heart className="h-4 w-4" /> Mes enregistrés uniquement
+            </label>
+
+
             <div>
               <label className="mb-2 block text-sm font-medium">{t("common.search")}</label>
               <div className="relative">
