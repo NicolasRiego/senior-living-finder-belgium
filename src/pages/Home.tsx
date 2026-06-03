@@ -122,22 +122,30 @@ export default function HomePage() {
           <p className="mt-4 text-lg text-muted-foreground">{t("home.howSubtitle")}</p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { i: <Search className="h-7 w-7" />, t: t("home.step1Title"), b: t("home.step1Body") },
             { i: <GitCompare className="h-7 w-7" />, t: t("home.step2Title"), b: t("home.step2Body") },
-            { i: <MapPin className="h-7 w-7" />, t: t("home.step3Title"), b: t("home.step3Body") },
-          ].map((s, i) => (
-            <div key={i} className="rounded-2xl border border-border/60 bg-card p-8 shadow-soft">
+            { i: <Calculator className="h-7 w-7" />, t: t("home.step3Title"), b: t("home.step3Body") },
+            { i: <MapPin className="h-7 w-7" />, t: t("home.step4Title"), b: t("home.step4Body") },
+          ].map((s, i, arr) => (
+            <div key={i} className="relative flex h-full flex-col rounded-2xl border border-border/60 bg-card p-8 shadow-soft">
               <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                 {s.i}
               </div>
               <div className="mb-1 text-sm font-semibold text-accent">0{i + 1}</div>
               <h3 className="font-display text-xl font-semibold">{s.t}</h3>
               <p className="mt-2 text-base text-muted-foreground">{s.b}</p>
+              {i < arr.length - 1 && (
+                <ArrowRight
+                  aria-hidden="true"
+                  className="pointer-events-none absolute right-[-1.25rem] top-1/2 hidden h-6 w-6 -translate-y-1/2 text-accent lg:block"
+                />
+              )}
             </div>
           ))}
         </div>
+
       </section>
 
       {/* FEATURED */}
