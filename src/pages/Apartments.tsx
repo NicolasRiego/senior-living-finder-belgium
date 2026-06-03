@@ -40,6 +40,10 @@ function urlToTx(v: string | null): TxFilter {
 
 export default function ApartmentsPage() {
   const [sp, setSp] = useSearchParams();
+  const { user } = useAuth();
+  const { items: savedItems } = useSavedApartments();
+  const savedIds = useMemo(() => new Set(savedItems.map((s) => s.id)), [savedItems]);
+  const [savedOnly, setSavedOnly] = useState(false);
 
   const SALE_MIN = 0;
   const SALE_MAX = 800000;
@@ -47,6 +51,7 @@ export default function ApartmentsPage() {
   const RENT_MAX = 5000;
   const [saleRange, setSaleRange] = useState<[number, number]>([SALE_MIN, SALE_MAX]);
   const [rentRange, setRentRange] = useState<[number, number]>([RENT_MIN, RENT_MAX]);
+
 
   const filters: ApartmentFilters = useMemo(() => {
     const tx = urlToTx(sp.get("type"));
