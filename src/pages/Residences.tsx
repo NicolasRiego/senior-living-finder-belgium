@@ -3,6 +3,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check, Heart } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { useFavorites } from "@/modules/favorites/useFavorites";
+import { useAuth } from "@/modules/auth/AuthProvider";
+import { openLoginGate } from "@/modules/auth/loginGate";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RangeSlider } from "@/components/ui/range-slider";
+
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import {
   searchResidences,
