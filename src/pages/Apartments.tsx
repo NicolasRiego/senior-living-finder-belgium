@@ -187,6 +187,27 @@ export default function ApartmentsPage() {
               </div>
             </div>
 
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={savedOnly}
+                onCheckedChange={(v) => {
+                  if (v && !user) {
+                    openLoginGate({
+                      title: "Connectez-vous pour voir vos enregistrements",
+                      description:
+                        "Créez un compte ou connectez-vous pour retrouver les logements que vous avez enregistrés.",
+                    });
+                    setSavedOnly(false);
+                    return;
+                  }
+                  setSavedOnly(!!v);
+                }}
+              />
+              <Heart className="h-4 w-4" /> Mes enregistrés uniquement
+            </label>
+
+
+
             {showSaleSlider && (
               <RangeSlider
                 label="Prix d'achat"
