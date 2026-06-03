@@ -48,6 +48,13 @@ import AdminDemo from "./pages/admin/AdminDemo";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTickets from "./pages/admin/AdminTickets";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
+import CrmDashboard from "./pages/admin/crm/CrmDashboard";
+import CrmContacts from "./pages/admin/crm/CrmContacts";
+import CrmContactDetail from "./pages/admin/crm/CrmContactDetail";
+import CrmGroupDetail from "./pages/admin/crm/CrmGroupDetail";
+import CrmPipeline from "./pages/admin/crm/CrmPipeline";
+import CrmCampaigns from "./pages/admin/crm/CrmCampaigns";
+import CrmCampaignDetail from "./pages/admin/crm/CrmCampaignDetail";
 import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
