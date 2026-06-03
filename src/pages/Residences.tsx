@@ -81,9 +81,16 @@ export default function ResidencesPage() {
     queryFn: () => searchResidences(filters),
   });
 
-  const total = search.data?.total ?? 0;
-  const totalPages = search.data?.totalPages ?? 1;
+  const { user } = useAuth();
+  const { ids: favIds } = useFavorites();
+  const [savedOnly, setSavedOnly] = useState(false);
+
+  const rawRows = search.data?.rows ?? [];
+  const displayedRows = savedOnly ? rawRows.filter((r) => favIds.has(r.id)) : rawRows;
+  const total = savedOnly ? displayedRows.length : (search.data?.total ?? 0);
+  const totalPages = savedOnly ? 1 : (search.data?.totalPages ?? 1);
   const page = filters.page ?? 1;
+
 
   return (
     <div className="container py-12 lg:py-16">
