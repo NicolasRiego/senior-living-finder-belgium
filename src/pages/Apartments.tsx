@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Home, MapPin, Pencil, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Home, MapPin, Pencil, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,10 @@ import {
 } from "@/modules/apartments/types";
 import { ApartmentCard } from "@/modules/apartments/ApartmentCard";
 import { ResidencePickerDialog } from "@/modules/apartments/ResidencePickerDialog";
+import { useAuth } from "@/modules/auth/AuthProvider";
+import { useSavedApartments } from "@/modules/apartments/savedApartments";
+import { openLoginGate } from "@/modules/auth/loginGate";
+
 
 const APT_TYPES: ApartmentType[] = ["appartement", "chambre", "studio"];
 const TX_OPTIONS: { value: TxFilter; label: string; urlValue: string | null }[] = [
