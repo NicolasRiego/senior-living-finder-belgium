@@ -311,7 +311,7 @@ export default function ResidencesPage() {
           ) : (
             <>
               <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {(search.data?.rows ?? []).map((r) => (
+                {displayedRows.map((r) => (
                   <PublicResidenceCard key={r.id} row={r} />
                 ))}
               </div>
