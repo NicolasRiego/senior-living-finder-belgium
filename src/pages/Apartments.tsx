@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Home, MapPin, Pencil, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Home, MapPin, Pencil, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,10 @@ import {
 } from "@/modules/apartments/types";
 import { ApartmentCard } from "@/modules/apartments/ApartmentCard";
 import { ResidencePickerDialog } from "@/modules/apartments/ResidencePickerDialog";
+import { useAuth } from "@/modules/auth/AuthProvider";
+import { useSavedApartments } from "@/modules/apartments/savedApartments";
+import { openLoginGate } from "@/modules/auth/loginGate";
+
 
 const APT_TYPES: ApartmentType[] = ["appartement", "chambre", "studio"];
 const TX_OPTIONS: { value: TxFilter; label: string; urlValue: string | null }[] = [
@@ -36,6 +40,10 @@ function urlToTx(v: string | null): TxFilter {
 
 export default function ApartmentsPage() {
   const [sp, setSp] = useSearchParams();
+  const { user } = useAuth();
+  const { items: savedItems } = useSavedApartments();
+  const savedIds = useMemo(() => new Set(savedItems.map((s) => s.id)), [savedItems]);
+  const [savedOnly, setSavedOnly] = useState(false);
 
   const SALE_MIN = 0;
   const SALE_MAX = 800000;
@@ -43,6 +51,7 @@ export default function ApartmentsPage() {
   const RENT_MAX = 5000;
   const [saleRange, setSaleRange] = useState<[number, number]>([SALE_MIN, SALE_MAX]);
   const [rentRange, setRentRange] = useState<[number, number]>([RENT_MIN, RENT_MAX]);
+
 
   const filters: ApartmentFilters = useMemo(() => {
     const tx = urlToTx(sp.get("type"));
@@ -124,9 +133,12 @@ export default function ApartmentsPage() {
   const [postalOpen, setPostalOpen] = useState(false);
   const { results: postalResults } = usePostalSearch(postalQuery);
 
-  const total = search.data?.total ?? 0;
-  const totalPages = search.data?.totalPages ?? 1;
+  const rawRows = search.data?.rows ?? [];
+  const displayedRows = savedOnly ? rawRows.filter((r) => savedIds.has(r.id)) : rawRows;
+  const total = savedOnly ? displayedRows.length : (search.data?.total ?? 0);
+  const totalPages = savedOnly ? 1 : (search.data?.totalPages ?? 1);
   const page = filters.page ?? 1;
+
   const showSaleSlider = filters.tx === "sale" || filters.tx === "all";
   const showRentSlider = filters.tx === "rent" || filters.tx === "all";
   const isSaleMode = filters.tx === "sale";
@@ -174,6 +186,27 @@ export default function ApartmentsPage() {
                 ))}
               </div>
             </div>
+
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={savedOnly}
+                onCheckedChange={(v) => {
+                  if (v && !user) {
+                    openLoginGate({
+                      title: "Connectez-vous pour voir vos enregistrements",
+                      description:
+                        "Créez un compte ou connectez-vous pour retrouver les logements que vous avez enregistrés.",
+                    });
+                    setSavedOnly(false);
+                    return;
+                  }
+                  setSavedOnly(!!v);
+                }}
+              />
+              <Heart className="h-4 w-4" /> Mes enregistrés uniquement
+            </label>
+
+
 
             {showSaleSlider && (
               <RangeSlider
@@ -435,7 +468,7 @@ export default function ApartmentsPage() {
           ) : (
             <>
               <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {(search.data?.rows ?? []).map((row) => (
+                {displayedRows.map((row) => (
                   <ApartmentCard key={row.id} row={row} />
                 ))}
               </div>

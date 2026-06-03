@@ -3,6 +3,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check, Heart } from "lucide-react";
 import { useCompare } from "@/modules/compare/CompareProvider";
 import { useFavorites } from "@/modules/favorites/useFavorites";
+import { useAuth } from "@/modules/auth/AuthProvider";
+import { openLoginGate } from "@/modules/auth/loginGate";
 import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RangeSlider } from "@/components/ui/range-slider";
+
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import {
   searchResidences,
@@ -78,9 +81,16 @@ export default function ResidencesPage() {
     queryFn: () => searchResidences(filters),
   });
 
-  const total = search.data?.total ?? 0;
-  const totalPages = search.data?.totalPages ?? 1;
+  const { user } = useAuth();
+  const { ids: favIds } = useFavorites();
+  const [savedOnly, setSavedOnly] = useState(false);
+
+  const rawRows = search.data?.rows ?? [];
+  const displayedRows = savedOnly ? rawRows.filter((r) => favIds.has(r.id)) : rawRows;
+  const total = savedOnly ? displayedRows.length : (search.data?.total ?? 0);
+  const totalPages = savedOnly ? 1 : (search.data?.totalPages ?? 1);
   const page = filters.page ?? 1;
+
 
   return (
     <div className="container py-12 lg:py-16">
@@ -97,6 +107,26 @@ export default function ResidencesPage() {
           <h2 className="mb-5 font-display text-xl font-semibold">{t("residences.filters")}</h2>
 
           <div className="space-y-5">
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={savedOnly}
+                onCheckedChange={(v) => {
+                  if (v && !user) {
+                    openLoginGate({
+                      title: "Connectez-vous pour voir vos enregistrements",
+                      description:
+                        "Créez un compte ou connectez-vous pour retrouver les résidences que vous avez enregistrées.",
+                    });
+                    setSavedOnly(false);
+                    return;
+                  }
+                  setSavedOnly(!!v);
+                }}
+              />
+              <Heart className="h-4 w-4" /> Mes enregistrés uniquement
+            </label>
+
+
             <div>
               <label className="mb-2 block text-sm font-medium">{t("common.search")}</label>
               <div className="relative">
@@ -281,7 +311,7 @@ export default function ResidencesPage() {
           ) : (
             <>
               <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {(search.data?.rows ?? []).map((r) => (
+                {displayedRows.map((r) => (
                   <PublicResidenceCard key={r.id} row={r} />
                 ))}
               </div>
