@@ -468,7 +468,7 @@ export default function ApartmentsPage() {
           ) : (
             <>
               <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {(search.data?.rows ?? []).map((row) => (
+                {displayedRows.map((row) => (
                   <ApartmentCard key={row.id} row={row} />
                 ))}
               </div>
