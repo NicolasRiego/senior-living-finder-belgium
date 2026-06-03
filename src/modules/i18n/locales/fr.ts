@@ -90,7 +90,7 @@ export const fr = {
   },
   compare: {
     title: "Comparateur de résidences",
-    subtitle: "Comparez jusqu'à 4 résidences côte à côte.",
+    subtitle: "Comparez jusqu'à 3 résidences côte à côte.",
     empty: "Votre comparateur est vide. Ajoutez des résidences depuis la liste.",
     browse: "Parcourir les résidences",
     criterion: "Critère",

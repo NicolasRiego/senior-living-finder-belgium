@@ -90,7 +90,7 @@ export const nl: Dict = {
   },
   compare: {
     title: "Vergelijker",
-    subtitle: "Vergelijk tot 4 residenties naast elkaar.",
+    subtitle: "Vergelijk tot 3 residenties naast elkaar.",
     empty: "Uw vergelijker is leeg. Voeg residenties toe vanuit de lijst.",
     browse: "Residenties bekijken",
     criterion: "Criterium",
