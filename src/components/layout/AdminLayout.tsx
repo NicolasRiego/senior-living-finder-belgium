@@ -16,6 +16,11 @@ import {
   Cog,
   Building2,
   User as UserIcon,
+  Briefcase,
+  LayoutDashboard,
+  Contact,
+  Kanban,
+  Megaphone,
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/version";
 import { ConstructionBanner } from "./ConstructionBanner";
