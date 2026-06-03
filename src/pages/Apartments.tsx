@@ -133,9 +133,12 @@ export default function ApartmentsPage() {
   const [postalOpen, setPostalOpen] = useState(false);
   const { results: postalResults } = usePostalSearch(postalQuery);
 
-  const total = search.data?.total ?? 0;
-  const totalPages = search.data?.totalPages ?? 1;
+  const rawRows = search.data?.rows ?? [];
+  const displayedRows = savedOnly ? rawRows.filter((r) => savedIds.has(r.id)) : rawRows;
+  const total = savedOnly ? displayedRows.length : (search.data?.total ?? 0);
+  const totalPages = savedOnly ? 1 : (search.data?.totalPages ?? 1);
   const page = filters.page ?? 1;
+
   const showSaleSlider = filters.tx === "sale" || filters.tx === "all";
   const showRentSlider = filters.tx === "rent" || filters.tx === "all";
   const isSaleMode = filters.tx === "sale";
