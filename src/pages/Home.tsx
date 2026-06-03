@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Search, GitCompare, MapPin, ArrowRight, ShieldCheck, HeartHandshake, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, GitCompare, MapPin, ArrowRight, ShieldCheck, HeartHandshake, Star, ChevronLeft, ChevronRight, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { FeaturedResidences } from "@/modules/residences/FeaturedResidences";
