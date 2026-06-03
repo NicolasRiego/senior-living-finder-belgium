@@ -75,6 +75,24 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                   </>
                 )}
               </AdminDropdown>
+              <AdminDropdown label="Commercial" icon={<Briefcase className="h-4 w-4" />}>
+                {(close) => (
+                  <>
+                    <AdminDropdownItem onSelect={go("/admin/crm", close)} icon={<LayoutDashboard className="h-4 w-4" />}>
+                      Tableau de bord
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/contacts", close)} icon={<Contact className="h-4 w-4" />}>
+                      Contacts & Groupes
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/pipeline", close)} icon={<Kanban className="h-4 w-4" />}>
+                      Pipeline
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/campagnes", close)} icon={<Megaphone className="h-4 w-4" />}>
+                      Campagnes
+                    </AdminDropdownItem>
+                  </>
+                )}
+              </AdminDropdown>
               <Link
                 to="/admin/tickets"
                 className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
