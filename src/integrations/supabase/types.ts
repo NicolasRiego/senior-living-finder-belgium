@@ -2025,6 +2025,10 @@ export type Database = {
     }
     Functions: {
       accept_org_invitation: { Args: { _code: string }; Returns: string }
+      admin_assign_residence: {
+        Args: { _residence_id: string; _target_user_id: string }
+        Returns: Json
+      }
       admin_claim_residence: { Args: { _residence_id: string }; Returns: Json }
       admin_list_residences_with_orgs: {
         Args: never
@@ -2088,6 +2092,16 @@ export type Database = {
           is_partner: boolean
           is_super_admin: boolean
           last_sign_in_at: string
+          user_id: string
+        }[]
+      }
+      admin_search_profiles_for_attribution: {
+        Args: { _only_partners?: boolean; _query: string }
+        Returns: {
+          account_type: string
+          display_name: string
+          email: string
+          is_partner: boolean
           user_id: string
         }[]
       }
