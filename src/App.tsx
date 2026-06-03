@@ -209,6 +209,13 @@ const App = () => (
                     path="/admin/tickets/:id"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminTicketDetail /></AdminLayout></RequireAuth>}
                   />
+                  <Route path="/admin/crm" element={<RequireAuth requireAdmin><AdminLayout><CrmDashboard /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/contacts" element={<RequireAuth requireAdmin><AdminLayout><CrmContacts /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/contacts/:id" element={<RequireAuth requireAdmin><AdminLayout><CrmContactDetail /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/groupes/:id" element={<RequireAuth requireAdmin><AdminLayout><CrmGroupDetail /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/pipeline" element={<RequireAuth requireAdmin><AdminLayout><CrmPipeline /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/campagnes" element={<RequireAuth requireAdmin><AdminLayout><CrmCampaigns /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/campagnes/:id" element={<RequireAuth requireAdmin><AdminLayout><CrmCampaignDetail /></AdminLayout></RequireAuth>} />
 
 
                   <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />
