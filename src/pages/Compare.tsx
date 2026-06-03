@@ -119,7 +119,7 @@ export default function ComparePage() {
             <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 text-center space-y-3">
               <Building2 className="mx-auto h-8 w-8 text-primary" />
               <p className="font-semibold">Résidences</p>
-              <p className="text-sm text-muted-foreground">Comparez jusqu'à 4 résidences</p>
+              <p className="text-sm text-muted-foreground">Comparez jusqu'à 3 résidences</p>
               <Button asChild variant="hero" className="w-full">
                 <Link to="/residences">Parcourir les résidences</Link>
               </Button>
@@ -127,7 +127,7 @@ export default function ComparePage() {
             <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 text-center space-y-3">
               <Home className="mx-auto h-8 w-8 text-primary" />
               <p className="font-semibold">Logements</p>
-              <p className="text-sm text-muted-foreground">Comparez jusqu'à 4 appartements</p>
+              <p className="text-sm text-muted-foreground">Comparez jusqu'à 3 logements</p>
               <Button asChild variant="hero" className="w-full">
                 <Link to="/appartements">Parcourir les logements</Link>
               </Button>
