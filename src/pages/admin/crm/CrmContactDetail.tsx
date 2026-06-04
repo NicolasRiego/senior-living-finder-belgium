@@ -365,7 +365,17 @@ export default function CrmContactDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MessageComposerDialog
+        open={composerOpen}
+        onOpenChange={setComposerOpen}
+        contact={contact}
+        lastInteractionSummary={interactions[0]?.summary ?? null}
+        residencesCount={1}
+        onSaved={reload}
+      />
     </div>
+
   );
 }
 
