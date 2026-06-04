@@ -6,7 +6,9 @@ import type {
   CrmGroup,
   CrmInteraction,
   CrmTask,
+  CrmTemplate,
 } from "./types";
+
 
 // ===== Groups =====
 export async function listGroups() {
