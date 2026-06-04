@@ -224,11 +224,12 @@ export default function CrmContactDetail() {
               <Button onClick={() => setComposerOpen(true)} className="w-full bg-primary hover:bg-primary/90">
                 <Mail className="h-4 w-4" /> Rédiger un message
               </Button>
-
+              {contact.residence_id && (
                 <Link to={`/admin/residences`} className="text-sm text-primary hover:underline flex items-center gap-1">
                   <Building2 className="h-4 w-4" /> Voir la fiche SilverPlace →
                 </Link>
               )}
+
               {group && (
                 <div className="text-sm">
                   Appartient au groupe :{" "}
