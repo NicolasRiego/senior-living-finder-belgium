@@ -12,11 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getGroup, listContacts, upsertContact } from "@/modules/crm/api";
+import { getGroup, listContacts, upsertContact, deleteContact } from "@/modules/crm/api";
 import type { CrmContact, CrmGroup } from "@/modules/crm/types";
 import { StatusBadge } from "@/modules/crm/ui";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Globe } from "lucide-react";
+import { ArrowLeft, Plus, Globe, Eye, Pencil, Trash2, Phone, Mail, CheckCircle2, Circle } from "lucide-react";
 
 export default function CrmGroupDetail() {
   const { id } = useParams<{ id: string }>();
