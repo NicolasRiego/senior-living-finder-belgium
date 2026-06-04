@@ -48,6 +48,7 @@ import AdminDemo from "./pages/admin/AdminDemo";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTickets from "./pages/admin/AdminTickets";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import CrmDashboard from "./pages/admin/crm/CrmDashboard";
 import CrmContacts from "./pages/admin/crm/CrmContacts";
 import CrmContactDetail from "./pages/admin/crm/CrmContactDetail";
@@ -172,7 +173,7 @@ const App = () => (
                   />
 
                   {/* Admin */}
-                  <Route path="/admin" element={<Navigate to="/admin/validation" replace />} />
+                  <Route path="/admin" element={<RequireAuth requireAdmin><AdminLayout><AdminDashboard /></AdminLayout></RequireAuth>} />
                   <Route
                     path="/admin/validation"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminValidation /></AdminLayout></RequireAuth>}
