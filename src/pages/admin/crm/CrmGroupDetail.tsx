@@ -12,11 +12,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getGroup, listContacts, upsertContact } from "@/modules/crm/api";
+import { getGroup, listContacts, upsertContact, deleteContact } from "@/modules/crm/api";
 import type { CrmContact, CrmGroup } from "@/modules/crm/types";
 import { StatusBadge } from "@/modules/crm/ui";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, Globe } from "lucide-react";
+import { ArrowLeft, Plus, Globe, Eye, Pencil, Trash2, Phone, Mail, CheckCircle2, Circle } from "lucide-react";
 
 export default function CrmGroupDetail() {
   const { id } = useParams<{ id: string }>();
@@ -106,20 +107,67 @@ export default function CrmGroupDetail() {
         </CardHeader>
         <CardContent>
           {residences.length === 0 ? <p className="text-sm text-muted-foreground">Aucune résidence dans ce groupe.</p> : (
-            <ul className="divide-y">
-              {residences.map((r) => (
-                <li key={r.id} className="flex items-center justify-between py-2">
-                  <div>
-                    <Link to={`/admin/crm/contacts/${r.id}`} className="font-medium hover:underline">{r.name}</Link>
-                    <div className="text-xs text-muted-foreground">{r.city}</div>
-                  </div>
-                  <StatusBadge status={r.status} />
-                </li>
-              ))}
+            <ul className="space-y-2">
+              {residences.map((r) => {
+                const contactName = [r.contact_firstname, r.contact_lastname].filter(Boolean).join(" ");
+                const onSilverplace = !!r.residence_id;
+                return (
+                  <li
+                    key={r.id}
+                    className="flex items-start justify-between gap-3 rounded-lg border p-4 transition-shadow hover:shadow-md flex-wrap"
+                    style={{ minHeight: 100 }}
+                  >
+                    <div className="flex-1 min-w-[200px]">
+                      <Link to={`/admin/crm/contacts/${r.id}`} className="font-medium hover:underline">{r.name}</Link>
+                      <div className="text-xs text-muted-foreground">{r.city || "—"}</div>
+                      {contactName && (
+                        <div className="mt-1 text-sm">
+                          {contactName}
+                          {r.contact_role && <span className="text-muted-foreground"> — {r.contact_role}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-muted-foreground">
+                      {r.phone && (
+                        <a href={`tel:${r.phone}`} title={r.phone} className="hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                          <Phone className="h-4 w-4" />
+                        </a>
+                      )}
+                      {r.email && (
+                        <a href={`mailto:${r.email}`} title={r.email} className="hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                          <Mail className="h-4 w-4" />
+                        </a>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <StatusBadge status={r.status} />
+                      {onSilverplace ? (
+                        <Badge variant="outline" className="border-transparent bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 gap-1">
+                          <CheckCircle2 className="h-3 w-3" /> Sur SilverPlace
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-transparent bg-muted text-muted-foreground gap-1">
+                          <Circle className="h-3 w-3" /> Non intégré
+                        </Badge>
+                      )}
+                      <div className="flex gap-1">
+                        <Button asChild variant="ghost" size="icon"><Link to={`/admin/crm/contacts/${r.id}`}><Eye className="h-4 w-4" /></Link></Button>
+                        <Button asChild variant="ghost" size="icon"><Link to={`/admin/crm/contacts/${r.id}`}><Pencil className="h-4 w-4" /></Link></Button>
+                        <Button variant="ghost" size="icon" onClick={async () => {
+                          if (!confirm(`Supprimer ${r.name} ?`)) return;
+                          try { await deleteContact(r.id); toast.success("Supprimé"); reload(); }
+                          catch (e: any) { toast.error(e.message); }
+                        }}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </CardContent>
       </Card>
+
 
       <Dialog open={adding} onOpenChange={setAdding}>
         <DialogContent>
