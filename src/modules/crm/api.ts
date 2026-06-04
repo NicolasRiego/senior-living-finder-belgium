@@ -176,3 +176,42 @@ export async function listAdmins() {
   const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", ids);
   return (profiles ?? []) as Array<{ user_id: string; display_name: string | null }>;
 }
+
+// ===== Templates =====
+export async function listTemplates() {
+  const { data, error } = await supabase
+    .from("crm_templates")
+    .select("*")
+    .order("is_default", { ascending: false })
+    .order("name");
+  if (error) throw error;
+  return (data ?? []) as CrmTemplate[];
+}
+
+export async function upsertTemplate(t: Partial<CrmTemplate> & { name: string; message_type: string }) {
+  const { data, error } = await supabase.from("crm_templates").upsert(t as any).select().single();
+  if (error) throw error;
+  return data as CrmTemplate;
+}
+
+export async function deleteTemplate(id: string) {
+  const { error } = await supabase.from("crm_templates").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ===== AI drafting =====
+export async function draftMessage(payload: {
+  messageType: string;
+  language: string;
+  tone: string;
+  contact: Partial<CrmContact>;
+  lastInteraction?: string | null;
+  residencesCount?: number;
+  extraInstructions?: string;
+}): Promise<{ subject: string; body: string }> {
+  const { data, error } = await supabase.functions.invoke("crm-draft-message", { body: payload });
+  if (error) throw error;
+  if ((data as any)?.error) throw new Error((data as any).error);
+  return { subject: (data as any)?.subject ?? "", body: (data as any)?.body ?? "" };
+}
+
