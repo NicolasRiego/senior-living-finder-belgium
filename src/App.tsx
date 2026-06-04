@@ -173,7 +173,7 @@ const App = () => (
                   />
 
                   {/* Admin */}
-                  <Route path="/admin" element={<Navigate to="/admin/validation" replace />} />
+                  <Route path="/admin" element={<RequireAuth requireAdmin><AdminLayout><AdminDashboard /></AdminLayout></RequireAuth>} />
                   <Route
                     path="/admin/validation"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminValidation /></AdminLayout></RequireAuth>}
