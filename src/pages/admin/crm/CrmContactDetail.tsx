@@ -39,7 +39,9 @@ import {
 import { StatusBadge, formatDate } from "@/modules/crm/ui";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { toast } from "sonner";
-import { Plus, Trash2, Building2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, Building2, ArrowLeft, Mail } from "lucide-react";
+import { MessageComposerDialog } from "@/modules/crm/MessageComposerDialog";
+
 
 export default function CrmContactDetail() {
   const { id } = useParams<{ id: string }>();
@@ -51,6 +53,8 @@ export default function CrmContactDetail() {
   const [admins, setAdmins] = useState<Array<{ user_id: string; display_name: string | null }>>([]);
   const [newInteraction, setNewInteraction] = useState<Partial<CrmInteraction> | null>(null);
   const [newTask, setNewTask] = useState<Partial<CrmTask> | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+
 
   const reload = async () => {
     if (!id) return;
@@ -186,7 +190,11 @@ export default function CrmContactDetail() {
                           }>{i.result}</Badge>
                         )}
                       </div>
-                      <p className="text-sm mt-1">{i.summary}</p>
+                      <p className="text-sm mt-1 font-medium">{i.summary}</p>
+                      {i.content && (
+                        <pre className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap font-sans bg-muted/30 rounded p-2">{i.content}</pre>
+                      )}
+
                     </li>
                   ))}
                 </ul>
@@ -217,11 +225,15 @@ export default function CrmContactDetail() {
                   onChange={(e) => updateField({ next_followup_date: e.target.value || null })}
                 />
               </div>
+              <Button onClick={() => setComposerOpen(true)} className="w-full bg-primary hover:bg-primary/90">
+                <Mail className="h-4 w-4" /> Rédiger un message
+              </Button>
               {contact.residence_id && (
                 <Link to={`/admin/residences`} className="text-sm text-primary hover:underline flex items-center gap-1">
                   <Building2 className="h-4 w-4" /> Voir la fiche SilverPlace →
                 </Link>
               )}
+
               {group && (
                 <div className="text-sm">
                   Appartient au groupe :{" "}
@@ -353,7 +365,17 @@ export default function CrmContactDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <MessageComposerDialog
+        open={composerOpen}
+        onOpenChange={setComposerOpen}
+        contact={contact}
+        lastInteractionSummary={interactions[0]?.summary ?? null}
+        residencesCount={1}
+        onSaved={reload}
+      />
     </div>
+
   );
 }
 

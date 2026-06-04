@@ -56,6 +56,8 @@ import CrmGroupDetail from "./pages/admin/crm/CrmGroupDetail";
 import CrmPipeline from "./pages/admin/crm/CrmPipeline";
 import CrmCampaigns from "./pages/admin/crm/CrmCampaigns";
 import CrmCampaignDetail from "./pages/admin/crm/CrmCampaignDetail";
+import CrmTemplates from "./pages/admin/crm/CrmTemplates";
+
 import { AdminLayout } from "./components/layout/AdminLayout";
 
 const queryClient = new QueryClient();
@@ -217,6 +219,8 @@ const App = () => (
                   <Route path="/admin/crm/pipeline" element={<RequireAuth requireAdmin><AdminLayout><CrmPipeline /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/campagnes" element={<RequireAuth requireAdmin><AdminLayout><CrmCampaigns /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/campagnes/:id" element={<RequireAuth requireAdmin><AdminLayout><CrmCampaignDetail /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/crm/templates" element={<RequireAuth requireAdmin><AdminLayout><CrmTemplates /></AdminLayout></RequireAuth>} />
+
 
 
                   <Route path="*" element={<PublicLayout><NotFound /></PublicLayout>} />

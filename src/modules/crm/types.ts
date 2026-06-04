@@ -59,10 +59,52 @@ export interface CrmInteraction {
   type: CrmInteractionType;
   date: string;
   summary: string;
+  content: string | null;
   result: CrmInteractionResult | null;
   created_by: string | null;
   created_at: string;
 }
+
+export type CrmMessageType =
+  | "premier_contact"
+  | "relance"
+  | "suite_positif"
+  | "invitation_demo"
+  | "bienvenue_partenaire";
+export type CrmMessageLanguage = "fr" | "nl" | "en";
+export type CrmMessageTone = "professionnel" | "chaleureux" | "direct";
+
+export interface CrmTemplate {
+  id: string;
+  name: string;
+  message_type: CrmMessageType | string;
+  language: CrmMessageLanguage | string;
+  tone: CrmMessageTone | string;
+  extra_instructions: string | null;
+  is_default: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const MESSAGE_TYPE_LABELS: Record<CrmMessageType, string> = {
+  premier_contact: "Premier contact",
+  relance: "Relance (après 7 jours sans réponse)",
+  suite_positif: "Suite à échange positif",
+  invitation_demo: "Invitation démo SilverPlace",
+  bienvenue_partenaire: "Bienvenue nouveau partenaire",
+};
+export const MESSAGE_LANG_LABELS: Record<CrmMessageLanguage, string> = {
+  fr: "Français",
+  nl: "Nederlands",
+  en: "English",
+};
+export const MESSAGE_TONE_LABELS: Record<CrmMessageTone, string> = {
+  professionnel: "Professionnel",
+  chaleureux: "Chaleureux",
+  direct: "Direct",
+};
+
 
 export interface CrmTask {
   id: string;

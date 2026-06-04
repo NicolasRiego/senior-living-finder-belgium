@@ -956,6 +956,7 @@ export type Database = {
       crm_interactions: {
         Row: {
           contact_id: string
+          content: string | null
           created_at: string
           created_by: string | null
           date: string
@@ -966,6 +967,7 @@ export type Database = {
         }
         Insert: {
           contact_id: string
+          content?: string | null
           created_at?: string
           created_by?: string | null
           date?: string
@@ -976,6 +978,7 @@ export type Database = {
         }
         Update: {
           contact_id?: string
+          content?: string | null
           created_at?: string
           created_by?: string | null
           date?: string
@@ -1046,6 +1049,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      crm_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          extra_instructions: string | null
+          id: string
+          is_default: boolean
+          language: string
+          message_type: string
+          name: string
+          tone: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          extra_instructions?: string | null
+          id?: string
+          is_default?: boolean
+          language?: string
+          message_type: string
+          name: string
+          tone?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          extra_instructions?: string | null
+          id?: string
+          is_default?: boolean
+          language?: string
+          message_type?: string
+          name?: string
+          tone?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       favorites: {
         Row: {

@@ -21,6 +21,8 @@ import {
   Contact,
   Kanban,
   Megaphone,
+  FileText,
+
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/version";
 import { ConstructionBanner } from "./ConstructionBanner";
@@ -90,6 +92,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     <AdminDropdownItem onSelect={go("/admin/crm/campagnes", close)} icon={<Megaphone className="h-4 w-4" />}>
                       Campagnes
                     </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/crm/templates", close)} icon={<FileText className="h-4 w-4" />}>
+                      Templates
+                    </AdminDropdownItem>
+
                   </>
                 )}
               </AdminDropdown>
