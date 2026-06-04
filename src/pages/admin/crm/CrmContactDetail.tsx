@@ -53,6 +53,8 @@ export default function CrmContactDetail() {
   const [admins, setAdmins] = useState<Array<{ user_id: string; display_name: string | null }>>([]);
   const [newInteraction, setNewInteraction] = useState<Partial<CrmInteraction> | null>(null);
   const [newTask, setNewTask] = useState<Partial<CrmTask> | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+
 
   const reload = async () => {
     if (!id) return;
