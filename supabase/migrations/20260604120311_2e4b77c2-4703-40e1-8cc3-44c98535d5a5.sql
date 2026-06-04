@@ -1,0 +1,1 @@
+ALTER TYPE public.crm_contact_source ADD VALUE IF NOT EXISTS 'import_firecrawl';

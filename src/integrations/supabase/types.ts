@@ -2597,6 +2597,7 @@ export type Database = {
         | "recommandation"
         | "evenement"
         | "autre"
+        | "import_firecrawl"
       crm_contact_status:
         | "a_contacter"
         | "contacte"
@@ -2785,6 +2786,7 @@ export const Constants = {
         "recommandation",
         "evenement",
         "autre",
+        "import_firecrawl",
       ],
       crm_contact_status: [
         "a_contacter",
