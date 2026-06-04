@@ -21,7 +21,7 @@ export function TypeBadge({ type }: { type: "groupe" | "residence_independante" 
           : "bg-muted text-muted-foreground",
       )}
     >
-      {type === "groupe" ? "Groupe" : "Indépendant"}
+      {type === "groupe" ? "Groupe" : "Résidence"}
     </Badge>
   );
 }
