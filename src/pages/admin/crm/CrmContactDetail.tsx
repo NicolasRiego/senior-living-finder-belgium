@@ -190,7 +190,11 @@ export default function CrmContactDetail() {
                           }>{i.result}</Badge>
                         )}
                       </div>
-                      <p className="text-sm mt-1">{i.summary}</p>
+                      <p className="text-sm mt-1 font-medium">{i.summary}</p>
+                      {i.content && (
+                        <pre className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap font-sans bg-muted/30 rounded p-2">{i.content}</pre>
+                      )}
+
                     </li>
                   ))}
                 </ul>
