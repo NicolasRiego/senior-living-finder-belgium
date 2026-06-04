@@ -39,7 +39,9 @@ import {
 import { StatusBadge, formatDate } from "@/modules/crm/ui";
 import { useAuth } from "@/modules/auth/AuthProvider";
 import { toast } from "sonner";
-import { Plus, Trash2, Building2, ArrowLeft } from "lucide-react";
+import { Plus, Trash2, Building2, ArrowLeft, Mail } from "lucide-react";
+import { MessageComposerDialog } from "@/modules/crm/MessageComposerDialog";
+
 
 export default function CrmContactDetail() {
   const { id } = useParams<{ id: string }>();
