@@ -107,7 +107,7 @@ export default function AdminDashboard() {
           supabase
             .from("residences")
             .select("id", { count: "exact", head: true })
-            .eq("status", "pending_review"),
+            .eq("status", "pending"),
         ]);
         if (c.error) throw c.error;
         if (i.error) throw i.error;
