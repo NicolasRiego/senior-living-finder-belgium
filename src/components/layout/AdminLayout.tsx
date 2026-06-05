@@ -22,6 +22,7 @@ import {
   Kanban,
   Megaphone,
   FileText,
+  Inbox,
 
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/version";
@@ -94,6 +95,9 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                     </AdminDropdownItem>
                     <AdminDropdownItem onSelect={go("/admin/crm/templates", close)} icon={<FileText className="h-4 w-4" />}>
                       Templates
+                    </AdminDropdownItem>
+                    <AdminDropdownItem onSelect={go("/admin/leads", close)} icon={<Inbox className="h-4 w-4" />}>
+                      Leads
                     </AdminDropdownItem>
 
                   </>
