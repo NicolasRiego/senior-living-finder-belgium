@@ -49,6 +49,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTickets from "./pages/admin/AdminTickets";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminLeads from "./pages/admin/AdminLeads";
 import CrmDashboard from "./pages/admin/crm/CrmDashboard";
 import CrmContacts from "./pages/admin/crm/CrmContacts";
 import CrmContactDetail from "./pages/admin/crm/CrmContactDetail";
@@ -220,6 +221,7 @@ const App = () => (
                   <Route path="/admin/crm/campagnes" element={<RequireAuth requireAdmin><AdminLayout><CrmCampaigns /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/campagnes/:id" element={<RequireAuth requireAdmin><AdminLayout><CrmCampaignDetail /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/templates" element={<RequireAuth requireAdmin><AdminLayout><CrmTemplates /></AdminLayout></RequireAuth>} />
+                  <Route path="/admin/leads" element={<RequireAuth requireAdmin><AdminLayout><AdminLeads /></AdminLayout></RequireAuth>} />
 
 
 
