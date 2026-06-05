@@ -1142,6 +1142,7 @@ export type Database = {
       leads: {
         Row: {
           anonymized_at: string | null
+          assigned_to: string | null
           autonomy_level: string | null
           budget_max: number | null
           budget_min: number | null
@@ -1151,20 +1152,28 @@ export type Database = {
           contact_name: string
           contact_phone: string | null
           created_at: string
+          first_response_at: string | null
+          firstname: string | null
           for_whom: string | null
           id: string
           is_demo: boolean
+          lastname: string | null
           message: string | null
+          preferred_date: string | null
+          preferred_time: string | null
           region_target: string | null
           residence_id: string
           score: number
+          source_page: string | null
           status: Database["public"]["Enums"]["lead_status"]
           timing: string | null
+          type: Database["public"]["Enums"]["lead_type"]
           updated_at: string
           user_id: string | null
         }
         Insert: {
           anonymized_at?: string | null
+          assigned_to?: string | null
           autonomy_level?: string | null
           budget_max?: number | null
           budget_min?: number | null
@@ -1174,20 +1183,28 @@ export type Database = {
           contact_name: string
           contact_phone?: string | null
           created_at?: string
+          first_response_at?: string | null
+          firstname?: string | null
           for_whom?: string | null
           id?: string
           is_demo?: boolean
+          lastname?: string | null
           message?: string | null
+          preferred_date?: string | null
+          preferred_time?: string | null
           region_target?: string | null
           residence_id: string
           score?: number
+          source_page?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           timing?: string | null
+          type?: Database["public"]["Enums"]["lead_type"]
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           anonymized_at?: string | null
+          assigned_to?: string | null
           autonomy_level?: string | null
           budget_max?: number | null
           budget_min?: number | null
@@ -1197,15 +1214,22 @@ export type Database = {
           contact_name?: string
           contact_phone?: string | null
           created_at?: string
+          first_response_at?: string | null
+          firstname?: string | null
           for_whom?: string | null
           id?: string
           is_demo?: boolean
+          lastname?: string | null
           message?: string | null
+          preferred_date?: string | null
+          preferred_time?: string | null
           region_target?: string | null
           residence_id?: string
           score?: number
+          source_page?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           timing?: string | null
+          type?: Database["public"]["Enums"]["lead_type"]
           updated_at?: string
           user_id?: string | null
         }
@@ -2550,24 +2574,49 @@ export type Database = {
         Returns: undefined
       }
       storage_residence_id: { Args: { _name: string }; Returns: string }
-      submit_lead: {
-        Args: {
-          _autonomy_level: string
-          _budget_max: number
-          _budget_min: number
-          _budget_range: string
-          _consent: boolean
-          _contact_email: string
-          _contact_name: string
-          _contact_phone: string
-          _for_whom: string
-          _message: string
-          _region_target: string
-          _residence_id: string
-          _timing: string
-        }
-        Returns: string
-      }
+      submit_lead:
+        | {
+            Args: {
+              _autonomy_level: string
+              _budget_max: number
+              _budget_min: number
+              _budget_range: string
+              _consent: boolean
+              _contact_email: string
+              _contact_name: string
+              _contact_phone: string
+              _for_whom: string
+              _message: string
+              _region_target: string
+              _residence_id: string
+              _timing: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _autonomy_level: string
+              _budget_max: number
+              _budget_min: number
+              _budget_range: string
+              _consent: boolean
+              _contact_email: string
+              _contact_name: string
+              _contact_phone: string
+              _firstname?: string
+              _for_whom: string
+              _lastname?: string
+              _message: string
+              _preferred_date?: string
+              _preferred_time?: string
+              _region_target: string
+              _residence_id: string
+              _source_page?: string
+              _timing: string
+              _type?: Database["public"]["Enums"]["lead_type"]
+            }
+            Returns: string
+          }
       submit_residence: { Args: { _residence_id: string }; Returns: undefined }
       unarchive_residence: { Args: { _residence_id: string }; Returns: Json }
       unit_type_residence: { Args: { _unit_type_id: string }; Returns: string }
@@ -2623,6 +2672,11 @@ export type Database = {
         | "visit_done"
         | "won"
         | "lost"
+        | "pris_en_charge"
+        | "visite_planifiee"
+        | "converti"
+        | "perdu"
+      lead_type: "visite" | "brochure" | "rappel" | "info"
       occupation_mode: "rent" | "buy" | "rent_or_buy"
       org_role: "owner" | "manager" | "member"
       photo_category:
@@ -2815,7 +2869,12 @@ export const Constants = {
         "visit_done",
         "won",
         "lost",
+        "pris_en_charge",
+        "visite_planifiee",
+        "converti",
+        "perdu",
       ],
+      lead_type: ["visite", "brochure", "rappel", "info"],
       occupation_mode: ["rent", "buy", "rent_or_buy"],
       org_role: ["owner", "manager", "member"],
       photo_category: [
