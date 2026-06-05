@@ -1,87 +1,88 @@
-## Objectif
 
-Remplacer l'autosave par une sauvegarde explicite dans l'éditeur de résidence partenaire, avec indicateurs visuels et garde de navigation pour les modifications non enregistrées.
+# Plan — Système de leads enrichi
 
-## Approche
+Objectif : étendre la table `leads` et le composant `LeadFormDialog` existants pour ajouter un typage explicite (visite/brochure/rappel), des champs dédiés (date/heure préférée, prénom/nom séparés, source), des statuts commerciaux (pris_en_charge/visite_planifiee/converti/perdu), un suivi SLA, et trois vues complètes (user / partenaire / admin).
 
-Centraliser la gestion de l'état "modifié / propre" dans un **contexte React partagé** (`WizardSaveContext`). Chaque étape s'enregistre auprès du contexte en exposant : son état "modifié", sa fonction de sauvegarde, et sa fonction de réinitialisation. La coquille `ResidenceEditor` gère ensuite de manière centralisée :
+## 1. Migration DB
 
-- Le bouton "Enregistrer les modifications" en bas de chaque étape
-- Le point orange dans la barre latérale
-- La modale d'avertissement à la navigation
-- L'avertissement avant rechargement du navigateur
+**Nouveaux ENUM**
+- `lead_type` : `visite | brochure | rappel | info` (garde `info` pour rétrocompat)
+- Étendre `lead_status` : ajouter `pris_en_charge`, `visite_planifiee`, `converti`, `perdu` (garde `new`, `qualified`, `closed_won`, `closed_lost`, `archived`)
 
-## Périmètre par étape
+**Colonnes ajoutées à `leads`**
+- `type lead_type NOT NULL DEFAULT 'info'`
+- `firstname text`, `lastname text` (peuplés via trigger depuis `contact_name` pour la rétrocompat)
+- `preferred_date date`, `preferred_time text` (matin/apres_midi/soir)
+- `source_page text`
+- `assigned_to uuid` (FK profiles.user_id)
+- `first_response_at timestamptz` (set automatiquement au 1er changement de status hors `new`)
+- `response_delay_hours numeric GENERATED ALWAYS AS ((EXTRACT EPOCH FROM (first_response_at - created_at))/3600) STORED`
 
-L'application a deux types d'étapes :
+**Trigger** : `before update` → si `status` passe de `new` à autre chose et `first_response_at IS NULL`, set `first_response_at = now()`.
 
-**Étapes "formulaire" (champs texte → 1 sauvegarde groupée)**
-Conversion complète vers le nouveau modèle (suppression d'`useAutosave`, ajout d'enregistrement au contexte, sauvegarde explicite) :
-- Étape 1 — Général
-- Étape 2 — Adresse
-- Étape 8 — Contact
+**RPC `submit_lead`** : mise à jour pour accepter les nouveaux params (`_type`, `_firstname`, `_lastname`, `_preferred_date`, `_preferred_time`, `_source_page`). Tous les anciens params restent optionnels pour ne pas casser l'existant.
 
-**Étapes "opérationnelles" (chaque action = écriture immédiate déjà existante)**
-Ces étapes contiennent de multiples sous-actions atomiques (ajouter une chambre, uploader une photo, supprimer un service, etc.) qui s'enregistrent déjà immédiatement en base. Elles s'inscrivent au contexte comme "jamais modifiées" — le bouton global reste désactivé avec un message *"Les modifications de cette étape sont enregistrées automatiquement à chaque action"*. C'est la seule façon raisonnable de ne pas casser les flux existants (suppression de services, toggle de disponibilité, upload de photos, etc.) ajoutés récemment :
-- Étape 3 — Logements (déjà lecture seule)
-- Étape 4 — Tarifs
-- Étape 5 — Services
-- Étape 6 — Activités
-- Étape 7 — Photos
-- Étape 9 — Validation
+**RLS** : les policies actuelles (admin all / partner via `can_manage_residence` / user via `user_id`) couvrent déjà les besoins. Ajout d'une policy `leads_assigned_read` pour que l'`assigned_to` voie ses leads.
 
-> ⚠️ Si tu souhaites vraiment imposer la sauvegarde explicite *aussi* aux étapes opérationnelles, c'est une réécriture en profondeur de chacune (suivi de diff par ligne, annulation, etc.) que je propose de traiter dans un second temps, étape par étape.
+## 2. Frontend — formulaires publics
+
+Refactor `src/modules/leads/LeadFormDialog.tsx` :
+- 3 variantes de form selon `intent`: `visit` (date + heure + message), `brochure` (nom/email/phone/message), `callback` (nom/phone + moment + message)
+- Champs `firstname` + `lastname` séparés (au lieu de `contact_name`)
+- Garde budget/timing/autonomie en section pliable « Précisez votre projet (optionnel) » pour le scoring
+- Capture `source_page = window.location.pathname`
+- Toast de confirmation typé : « ✓ Votre demande a été envoyée. La résidence vous contactera sous 24h. »
+
+## 3. Espace partenaire — `/partner/leads`
+
+Refonte `src/pages/partner/Leads.tsx` :
+- Badge sidebar avec count `status = 'new'`
+- Liste de cards avec : badge type (🗓/📄/📞), nom, email, phone, résidence, « il y a X h », badge statut couleur, actions rapides (4 boutons), alerte SLA `>24h` si `status='new'`
+- Filtres : résidence (si multi), type, status
+
+## 4. Espace admin — `/admin/leads`
+
+Nouvelle page `src/pages/admin/AdminLeads.tsx` + route :
+- 4 cards stats : total mois, nouveaux non traités, taux conversion, délai moyen réponse
+- Bannière SLA rouge si leads `new > 24h`
+- Filtres : résidence, type, status, plage de dates, recherche nom/email
+- Table : Type | Nom | Résidence | Statut | Date | Délai | Assigné | Actions
+- Lien dans le dropdown `Commercial` du header admin
+
+## 5. Mon espace — `/mon-espace/demandes`
+
+Mise à jour `src/pages/account/MyAccount.tsx` (onglet Demandes) :
+- Query `leads WHERE user_id = auth.uid()`
+- Card par demande : type + résidence + date + statut traduit (Nouveau→« En attente de réponse », Pris en charge→« Votre demande est traitée », Visite planifiée→« Visite confirmée le … », Converti→« Dossier finalisé », Perdu→« Demande clôturée »)
 
 ## Détails techniques
 
-### Nouveau fichier : `src/modules/partner/WizardSaveContext.tsx`
+**Fichiers à modifier**
+- `supabase/migrations/<new>.sql` : enums + colonnes + trigger + RPC update
+- `src/modules/leads/LeadFormDialog.tsx` : refactor multi-variant
+- `src/modules/leads/api.ts` (nouveau) : `fetchPartnerLeads`, `fetchAdminLeads`, `fetchMyLeads`, `updateLeadStatus`, `assignLead`
+- `src/modules/leads/components/LeadCard.tsx` (nouveau)
+- `src/modules/leads/components/LeadStatusBadge.tsx` (nouveau)
+- `src/modules/leads/labels.ts` (nouveau) : map status/type → label FR + couleur
+- `src/pages/partner/Leads.tsx` : refonte
+- `src/pages/admin/AdminLeads.tsx` (nouveau) + route dans `App.tsx`
+- `src/components/layout/admin/AdminDropdown.tsx` : entrée « Leads » dans Commercial
+- `src/pages/account/MyAccount.tsx` (ou composant onglet Demandes) : query réelle
 
-```ts
-type StepHandle = { isDirty: boolean; save: () => Promise<void>; reset: () => void };
-type Ctx = {
-  register: (key: string, handle: StepHandle) => () => void;
-  dirtySteps: Set<string>;
-  currentStep: string;
-  setCurrentStep: (k: string) => void;
-  saveCurrent: () => Promise<boolean>;
-  guardNavigation: (next: () => void) => void;
-};
-```
+**Respect des règles projet**
+- Fichiers ≤ 200 lignes (découpe en sous-composants)
+- TypeScript strict, props typées
+- `useMemo` sur filtres, `React.memo` sur LeadCard
+- Tokens HSL du design system uniquement (statut couleur = variants Badge)
+- `aria-label` sur boutons icônes
 
-Hook `useRegisterWizardStep(key, { isDirty, save, reset })` qui ré-enregistre à chaque changement de `isDirty`/`save`.
+## Hors scope explicite
+- Pas de notification email auto au partenaire (peut être un edge function dans un 2e temps)
+- Pas d'historique de changements de statut (audit_log existant peut suffire)
 
-### `ResidenceEditor.tsx`
-
-- Enveloppe dans `<WizardSaveProvider>`.
-- Sidebar : point orange à droite du label si `dirtySteps.has(stepKey)`.
-- Bouton **"Enregistrer les modifications"** affiché sous la zone d'étape, désactivé si l'étape courante n'est pas modifiée.
-- Boutons Précédent/Suivant + clics sidebar → passent par `guardNavigation`.
-- Modale `AlertDialog` à 3 boutons (Enregistrer / Ignorer / Rester).
-- `window.beforeunload` actif tant que `dirtySteps.size > 0`.
-- Suppression de `AutosaveBadge` (remplacé par un compteur "X modification(s) non enregistrée(s)" si pertinent).
-
-### Étapes formulaire (Général / Adresse / Contact)
-
-- Conserver `local` state, supprimer `useAutosave`.
-- Calculer `isDirty` par comparaison `local` vs valeurs initiales (snapshot mémorisé via `useRef`).
-- Exposer `save()` qui fait l'`update` Supabase, met à jour le snapshot, appelle `onChange(local)`.
-- Exposer `reset()` qui ré-applique le snapshot.
-- Toast succès/erreur géré centralement dans `saveCurrent` du contexte.
-
-### Étapes opérationnelles
-
-Une seule ligne en haut :
-```tsx
-useRegisterWizardStep("services", { isDirty: false, save: async () => {}, reset: () => {} });
-```
-Plus une note `text-muted-foreground` *"Chaque modification est enregistrée immédiatement."* sous le titre.
-
-## Risques / points d'attention
-
-- L'autosave existant dans Général/Adresse/Contact disparaît : un partenaire qui ferme l'onglet sans cliquer "Enregistrer" perdra ses changements (mitigation : `beforeunload` + modale).
-- Les étapes opérationnelles continuent de sauvegarder à chaque action (comportement actuel). Le point orange n'apparaîtra pas pour elles.
-- `useAutosave` reste dans le code (utilisé seulement par les étapes formulaire avant migration) — je le retire des 3 fichiers concernés mais ne supprime pas le fichier au cas où.
-
-## Confirmation demandée
-
-Avant d'implémenter : OK pour ce périmètre (sauvegarde explicite uniquement sur les 3 étapes formulaire, étapes opérationnelles restent en sauvegarde immédiate par action) ? Ou veux-tu que je convertisse aussi une étape opérationnelle spécifique en priorité ?
+## Étapes d'exécution
+1. Migration (validation user)
+2. Refactor `LeadFormDialog` + API leads
+3. Refonte espace partenaire
+4. Nouvelle page admin + route + dropdown
+5. Onglet « Mes demandes » user

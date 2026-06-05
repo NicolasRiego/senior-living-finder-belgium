@@ -18,8 +18,9 @@ import { SimulationHistory } from "@/modules/apartments/SimulationHistory";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
 import { useSimulatorLogements, SIMULATOR_MAX } from "@/modules/apartments/simulatorLogements";
 import type { BudgetSimulationRow } from "@/modules/apartments/budgetSimulations";
+import { USER_STATUS_LABEL, LEAD_TYPE_META, type LeadType } from "@/modules/leads/labels";
 
-type LeadRow = { id: string; created_at: string; status: string; residence_id: string; residences: { nom_fr: string; slug: string } | null };
+type LeadRow = { id: string; created_at: string; status: string; type: string; preferred_date: string | null; residence_id: string; residences: { nom_fr: string; slug: string } | null };
 
 export default function MyAccountPage() {
   const { user, isAdmin, isPartner } = useAuth();
@@ -36,7 +37,7 @@ export default function MyAccountPage() {
     (async () => {
       const { data: ls } = await supabase
         .from("leads")
-        .select("id, created_at, status, residence_id, residences:residences(nom_fr, slug)")
+        .select("id, created_at, status, type, preferred_date, residence_id, residences:residences(nom_fr, slug)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       setLeads((ls ?? []) as any);
@@ -148,25 +149,7 @@ export default function MyAccountPage() {
             </CardContent></Card>
           ) : (
             <div className="space-y-3">
-              {leads.map((l) => (
-                <Card key={l.id}>
-                  <CardContent className="py-4 flex items-center justify-between gap-4">
-                    <div>
-                      <p className="font-semibold">
-                        {l.residences ? (
-                          <Link to={`/residences/${l.residences.slug}`} className="hover:underline">
-                            {l.residences.nom_fr}
-                          </Link>
-                        ) : "Résidence"}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Envoyée le {new Date(l.created_at).toLocaleDateString("fr-BE")}
-                      </p>
-                    </div>
-                    <Badge variant="outline">{l.status}</Badge>
-                  </CardContent>
-                </Card>
-              ))}
+              {leads.map((l) => <MyLeadCard key={l.id} lead={l} />)}
             </div>
           )}
         </TabsContent>
@@ -197,5 +180,35 @@ export default function MyAccountPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function MyLeadCard({ lead }: { lead: LeadRow }) {
+  const meta = LEAD_TYPE_META[(lead.type as LeadType) ?? "info"] ?? LEAD_TYPE_META.info;
+  const statusLabel = USER_STATUS_LABEL[lead.status] ?? lead.status;
+  const visitInfo = lead.status === "visite_planifiee" && lead.preferred_date
+    ? ` le ${new Date(lead.preferred_date).toLocaleDateString("fr-BE")}`
+    : "";
+  return (
+    <Card>
+      <CardContent className="py-4 flex items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span aria-hidden>{meta.icon}</span> {meta.label}
+          </div>
+          <p className="font-semibold">
+            {lead.residences ? (
+              <Link to={`/residences/${lead.residences.slug}`} className="hover:underline">
+                {lead.residences.nom_fr}
+              </Link>
+            ) : "Résidence"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Envoyée le {new Date(lead.created_at).toLocaleDateString("fr-BE")}
+          </p>
+        </div>
+        <Badge variant="outline">{statusLabel}{visitInfo}</Badge>
+      </CardContent>
+    </Card>
   );
 }
