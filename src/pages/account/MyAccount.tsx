@@ -182,3 +182,33 @@ export default function MyAccountPage() {
     </div>
   );
 }
+
+function MyLeadCard({ lead }: { lead: LeadRow }) {
+  const meta = LEAD_TYPE_META[(lead.type as LeadType) ?? "info"] ?? LEAD_TYPE_META.info;
+  const statusLabel = USER_STATUS_LABEL[lead.status] ?? lead.status;
+  const visitInfo = lead.status === "visite_planifiee" && lead.preferred_date
+    ? ` le ${new Date(lead.preferred_date).toLocaleDateString("fr-BE")}`
+    : "";
+  return (
+    <Card>
+      <CardContent className="py-4 flex items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span aria-hidden>{meta.icon}</span> {meta.label}
+          </div>
+          <p className="font-semibold">
+            {lead.residences ? (
+              <Link to={`/residences/${lead.residences.slug}`} className="hover:underline">
+                {lead.residences.nom_fr}
+              </Link>
+            ) : "Résidence"}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Envoyée le {new Date(lead.created_at).toLocaleDateString("fr-BE")}
+          </p>
+        </div>
+        <Badge variant="outline">{statusLabel}{visitInfo}</Badge>
+      </CardContent>
+    </Card>
+  );
+}
