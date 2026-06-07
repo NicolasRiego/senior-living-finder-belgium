@@ -61,7 +61,7 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
 
   const results: CompareItem[] = [];
   for (const v of viewRows) {
-    const [pricing, services, activities, residence] = await Promise.all([
+    const [pricing, services, activities, residence, charges] = await Promise.all([
       (async () => {
         const u = await supabase.from("unit_types").select("id").eq("residence_id", v.id);
         const utIds = (u.data ?? []).map((x) => x.id);
@@ -87,7 +87,16 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
         .select("adresse, code_postal, contact_email, contact_phone, proximity")
         .eq("id", v.id)
         .maybeSingle(),
+      supabase
+        .from("residence_charges")
+        .select("amount")
+        .eq("residence_id", v.id)
+        .eq("is_mandatory", true)
+        .neq("label", "Nouveau service"),
     ]);
+    const chargeRows = (charges.data ?? []) as Array<{ amount: number | null }>;
+    const mandatory_charges_total = chargeRows.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+    const mandatory_charges_count = chargeRows.length;
 
     const resolved = await getCoverUrl(v.cover_path);
     const cover_url = resolved ?? "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200";
