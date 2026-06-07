@@ -516,16 +516,14 @@ export default function ComparePage() {
                   return (
                     <div key={a.id} className="text-center">
                       <span>{`${a.charges_monthly.toLocaleString("fr-BE")} €`}</span>
-                      {a.additional_charges.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setAptChargesDialogId(a.id)}
-                          aria-label="Voir le détail des charges mensuelles"
-                          className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
-                        >
-                          <HelpCircle className="h-4 w-4" />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setAptChargesDialogId(a.id)}
+                        aria-label="Voir le détail des charges mensuelles"
+                        className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
+                      >
+                        <HelpCircle className="h-4 w-4" />
+                      </button>
                     </div>
                   );
                 })}
