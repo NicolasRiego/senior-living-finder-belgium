@@ -26,6 +26,8 @@ export type CompareItem = {
   activity_codes: Set<string>;
   is_pmr: boolean;
   has_availability: boolean;
+  mandatory_charges_total: number;
+  mandatory_charges_count: number;
 };
 
 type SearchViewRow = {
