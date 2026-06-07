@@ -89,7 +89,7 @@ export default function ApartmentDetailPage() {
   return (
     <article className="container py-10 lg:py-14">
       <Button asChild variant="ghost" size="sm" className="mb-6">
-        <Link to="/appartements"><ArrowLeft className="h-4 w-4" /> Tous les appartements</Link>
+        <Link to="/appartements"><ArrowLeft className="h-4 w-4" /> Retour aux logements</Link>
       </Button>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
