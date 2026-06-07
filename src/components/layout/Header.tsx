@@ -91,9 +91,11 @@ export function Header() {
                   <DropdownMenuTrigger
                     className={cn(
                       "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
-                      isTransparent
-                        ? "text-white/90 hover:bg-white/10 hover:text-white drop-shadow"
-                        : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                      location.pathname.startsWith("/appartements")
+                        ? "bg-primary-soft text-primary"
+                        : isTransparent
+                          ? "text-white/90 hover:bg-white/10 hover:text-white drop-shadow"
+                          : "text-foreground/80 hover:bg-muted hover:text-foreground",
                     )}
                   >
                     Logements <ChevronDown className="h-[15px] w-[15px]" />
