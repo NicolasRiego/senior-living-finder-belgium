@@ -281,40 +281,51 @@ export default function ComparePage() {
                 ))}
               </DataRow>
 
-              <SectionTitle label="Prix & coûts" count={items.length} />
-              <DataRow label={t("common.from")} count={items.length} index={0}>
+              <SectionTitle label="Budget mensuel" count={items.length} />
+              <DataRow label="Loyer minimum (hors consommations)" count={items.length} index={0}>
                 {items.map((r) => (
                   <div key={r.id} className="text-center">
-                    {r.price_from != null ? (
-                      <PriceStrong value={`${Number(r.price_from).toLocaleString("fr-BE")} €/mois`} />
+                    {r.rent_from != null ? (
+                      <PriceStrong value={`${Number(r.rent_from).toLocaleString("fr-BE")} €/mois`} />
                     ) : (
                       <Dash />
                     )}
                   </div>
                 ))}
               </DataRow>
-              <DataRow label="Loyer min" count={items.length} index={1}>
+              <DataRow label="Forfait services de base" count={items.length} index={1}>
                 {items.map((r) => (
                   <CellText key={r.id}>
-                    {r.rent_from != null ? `${Number(r.rent_from).toLocaleString("fr-BE")} €` : <Dash />}
+                    {r.mandatory_charges_count === 0 ? (
+                      <Dash />
+                    ) : r.mandatory_charges_total === 0 ? (
+                      "Inclus"
+                    ) : (
+                      `${r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois`
+                    )}
                   </CellText>
                 ))}
               </DataRow>
-              <DataRow label="Coût estimé / mois" count={items.length} index={2}>
+              <DataRow label="Coût total minimum" count={items.length} index={2}>
                 {items.map((r) => {
-                  const mins = r.pricing.map((p) => p.estimated_monthly_min).filter((v): v is number => v != null);
-                  const maxs = r.pricing.map((p) => p.estimated_monthly_max).filter((v): v is number => v != null);
-                  if (!mins.length) return <CellText key={r.id}><Dash /></CellText>;
-                  const min = Math.min(...mins);
-                  const max = maxs.length ? Math.max(...maxs) : null;
+                  if (r.rent_from == null) {
+                    return (
+                      <div key={r.id} className="text-center font-bold text-primary">
+                        <Dash />
+                      </div>
+                    );
+                  }
+                  const total = Number(r.rent_from) + (r.mandatory_charges_total || 0);
                   return (
-                    <CellText key={r.id}>
-                      {min.toLocaleString("fr-BE")}
-                      {max ? ` – ${max.toLocaleString("fr-BE")}` : ""} €
-                    </CellText>
+                    <div key={r.id} className="text-center">
+                      <span className="inline-block rounded-md bg-primary/10 px-3 py-1 font-bold text-primary">
+                        {total.toLocaleString("fr-BE")} €/mois
+                      </span>
+                    </div>
                   );
                 })}
               </DataRow>
+
 
               <SectionTitle label="Surfaces & logements" count={items.length} />
               <DataRow label="Surface min" count={items.length} index={0}>
