@@ -77,6 +77,15 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
       const residenceId = a.residence_id as string;
       const path = coverMap.get(residenceId) ?? null;
       const signed = path ? await getCoverUrl(path) : null;
+      const { data: chargesData } = await supabase
+        .from("apartment_additional_charges")
+        .select("label, amount")
+        .eq("apartment_id", a.id as string)
+        .order("sort_order");
+      const additional_charges = (chargesData ?? []).map((c) => ({
+        label: (c.label as string) ?? "—",
+        amount: Number(c.amount) || 0,
+      }));
       return {
         id: a.id as string,
         title_fr: (a.title_fr as string | null) ?? null,
@@ -102,6 +111,7 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
         residence_ville: residence.ville ?? "",
         residence_slug: residence.slug ?? "",
         cover_url: signed ?? PEXELS_FALLBACK,
+        additional_charges,
       };
     }),
   );
