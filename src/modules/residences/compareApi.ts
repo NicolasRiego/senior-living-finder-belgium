@@ -28,6 +28,7 @@ export type CompareItem = {
   has_availability: boolean;
   mandatory_charges_total: number;
   mandatory_charges_count: number;
+  mandatory_charges: { label: string; amount: number }[];
 };
 
 type SearchViewRow = {
