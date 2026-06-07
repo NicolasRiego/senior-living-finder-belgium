@@ -4,7 +4,7 @@ import { MapPin, Heart, Building2, Maximize, Layers, GitCompare, Check } from "l
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
-import { useCompare, COMPARE_FULL_TIP_APT } from "@/modules/compare/CompareProvider";
+import { useCompare, COMPARE_FULL_TIP_APT_L1, COMPARE_FULL_TIP_APT_L2 } from "@/modules/compare/CompareProvider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCoverUrl } from "./publicApi";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
@@ -219,7 +219,10 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
                 <TooltipTrigger asChild>
                   <span tabIndex={0} className="inline-block w-full">{btn}</span>
                 </TooltipTrigger>
-                <TooltipContent>{COMPARE_FULL_TIP_APT}</TooltipContent>
+                <TooltipContent className="min-w-[220px] text-center px-4 py-2 text-sm leading-snug">
+                  <div>{COMPARE_FULL_TIP_APT_L1}</div>
+                  <div>{COMPARE_FULL_TIP_APT_L2}</div>
+                </TooltipContent>
               </Tooltip>
             );
           })()}

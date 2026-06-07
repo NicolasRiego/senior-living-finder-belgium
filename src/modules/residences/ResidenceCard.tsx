@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useCompare } from "@/modules/compare/CompareProvider";
-import { COMPARE_FULL_TIP_RES } from "@/modules/compare/CompareProvider";
+import { COMPARE_FULL_TIP_RES_L1, COMPARE_FULL_TIP_RES_L2 } from "@/modules/compare/CompareProvider";
 import { useFavorites } from "@/modules/favorites/useFavorites";
 import type { Residence } from "@/modules/residences/data";
 
@@ -109,7 +109,10 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
                 <TooltipTrigger asChild>
                   <span tabIndex={0} className="inline-block w-full">{btn}</span>
                 </TooltipTrigger>
-                <TooltipContent>{COMPARE_FULL_TIP_RES}</TooltipContent>
+                <TooltipContent className="min-w-[220px] text-center px-4 py-2 text-sm leading-snug">
+                  <div>{COMPARE_FULL_TIP_RES_L1}</div>
+                  <div>{COMPARE_FULL_TIP_RES_L2}</div>
+                </TooltipContent>
               </Tooltip>
             );
           })()}
