@@ -118,13 +118,13 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
                       <Stat value={unitSummaries.reduce((t, s) => t + s.available, 0)} label="Disponibles" color="text-green-600" />
                       <Stat value={unitSummaries.length} label="Types différents" />
                     </div>
+                    <div className="mb-5 text-center">
+                      <Link to={`/appartements?residences=${r.id}`} className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors">
+                        Voir tous les logements disponibles →
+                      </Link>
+                    </div>
                     <div className="space-y-3">
                       {unitSummaries.map((s) => <UnitCard key={s.type} s={s} />)}
-                    </div>
-                    <div className="mt-5 text-center">
-                      <Link to={`/appartements?residences=${r.id}`} className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary/10 transition-colors">
-                        Voir tous les appartements disponibles →
-                      </Link>
                     </div>
                   </Section>
                 )}
