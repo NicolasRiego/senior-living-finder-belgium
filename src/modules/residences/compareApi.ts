@@ -143,6 +143,7 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
       has_availability: !!v.has_availability,
       mandatory_charges_total,
       mandatory_charges_count,
+      mandatory_charges,
     });
   }
 
