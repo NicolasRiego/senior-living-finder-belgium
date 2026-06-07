@@ -123,7 +123,7 @@ export default function ResidencesPage() {
                   setSavedOnly(!!v);
                 }}
               />
-              <Heart className="h-4 w-4" /> Mes enregistrés uniquement
+              <Heart className="h-4 w-4" /> Mes résidences uniquement
             </label>
 
 
