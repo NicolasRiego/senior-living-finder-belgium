@@ -49,7 +49,8 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
       `
       id, title_fr, type, surface_m2, floor,
       transaction_type, rent_price, sale_price,
-      charges_monthly, parking, cave, terrace,
+      charges_monthly, charges_description,
+      parking, cave, terrace,
       garden, furnished, kitchen_equipped,
       elevator, wheelchair_accessible,
       status, available_from, residence_id,
