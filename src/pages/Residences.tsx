@@ -493,7 +493,10 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
                   <TooltipTrigger asChild>
                     <span tabIndex={0} className="inline-block w-full">{btn}</span>
                   </TooltipTrigger>
-                  <TooltipContent>{COMPARE_FULL_TIP_RES}</TooltipContent>
+                  <TooltipContent className="min-w-[220px] text-center px-4 py-2 text-sm leading-snug">
+                    <div>{COMPARE_FULL_TIP_RES_L1}</div>
+                    <div>{COMPARE_FULL_TIP_RES_L2}</div>
+                  </TooltipContent>
                 </Tooltip>
               );
             })()}
