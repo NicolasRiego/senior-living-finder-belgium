@@ -464,26 +464,39 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
                 <Heart className={"h-4 w-4 " + (saved ? "fill-current text-success" : "")} />
               </Button>
             </div>
-            <Button
-              type="button"
-              size="sm"
-              variant={inCompare ? "soft" : "outline"}
-              disabled={!inCompare && isFull}
-              onClick={() => toggle(row.id)}
-              aria-pressed={inCompare}
-              title={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
-              className="w-full px-4"
-            >
-              {inCompare ? (
-                <>
-                  <Check className="h-4 w-4" /> Dans le comparateur
-                </>
-              ) : (
-                <>
-                  <GitCompare className="h-4 w-4" /> Comparateur
-                </>
-              )}
-            </Button>
+            {(() => {
+              const disabled = !inCompare && isFull;
+              const btn = (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={inCompare ? "soft" : "outline"}
+                  disabled={disabled}
+                  onClick={() => toggle(row.id)}
+                  aria-pressed={inCompare}
+                  className="w-full px-4"
+                >
+                  {inCompare ? (
+                    <>
+                      <Check className="h-4 w-4" /> Dans le comparateur
+                    </>
+                  ) : (
+                    <>
+                      <GitCompare className="h-4 w-4" /> Comparateur
+                    </>
+                  )}
+                </Button>
+              );
+              if (!disabled) return btn;
+              return (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span tabIndex={0} className="inline-block w-full">{btn}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>{COMPARE_FULL_TIP_RES}</TooltipContent>
+                </Tooltip>
+              );
+            })()}
           </div>
         </div>
       </div>
