@@ -259,8 +259,8 @@ export default function ApartmentDetailPage() {
               <Button
                 type="button"
                 variant={inCompare ? "soft" : "outline"}
-                disabled={!inCompare && isAptFull}
                 onClick={() => toggleApt(a.id)}
+
                 aria-pressed={inCompare}
                 className="w-full whitespace-normal py-3 px-4 h-auto leading-tight"
               >
