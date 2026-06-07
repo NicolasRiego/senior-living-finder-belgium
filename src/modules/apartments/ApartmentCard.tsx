@@ -219,7 +219,10 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
                 <TooltipTrigger asChild>
                   <span tabIndex={0} className="inline-block w-full">{btn}</span>
                 </TooltipTrigger>
-                <TooltipContent>{COMPARE_FULL_TIP_APT}</TooltipContent>
+                <TooltipContent className="min-w-[220px] text-center px-4 py-2 text-sm leading-snug">
+                  <div>{COMPARE_FULL_TIP_APT_L1}</div>
+                  <div>{COMPARE_FULL_TIP_APT_L2}</div>
+                </TooltipContent>
               </Tooltip>
             );
           })()}
