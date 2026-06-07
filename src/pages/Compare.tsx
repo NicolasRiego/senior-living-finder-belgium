@@ -506,7 +506,8 @@ export default function ComparePage() {
               </DataRow>
               <DataRow label="Charges mensuelles" count={aptItems.length} index={2}>
                 {aptItems.map((a) => {
-                  if (!a.charges_monthly) {
+                  const total = a.charges_monthly_total ?? 0;
+                  if (total <= 0) {
                     return (
                       <CellText key={a.id}>
                         <Dash />
@@ -515,7 +516,7 @@ export default function ComparePage() {
                   }
                   return (
                     <div key={a.id} className="text-center">
-                      <span>{`${a.charges_monthly.toLocaleString("fr-BE")} €`}</span>
+                      <span>{`${total.toLocaleString("fr-BE")} €/mois`}</span>
                       <button
                         type="button"
                         onClick={() => setAptChargesDialogId(a.id)}
