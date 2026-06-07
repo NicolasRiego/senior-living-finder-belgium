@@ -1,4 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { toast } from "sonner";
+
+export const COMPARE_FULL_MSG_RES =
+  "Vous avez atteint le maximum de 4 résidences comparées. Rendez-vous dans le Comparateur pour en supprimer avant d'en ajouter de nouvelles.";
+export const COMPARE_FULL_MSG_APT =
+  "Vous avez atteint le maximum de 4 logements comparés. Rendez-vous dans le Comparateur pour en supprimer avant d'en ajouter de nouveaux.";
+export const COMPARE_FULL_TIP_RES = "Limite de 4 résidences comparées atteinte";
+export const COMPARE_FULL_TIP_APT = "Limite de 4 logements comparés atteinte";
 
 const MAX = 4;
 const STORAGE_KEY_RES = "sc_compare_ids";
@@ -68,9 +76,14 @@ export function CompareProvider({ children }: { children: ReactNode }) {
 
   // Résidences
   const toggle = (id: string) =>
-    setIdsState((curr) =>
-      curr.includes(id) ? curr.filter((x) => x !== id) : curr.length >= MAX ? curr : [...curr, id],
-    );
+    setIdsState((curr) => {
+      if (curr.includes(id)) return curr.filter((x) => x !== id);
+      if (curr.length >= MAX) {
+        toast.error(COMPARE_FULL_MSG_RES);
+        return curr;
+      }
+      return [...curr, id];
+    });
   const remove = (id: string) => setIdsState((c) => c.filter((x) => x !== id));
   const clear = () => setIdsState([]);
   const has = (id: string) => ids.includes(id);
@@ -78,9 +91,14 @@ export function CompareProvider({ children }: { children: ReactNode }) {
 
   // Appartements
   const toggleApt = (id: string) =>
-    setAptIdsState((curr) =>
-      curr.includes(id) ? curr.filter((x) => x !== id) : curr.length >= MAX ? curr : [...curr, id],
-    );
+    setAptIdsState((curr) => {
+      if (curr.includes(id)) return curr.filter((x) => x !== id);
+      if (curr.length >= MAX) {
+        toast.error(COMPARE_FULL_MSG_APT);
+        return curr;
+      }
+      return [...curr, id];
+    });
   const removeApt = (id: string) => setAptIdsState((c) => c.filter((x) => x !== id));
   const clearApt = () => setAptIdsState([]);
   const hasApt = (id: string) => aptIds.includes(id);

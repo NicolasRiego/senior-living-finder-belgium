@@ -334,7 +334,7 @@ function CompareToggle({ id }: { id: string }) {
   const { has, toggle, isFull } = useCompare();
   const inCompare = has(id);
   return (
-    <Button type="button" variant={inCompare ? "soft" : "outline"} size="sm" disabled={!inCompare && isFull} onClick={() => toggle(id)} aria-pressed={inCompare}>
+    <Button type="button" variant={inCompare ? "soft" : "outline"} size="sm" onClick={() => toggle(id)} aria-pressed={inCompare}>
       {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
       {inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
     </Button>

@@ -4,7 +4,8 @@ import { MapPin, Heart, Building2, Maximize, Layers, GitCompare, Check } from "l
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useSavedApartments } from "@/modules/apartments/savedApartments";
-import { useCompare } from "@/modules/compare/CompareProvider";
+import { useCompare, COMPARE_FULL_TIP_APT } from "@/modules/compare/CompareProvider";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { getCoverUrl } from "./publicApi";
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import type { ApartmentSearchRow } from "./types";
@@ -184,37 +185,44 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
             </Button>
           </div>
 
-          <Button
-            type="button"
-            size="sm"
-            variant={inCompare ? "soft" : "outline"}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleApt(row.id);
-            }}
-            disabled={!inCompare && isAptFull}
-            aria-pressed={inCompare}
-            aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
-            title={
-              inCompare
-                ? "Retirer du comparateur"
-                : isAptFull
-                ? "Comparateur plein (max 4)"
-                : "Ajouter au comparateur"
-            }
-            className="w-full whitespace-nowrap"
-          >
-            {inCompare ? (
-              <>
-                <Check className="h-4 w-4" /> Dans le comparateur
-              </>
-            ) : (
-              <>
-                <GitCompare className="h-4 w-4" /> Comparateur
-              </>
-            )}
-          </Button>
+          {(() => {
+            const disabled = !inCompare && isAptFull;
+            const btn = (
+              <Button
+                type="button"
+                size="sm"
+                variant={inCompare ? "soft" : "outline"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleApt(row.id);
+                }}
+                disabled={disabled}
+                aria-pressed={inCompare}
+                aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+                className="w-full whitespace-nowrap"
+              >
+                {inCompare ? (
+                  <>
+                    <Check className="h-4 w-4" /> Dans le comparateur
+                  </>
+                ) : (
+                  <>
+                    <GitCompare className="h-4 w-4" /> Comparateur
+                  </>
+                )}
+              </Button>
+            );
+            if (!disabled) return btn;
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={0} className="inline-block w-full">{btn}</span>
+                </TooltipTrigger>
+                <TooltipContent>{COMPARE_FULL_TIP_APT}</TooltipContent>
+              </Tooltip>
+            );
+          })()}
 
           <Button asChild size="sm" variant="ghost" className="w-full whitespace-nowrap">
             <Link to={`/residences/${row.residence_slug}`}>Voir la résidence</Link>
