@@ -505,11 +505,30 @@ export default function ComparePage() {
                 ))}
               </DataRow>
               <DataRow label="Charges mensuelles" count={aptItems.length} index={2}>
-                {aptItems.map((a) => (
-                  <CellText key={a.id}>
-                    {a.charges_monthly ? `${a.charges_monthly.toLocaleString("fr-BE")} €` : <Dash />}
-                  </CellText>
-                ))}
+                {aptItems.map((a) => {
+                  if (!a.charges_monthly) {
+                    return (
+                      <CellText key={a.id}>
+                        <Dash />
+                      </CellText>
+                    );
+                  }
+                  return (
+                    <div key={a.id} className="text-center">
+                      <span>{`${a.charges_monthly.toLocaleString("fr-BE")} €`}</span>
+                      {a.additional_charges.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setAptChargesDialogId(a.id)}
+                          aria-label="Voir le détail des charges mensuelles"
+                          className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
+                        >
+                          <HelpCircle className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </DataRow>
               <DataRow label="Prix d'achat" count={aptItems.length} index={3}>
                 {aptItems.map((a) => (
