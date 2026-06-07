@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check, Heart } from "lucide-react";
-import { useCompare, COMPARE_FULL_TIP_RES } from "@/modules/compare/CompareProvider";
+import { useCompare, COMPARE_FULL_TIP_RES_L1, COMPARE_FULL_TIP_RES_L2 } from "@/modules/compare/CompareProvider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFavorites } from "@/modules/favorites/useFavorites";
 import { useAuth } from "@/modules/auth/AuthProvider";
