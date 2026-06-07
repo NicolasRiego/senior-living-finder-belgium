@@ -516,16 +516,14 @@ export default function ComparePage() {
                   return (
                     <div key={a.id} className="text-center">
                       <span>{`${a.charges_monthly.toLocaleString("fr-BE")} €`}</span>
-                      {a.additional_charges.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setAptChargesDialogId(a.id)}
-                          aria-label="Voir le détail des charges mensuelles"
-                          className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
-                        >
-                          <HelpCircle className="h-4 w-4" />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setAptChargesDialogId(a.id)}
+                        aria-label="Voir le détail des charges mensuelles"
+                        className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
+                      >
+                        <HelpCircle className="h-4 w-4" />
+                      </button>
                     </div>
                   );
                 })}
@@ -640,16 +638,22 @@ export default function ComparePage() {
                 <p className="mb-3 text-sm text-muted-foreground">
                   {a.title_fr || aptTypeLabel(a)} — {a.residence_nom_fr}
                 </p>
-                <ul className="divide-y divide-border rounded-md border">
-                  {a.additional_charges.map((c, i) => (
-                    <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
-                      <span className="text-sm">{c.label}</span>
-                      <span className="text-sm font-medium">
-                        {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                {a.additional_charges.length > 0 ? (
+                  <ul className="divide-y divide-border rounded-md border">
+                    {a.additional_charges.map((c, i) => (
+                      <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
+                        <span className="text-sm">{c.label}</span>
+                        <span className="text-sm font-medium">
+                          {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="rounded-md border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                    Le détail ligne par ligne n'a pas été communiqué par le partenaire. Seul le montant total des charges mensuelles est disponible.
+                  </p>
+                )}
                 <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
                   <span>Total</span>
                   <span className="text-primary">
