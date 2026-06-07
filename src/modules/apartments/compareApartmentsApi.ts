@@ -30,6 +30,7 @@ export type CompareAptItem = {
   residence_ville: string;
   residence_slug: string;
   cover_url: string | null;
+  additional_charges: { label: string; amount: number }[];
 };
 
 export async function fetchCompareApartments(ids: string[]): Promise<CompareAptItem[]> {
