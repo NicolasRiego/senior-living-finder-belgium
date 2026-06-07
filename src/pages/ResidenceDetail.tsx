@@ -36,5 +36,5 @@ export default function ResidenceDetailPage() {
     );
   }
 
-  return <ResidenceDetailView data={data as ResidenceDetailData} />;
+  return <ResidenceDetailView data={data as ResidenceDetailData} backLink={{ to: "/residences", label: "Retour aux résidences" }} />;
 }
