@@ -203,7 +203,7 @@ export default function ApartmentsPage() {
                   setSavedOnly(!!v);
                 }}
               />
-              <Heart className="h-4 w-4" /> Mes enregistrés uniquement
+              <Heart className="h-4 w-4" /> Mes logements uniquement
             </label>
 
 
