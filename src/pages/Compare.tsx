@@ -594,29 +594,29 @@ export default function ComparePage() {
       )}
 
       <Dialog open={chargesDialogId !== null} onOpenChange={(open) => !open && setChargesDialogId(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[90vw] max-w-md max-h-[85vh] overflow-y-auto p-6">
           <DialogHeader>
-            <DialogTitle>Services de base inclus dans le forfait</DialogTitle>
+            <DialogTitle className="break-words pr-6">Services de base inclus dans le forfait</DialogTitle>
           </DialogHeader>
           {(() => {
             const r = items.find((x) => x.id === chargesDialogId);
             if (!r) return null;
             return (
-              <div className="mt-2">
-                <p className="mb-3 text-sm text-muted-foreground">{r.nom_fr}</p>
-                <ul className="divide-y divide-border rounded-md border">
+              <div className="mt-2 w-full">
+                <p className="mb-3 text-sm text-muted-foreground break-words">{r.nom_fr}</p>
+                <ul className="w-full divide-y divide-border rounded-md border">
                   {r.mandatory_charges.map((c, i) => (
-                    <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
-                      <span className="text-sm">{c.label}</span>
-                      <span className="text-sm font-medium">
+                    <li key={i} className="flex items-start justify-between gap-3 px-4 py-2">
+                      <span className="text-sm break-words min-w-0 flex-1">{c.label}</span>
+                      <span className="text-sm font-medium whitespace-nowrap shrink-0">
                         {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
                       </span>
                     </li>
                   ))}
                 </ul>
-                <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
+                <div className="mt-4 flex items-center justify-between gap-3 border-t pt-3 text-sm font-semibold">
                   <span>Total</span>
-                  <span className="text-primary">
+                  <span className="text-primary whitespace-nowrap">
                     {r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois
                   </span>
                 </div>
@@ -627,9 +627,9 @@ export default function ComparePage() {
       </Dialog>
 
       <Dialog open={aptChargesDialogId !== null} onOpenChange={(open) => !open && setAptChargesDialogId(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="w-[90vw] max-w-md max-h-[85vh] overflow-y-auto p-6">
           <DialogHeader>
-            <DialogTitle>Détail des charges mensuelles</DialogTitle>
+            <DialogTitle className="break-words pr-6">Détail des charges mensuelles</DialogTitle>
           </DialogHeader>
           {(() => {
             const a = aptItems.find((x) => x.id === aptChargesDialogId);
@@ -638,36 +638,36 @@ export default function ComparePage() {
             const includedExtras = a.additional_charges.filter((c) => c.is_included);
             const total = a.charges_monthly_total ?? 0;
             return (
-              <div className="mt-2">
-                <p className="mb-3 text-sm text-muted-foreground">
+              <div className="mt-2 w-full">
+                <p className="mb-3 text-sm text-muted-foreground break-words">
                   {a.title_fr || aptTypeLabel(a)} — {a.residence_nom_fr}
                 </p>
-                <ul className="divide-y divide-border rounded-md border">
+                <ul className="w-full divide-y divide-border rounded-md border">
                   {base > 0 && (
-                    <li className="flex items-start justify-between gap-4 px-4 py-2">
-                      <span className="text-sm">
+                    <li className="flex items-start justify-between gap-3 px-4 py-2">
+                      <span className="text-sm break-words min-w-0 flex-1">
                         {a.charges_description?.trim() || "Charges de base"}
                       </span>
-                      <span className="text-sm font-medium whitespace-nowrap">
+                      <span className="text-sm font-medium whitespace-nowrap shrink-0">
                         {`${base.toLocaleString("fr-BE")} €/mois`}
                       </span>
                     </li>
                   )}
                   {includedExtras.map((c, i) => (
-                    <li key={i} className="flex items-start justify-between gap-4 px-4 py-2">
-                      <span className="text-sm">
+                    <li key={i} className="flex items-start justify-between gap-3 px-4 py-2">
+                      <span className="text-sm break-words min-w-0 flex-1">
                         {c.label}
                         {c.description?.trim() ? ` (${c.description.trim()})` : ""}
                       </span>
-                      <span className="text-sm font-medium whitespace-nowrap">
+                      <span className="text-sm font-medium whitespace-nowrap shrink-0">
                         {`${c.amount.toLocaleString("fr-BE")} €/mois`}
                       </span>
                     </li>
                   ))}
                 </ul>
-                <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
+                <div className="mt-4 flex items-center justify-between gap-3 border-t pt-3 text-sm font-semibold">
                   <span>Total</span>
-                  <span className="text-primary">
+                  <span className="text-primary whitespace-nowrap">
                     {total.toLocaleString("fr-BE")} €/mois
                   </span>
                 </div>
