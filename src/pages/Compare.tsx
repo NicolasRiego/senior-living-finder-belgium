@@ -573,6 +573,39 @@ export default function ComparePage() {
         </section>
         )
       )}
+
+      <Dialog open={chargesDialogId !== null} onOpenChange={(open) => !open && setChargesDialogId(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Services de base inclus dans le forfait</DialogTitle>
+          </DialogHeader>
+          {(() => {
+            const r = items.find((x) => x.id === chargesDialogId);
+            if (!r) return null;
+            return (
+              <div className="mt-2">
+                <p className="mb-3 text-sm text-muted-foreground">{r.nom_fr}</p>
+                <ul className="divide-y divide-border rounded-md border">
+                  {r.mandatory_charges.map((c, i) => (
+                    <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
+                      <span className="text-sm">{c.label}</span>
+                      <span className="text-sm font-medium">
+                        {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
+                  <span>Total</span>
+                  <span className="text-primary">
+                    {r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
