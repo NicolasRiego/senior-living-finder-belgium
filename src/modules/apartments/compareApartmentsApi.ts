@@ -15,6 +15,8 @@ export type CompareAptItem = {
   rent_price: number | null;
   sale_price: number | null;
   charges_monthly: number | null;
+  charges_description: string | null;
+  charges_monthly_total: number;
   parking: boolean;
   cave: boolean;
   terrace: boolean;
@@ -30,7 +32,13 @@ export type CompareAptItem = {
   residence_ville: string;
   residence_slug: string;
   cover_url: string | null;
-  additional_charges: { label: string; amount: number }[];
+  additional_charges: {
+    label: string;
+    amount: number;
+    description: string | null;
+    is_included: boolean;
+  }[];
+  included_additional_charges_total: number;
 };
 
 export async function fetchCompareApartments(ids: string[]): Promise<CompareAptItem[]> {
@@ -41,7 +49,8 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
       `
       id, title_fr, type, surface_m2, floor,
       transaction_type, rent_price, sale_price,
-      charges_monthly, parking, cave, terrace,
+      charges_monthly, charges_description,
+      parking, cave, terrace,
       garden, furnished, kitchen_equipped,
       elevator, wheelchair_accessible,
       status, available_from, residence_id,
@@ -79,13 +88,20 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
       const signed = path ? await getCoverUrl(path) : null;
       const { data: chargesData } = await supabase
         .from("apartment_additional_charges")
-        .select("label, amount")
+        .select("label, amount, description, is_included")
         .eq("apartment_id", a.id as string)
         .order("sort_order");
       const additional_charges = (chargesData ?? []).map((c) => ({
         label: (c.label as string) ?? "—",
         amount: Number(c.amount) || 0,
+        description: (c.description as string | null) ?? null,
+        is_included: Boolean(c.is_included),
       }));
+      const included_additional_charges_total = additional_charges
+        .filter((c) => c.is_included)
+        .reduce((sum, c) => sum + c.amount, 0);
+      const baseCharges = (a.charges_monthly as number | null) ?? 0;
+      const charges_monthly_total = baseCharges + included_additional_charges_total;
       return {
         id: a.id as string,
         title_fr: (a.title_fr as string | null) ?? null,
@@ -96,6 +112,8 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
         rent_price: (a.rent_price as number | null) ?? null,
         sale_price: (a.sale_price as number | null) ?? null,
         charges_monthly: (a.charges_monthly as number | null) ?? null,
+        charges_description: (a.charges_description as string | null) ?? null,
+        charges_monthly_total,
         parking: Boolean(a.parking),
         cave: Boolean(a.cave),
         terrace: Boolean(a.terrace),
@@ -112,6 +130,7 @@ export async function fetchCompareApartments(ids: string[]): Promise<CompareAptI
         residence_slug: residence.slug ?? "",
         cover_url: signed ?? PEXELS_FALLBACK,
         additional_charges,
+        included_additional_charges_total,
       };
     }),
   );
