@@ -1,4 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { toast } from "sonner";
+
+export const COMPARE_FULL_MSG_RES =
+  "Vous avez atteint le maximum de 4 résidences comparées. Rendez-vous dans le Comparateur pour en supprimer avant d'en ajouter de nouvelles.";
+export const COMPARE_FULL_MSG_APT =
+  "Vous avez atteint le maximum de 4 logements comparés. Rendez-vous dans le Comparateur pour en supprimer avant d'en ajouter de nouveaux.";
+export const COMPARE_FULL_TIP_RES = "Limite de 4 résidences comparées atteinte";
+export const COMPARE_FULL_TIP_APT = "Limite de 4 logements comparés atteinte";
 
 const MAX = 4;
 const STORAGE_KEY_RES = "sc_compare_ids";
