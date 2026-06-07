@@ -28,6 +28,7 @@ export type CompareItem = {
   has_availability: boolean;
   mandatory_charges_total: number;
   mandatory_charges_count: number;
+  mandatory_charges: { label: string; amount: number }[];
 };
 
 type SearchViewRow = {
@@ -89,14 +90,18 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
         .maybeSingle(),
       supabase
         .from("residence_charges")
-        .select("amount")
+        .select("label, amount")
         .eq("residence_id", v.id)
         .eq("is_mandatory", true)
         .neq("label", "Nouveau service"),
     ]);
-    const chargeRows = (charges.data ?? []) as Array<{ amount: number | null }>;
-    const mandatory_charges_total = chargeRows.reduce((s, c) => s + (Number(c.amount) || 0), 0);
-    const mandatory_charges_count = chargeRows.length;
+    const chargeRows = (charges.data ?? []) as Array<{ label: string | null; amount: number | null }>;
+    const mandatory_charges = chargeRows.map((c) => ({
+      label: c.label ?? "—",
+      amount: Number(c.amount) || 0,
+    }));
+    const mandatory_charges_total = mandatory_charges.reduce((s, c) => s + c.amount, 0);
+    const mandatory_charges_count = mandatory_charges.length;
 
     const resolved = await getCoverUrl(v.cover_path);
     const cover_url = resolved ?? "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200";
@@ -138,6 +143,7 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
       has_availability: !!v.has_availability,
       mandatory_charges_total,
       mandatory_charges_count,
+      mandatory_charges,
     });
   }
 

@@ -11,7 +11,14 @@ import {
   Plus,
   Building2,
   Home,
+  HelpCircle,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +43,7 @@ export default function ComparePage() {
   const { ids, remove, clear, setIds, aptIds, removeApt, clearApt } = useCompare();
   const [sp, setSp] = useSearchParams();
   const [activeTab, setActiveTab] = useState<"residences" | "logements">("residences");
+  const [chargesDialogId, setChargesDialogId] = useState<string | null>(null);
 
   useEffect(() => {
     if (ids.length === 0 && aptIds.length > 0) setActiveTab("logements");
@@ -294,17 +302,31 @@ export default function ComparePage() {
                 ))}
               </DataRow>
               <DataRow label="Forfait services de base" count={items.length} index={1}>
-                {items.map((r) => (
-                  <CellText key={r.id}>
-                    {r.mandatory_charges_count === 0 ? (
-                      <Dash />
-                    ) : r.mandatory_charges_total === 0 ? (
-                      "Inclus"
-                    ) : (
-                      `${r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois`
-                    )}
-                  </CellText>
-                ))}
+                {items.map((r) => {
+                  if (r.mandatory_charges_count === 0) {
+                    return (
+                      <CellText key={r.id}>
+                        <Dash />
+                      </CellText>
+                    );
+                  }
+                  if (r.mandatory_charges_total === 0) {
+                    return <CellText key={r.id}>Inclus</CellText>;
+                  }
+                  return (
+                    <div key={r.id} className="relative text-center">
+                      <span>{`${r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois`}</span>
+                      <button
+                        type="button"
+                        onClick={() => setChargesDialogId(r.id)}
+                        aria-label="Voir le détail des services de base"
+                        className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
+                      >
+                        <HelpCircle className="h-4 w-4" />
+                      </button>
+                    </div>
+                  );
+                })}
               </DataRow>
               <DataRow label="Coût total minimum" count={items.length} index={2}>
                 {items.map((r) => {
@@ -551,6 +573,39 @@ export default function ComparePage() {
         </section>
         )
       )}
+
+      <Dialog open={chargesDialogId !== null} onOpenChange={(open) => !open && setChargesDialogId(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Services de base inclus dans le forfait</DialogTitle>
+          </DialogHeader>
+          {(() => {
+            const r = items.find((x) => x.id === chargesDialogId);
+            if (!r) return null;
+            return (
+              <div className="mt-2">
+                <p className="mb-3 text-sm text-muted-foreground">{r.nom_fr}</p>
+                <ul className="divide-y divide-border rounded-md border">
+                  {r.mandatory_charges.map((c, i) => (
+                    <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
+                      <span className="text-sm">{c.label}</span>
+                      <span className="text-sm font-medium">
+                        {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
+                  <span>Total</span>
+                  <span className="text-primary">
+                    {r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
