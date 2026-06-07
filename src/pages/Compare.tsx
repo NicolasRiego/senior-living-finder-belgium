@@ -302,17 +302,31 @@ export default function ComparePage() {
                 ))}
               </DataRow>
               <DataRow label="Forfait services de base" count={items.length} index={1}>
-                {items.map((r) => (
-                  <CellText key={r.id}>
-                    {r.mandatory_charges_count === 0 ? (
-                      <Dash />
-                    ) : r.mandatory_charges_total === 0 ? (
-                      "Inclus"
-                    ) : (
-                      `${r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois`
-                    )}
-                  </CellText>
-                ))}
+                {items.map((r) => {
+                  if (r.mandatory_charges_count === 0) {
+                    return (
+                      <CellText key={r.id}>
+                        <Dash />
+                      </CellText>
+                    );
+                  }
+                  if (r.mandatory_charges_total === 0) {
+                    return <CellText key={r.id}>Inclus</CellText>;
+                  }
+                  return (
+                    <div key={r.id} className="relative text-center">
+                      <span>{`${r.mandatory_charges_total.toLocaleString("fr-BE")} €/mois`}</span>
+                      <button
+                        type="button"
+                        onClick={() => setChargesDialogId(r.id)}
+                        aria-label="Voir le détail des services de base"
+                        className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring align-middle"
+                      >
+                        <HelpCircle className="h-4 w-4" />
+                      </button>
+                    </div>
+                  );
+                })}
               </DataRow>
               <DataRow label="Coût total minimum" count={items.length} index={2}>
                 {items.map((r) => {
