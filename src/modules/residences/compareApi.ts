@@ -136,6 +136,8 @@ export async function fetchCompareItems(ids: string[]): Promise<CompareItem[]> {
       activity_codes: activityCodes,
       is_pmr: !!v.is_pmr,
       has_availability: !!v.has_availability,
+      mandatory_charges_total,
+      mandatory_charges_count,
     });
   }
 
