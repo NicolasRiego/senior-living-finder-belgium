@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { useCompare } from "@/modules/compare/CompareProvider";
-import { COMPARE_FULL_TIP_RES } from "@/modules/compare/CompareProvider";
+import { COMPARE_FULL_TIP_RES_L1, COMPARE_FULL_TIP_RES_L2 } from "@/modules/compare/CompareProvider";
 import { useFavorites } from "@/modules/favorites/useFavorites";
 import type { Residence } from "@/modules/residences/data";
 
