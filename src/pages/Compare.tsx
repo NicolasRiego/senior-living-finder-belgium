@@ -43,6 +43,7 @@ export default function ComparePage() {
   const { ids, remove, clear, setIds, aptIds, removeApt, clearApt } = useCompare();
   const [sp, setSp] = useSearchParams();
   const [activeTab, setActiveTab] = useState<"residences" | "logements">("residences");
+  const [chargesDialogId, setChargesDialogId] = useState<string | null>(null);
 
   useEffect(() => {
     if (ids.length === 0 && aptIds.length > 0) setActiveTab("logements");
