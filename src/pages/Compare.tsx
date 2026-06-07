@@ -626,6 +626,41 @@ export default function ComparePage() {
           })()}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={aptChargesDialogId !== null} onOpenChange={(open) => !open && setAptChargesDialogId(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Détail des charges mensuelles</DialogTitle>
+          </DialogHeader>
+          {(() => {
+            const a = aptItems.find((x) => x.id === aptChargesDialogId);
+            if (!a) return null;
+            return (
+              <div className="mt-2">
+                <p className="mb-3 text-sm text-muted-foreground">
+                  {a.title_fr || aptTypeLabel(a)} — {a.residence_nom_fr}
+                </p>
+                <ul className="divide-y divide-border rounded-md border">
+                  {a.additional_charges.map((c, i) => (
+                    <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
+                      <span className="text-sm">{c.label}</span>
+                      <span className="text-sm font-medium">
+                        {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
+                  <span>Total</span>
+                  <span className="text-primary">
+                    {(a.charges_monthly ?? 0).toLocaleString("fr-BE")} €/mois
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
