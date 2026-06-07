@@ -87,20 +87,32 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
               <Heart className={"h-4 w-4 " + (isFav ? "fill-current text-success" : "")} />
             </Button>
           </div>
-          <Button
-            type="button"
-            variant={inCompare ? "soft" : "outline"}
-            size="sm"
-            disabled={!inCompare && isFull}
-            onClick={() => toggle(residence.id)}
-            aria-pressed={inCompare}
-            className="w-full"
-          >
-            {inCompare ? <Check className="h-4 w-4" /> : null}
-            <span>
-              {inCompare ? t("common.removeFromCompare") : t("common.compare")}
-            </span>
-          </Button>
+          {(() => {
+            const disabled = !inCompare && isFull;
+            const btn = (
+              <Button
+                type="button"
+                variant={inCompare ? "soft" : "outline"}
+                size="sm"
+                disabled={disabled}
+                onClick={() => toggle(residence.id)}
+                aria-pressed={inCompare}
+                className="w-full"
+              >
+                {inCompare ? <Check className="h-4 w-4" /> : null}
+                <span>{inCompare ? t("common.removeFromCompare") : t("common.compare")}</span>
+              </Button>
+            );
+            if (!disabled) return btn;
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span tabIndex={0} className="inline-block w-full">{btn}</span>
+                </TooltipTrigger>
+                <TooltipContent>{COMPARE_FULL_TIP_RES}</TooltipContent>
+              </Tooltip>
+            );
+          })()}
         </div>
       </div>
     </article>
