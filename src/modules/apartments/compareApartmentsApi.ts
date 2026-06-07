@@ -15,6 +15,8 @@ export type CompareAptItem = {
   rent_price: number | null;
   sale_price: number | null;
   charges_monthly: number | null;
+  charges_description: string | null;
+  charges_monthly_total: number;
   parking: boolean;
   cave: boolean;
   terrace: boolean;
@@ -30,7 +32,13 @@ export type CompareAptItem = {
   residence_ville: string;
   residence_slug: string;
   cover_url: string | null;
-  additional_charges: { label: string; amount: number }[];
+  additional_charges: {
+    label: string;
+    amount: number;
+    description: string | null;
+    is_included: boolean;
+  }[];
+  included_additional_charges_total: number;
 };
 
 export async function fetchCompareApartments(ids: string[]): Promise<CompareAptItem[]> {
