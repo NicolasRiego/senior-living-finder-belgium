@@ -634,31 +634,41 @@ export default function ComparePage() {
           {(() => {
             const a = aptItems.find((x) => x.id === aptChargesDialogId);
             if (!a) return null;
+            const base = a.charges_monthly ?? 0;
+            const includedExtras = a.additional_charges.filter((c) => c.is_included);
+            const total = a.charges_monthly_total ?? 0;
             return (
               <div className="mt-2">
                 <p className="mb-3 text-sm text-muted-foreground">
                   {a.title_fr || aptTypeLabel(a)} — {a.residence_nom_fr}
                 </p>
-                {a.additional_charges.length > 0 ? (
-                  <ul className="divide-y divide-border rounded-md border">
-                    {a.additional_charges.map((c, i) => (
-                      <li key={i} className="flex items-center justify-between gap-4 px-4 py-2">
-                        <span className="text-sm">{c.label}</span>
-                        <span className="text-sm font-medium">
-                          {c.amount === 0 ? "Inclus" : `${c.amount.toLocaleString("fr-BE")} €/mois`}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="rounded-md border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
-                    Le détail ligne par ligne n'a pas été communiqué par le partenaire. Seul le montant total des charges mensuelles est disponible.
-                  </p>
-                )}
+                <ul className="divide-y divide-border rounded-md border">
+                  {base > 0 && (
+                    <li className="flex items-start justify-between gap-4 px-4 py-2">
+                      <span className="text-sm">
+                        {a.charges_description?.trim() || "Charges de base"}
+                      </span>
+                      <span className="text-sm font-medium whitespace-nowrap">
+                        {`${base.toLocaleString("fr-BE")} €/mois`}
+                      </span>
+                    </li>
+                  )}
+                  {includedExtras.map((c, i) => (
+                    <li key={i} className="flex items-start justify-between gap-4 px-4 py-2">
+                      <span className="text-sm">
+                        {c.label}
+                        {c.description?.trim() ? ` (${c.description.trim()})` : ""}
+                      </span>
+                      <span className="text-sm font-medium whitespace-nowrap">
+                        {`${c.amount.toLocaleString("fr-BE")} €/mois`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
                 <div className="mt-4 flex items-center justify-between border-t pt-3 text-sm font-semibold">
                   <span>Total</span>
                   <span className="text-primary">
-                    {(a.charges_monthly ?? 0).toLocaleString("fr-BE")} €/mois
+                    {total.toLocaleString("fr-BE")} €/mois
                   </span>
                 </div>
               </div>
