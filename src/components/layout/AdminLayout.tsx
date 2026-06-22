@@ -111,6 +111,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 <Ticket className="h-4 w-4" /> Tickets
               </Link>
               <Link
+                to="/admin/taches"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+              >
+                <CheckSquare className="h-4 w-4" /> Tâches
+              </Link>
+              <Link
                 to="/"
                 className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
               >
