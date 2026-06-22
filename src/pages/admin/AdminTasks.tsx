@@ -152,16 +152,18 @@ export default function AdminTasks() {
   };
 
   const upcoming = useMemo(() => {
+    if (!currentUserId) return [];
     return tasks
-      .filter((t) => t.due_date && t.status !== "terminee")
+      .filter((t) => t.due_date && t.status !== "terminee" && t.assignees.includes(currentUserId))
       .sort((a, b) => (a.due_date! < b.due_date! ? -1 : 1));
-  }, [tasks]);
+  }, [tasks, currentUserId]);
 
   const overdue = useMemo(() => {
+    if (!currentUserId) return [];
     return tasks
-      .filter((t) => t.due_date && t.status !== "terminee" && daysDiff(t.due_date!) < 0)
+      .filter((t) => t.due_date && t.status !== "terminee" && t.assignees.includes(currentUserId) && daysDiff(t.due_date!) < 0)
       .sort((a, b) => (a.due_date! < b.due_date! ? -1 : 1));
-  }, [tasks, today]);
+  }, [tasks, today, currentUserId]);
 
 
   const openCreate = () => {
