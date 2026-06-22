@@ -16,7 +16,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Plus, Calendar, User as UserIcon, Trash2, Pencil, ChevronDown } from "lucide-react";
+import { Plus, Calendar, User as UserIcon, Trash2, Pencil, ChevronDown, LayoutGrid, List } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 type Priority = "basse" | "normale" | "haute" | "urgente";
@@ -79,6 +79,11 @@ export default function AdminTasks() {
   const [fPriority, setFPriority] = useState<string>("all");
   const [fAssignee, setFAssignee] = useState<string>("all");
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [view, setView] = useState<"grid" | "list">(() => {
+    if (typeof window === "undefined") return "grid";
+    return (localStorage.getItem("admin_tasks_view") as "grid" | "list") || "grid";
+  });
+  useEffect(() => { localStorage.setItem("admin_tasks_view", view); }, [view]);
 
   const loadAll = async () => {
     setLoading(true);
@@ -231,9 +236,29 @@ export default function AdminTasks() {
           <h1 className="text-3xl font-display font-semibold">Tâches</h1>
           <p className="text-muted-foreground text-sm">Gestion interne des tâches administratives</p>
         </div>
-        <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-          <Plus className="h-4 w-4" /> Nouvelle tâche
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-md border bg-card p-0.5">
+            <button
+              onClick={() => setView("grid")}
+              aria-label="Vue grille"
+              aria-pressed={view === "grid"}
+              className={`inline-flex items-center justify-center h-8 w-8 rounded ${view === "grid" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setView("list")}
+              aria-label="Vue liste"
+              aria-pressed={view === "list"}
+              className={`inline-flex items-center justify-center h-8 w-8 rounded ${view === "list" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
+          <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Plus className="h-4 w-4" /> Nouvelle tâche
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -282,7 +307,7 @@ export default function AdminTasks() {
         <p className="text-muted-foreground">Chargement…</p>
       ) : filtered.length === 0 ? (
         <Card className="p-8 text-center text-muted-foreground">Aucune tâche</Card>
-      ) : (
+      ) : view === "grid" ? (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((t) => (
             <Card key={t.id} className="p-4 space-y-3 flex flex-col">
@@ -343,6 +368,64 @@ export default function AdminTasks() {
             </Card>
           ))}
         </div>
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="text-left font-medium px-4 py-2">Titre</th>
+                  <th className="text-left font-medium px-4 py-2">Priorité</th>
+                  <th className="text-left font-medium px-4 py-2">Statut</th>
+                  <th className="text-left font-medium px-4 py-2">Assignés</th>
+                  <th className="text-left font-medium px-4 py-2">Échéance</th>
+                  <th className="px-4 py-2 w-20"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((t) => (
+                  <tr key={t.id} className="border-t hover:bg-muted/30">
+                    <td className="px-4 py-2 font-medium">{t.title}</td>
+                    <td className="px-4 py-2">
+                      <Badge variant="outline" className={PRIORITY_CLASS[t.priority]}>
+                        {PRIORITY_LABEL[t.priority]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2">
+                      <Badge variant="outline" className={STATUS_CLASS[t.status]}>
+                        {STATUS_LABEL[t.status]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2 text-muted-foreground">
+                      {t.assignees.length === 0 ? "—" : t.assignees.map(labelFor).join(", ")}
+                    </td>
+                    <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">
+                      {t.due_date ? new Date(t.due_date).toLocaleDateString("fr-BE") : "—"}
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openEdit(t)}
+                          className="text-muted-foreground hover:text-primary"
+                          aria-label="Modifier la tâche"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteTask(t.id)}
+                          className="text-muted-foreground hover:text-destructive"
+                          aria-label="Supprimer la tâche"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditingId(null); setForm(EMPTY_FORM); } }}>
