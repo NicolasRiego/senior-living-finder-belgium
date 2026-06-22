@@ -132,9 +132,34 @@ export type Database = {
           },
         ]
       }
+      admin_task_assignees: {
+        Row: {
+          created_at: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "admin_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_tasks: {
         Row: {
-          assigned_to: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -146,7 +171,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          assigned_to?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -158,7 +182,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          assigned_to?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
