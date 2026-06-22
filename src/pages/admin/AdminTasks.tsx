@@ -95,6 +95,121 @@ export default function AdminTasks() {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
   }, []);
 
+  type DocRow = {
+    id: string; title: string; description: string | null;
+    file_url: string; file_name: string; file_type: string | null; file_size: number | null;
+    task_id: string | null; uploaded_by: string | null; created_at: string;
+  };
+  const [documents, setDocuments] = useState<DocRow[]>([]);
+  const [docFilterTask, setDocFilterTask] = useState<string>("all");
+  const [docOpen, setDocOpen] = useState(false);
+  const [docTitle, setDocTitle] = useState("");
+  const [docDescription, setDocDescription] = useState("");
+  const [docTaskId, setDocTaskId] = useState<string>("none");
+  const [docFile, setDocFile] = useState<File | null>(null);
+  const [docUploading, setDocUploading] = useState(false);
+
+  const loadDocuments = async () => {
+    const { data, error } = await (supabase as any)
+      .from("admin_task_documents")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      toast({ title: "Erreur documents", description: error.message, variant: "destructive" });
+      return;
+    }
+    setDocuments((data ?? []) as DocRow[]);
+  };
+  useEffect(() => { loadDocuments(); }, []);
+
+  const filteredDocs = useMemo(() => {
+    if (docFilterTask === "all") return documents;
+    if (docFilterTask === "none") return documents.filter((d) => !d.task_id);
+    return documents.filter((d) => d.task_id === docFilterTask);
+  }, [documents, docFilterTask]);
+
+  const taskTitleById = useMemo(() => {
+    const m = new Map<string, string>();
+    tasks.forEach((t) => m.set(t.id, t.title));
+    return m;
+  }, [tasks]);
+
+  const resetDocForm = () => {
+    setDocTitle(""); setDocDescription(""); setDocTaskId("none"); setDocFile(null);
+  };
+
+  const uploadDocument = async () => {
+    if (!docTitle.trim()) { toast({ title: "Titre requis", variant: "destructive" }); return; }
+    if (!docFile) { toast({ title: "Fichier requis", variant: "destructive" }); return; }
+    setDocUploading(true);
+    try {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (!uid) throw new Error("Non connecté");
+      const ext = docFile.name.includes(".") ? docFile.name.split(".").pop() : "";
+      const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext ? "." + ext : ""}`;
+      const up = await supabase.storage.from("admin-documents").upload(path, docFile, {
+        contentType: docFile.type || undefined,
+        upsert: false,
+      });
+      if (up.error) throw up.error;
+      const ins = await (supabase as any).from("admin_task_documents").insert({
+        title: docTitle.trim(),
+        description: docDescription.trim() || null,
+        file_url: path,
+        file_name: docFile.name,
+        file_type: docFile.type || null,
+        file_size: docFile.size,
+        task_id: docTaskId === "none" ? null : docTaskId,
+        uploaded_by: uid,
+      });
+      if (ins.error) throw ins.error;
+      toast({ title: "Document ajouté" });
+      setDocOpen(false);
+      resetDocForm();
+      loadDocuments();
+    } catch (e: any) {
+      toast({ title: "Erreur", description: e.message, variant: "destructive" });
+    } finally {
+      setDocUploading(false);
+    }
+  };
+
+  const downloadDocument = async (d: DocRow) => {
+    const { data, error } = await supabase.storage.from("admin-documents").createSignedUrl(d.file_url, 60);
+    if (error || !data) {
+      toast({ title: "Erreur", description: error?.message, variant: "destructive" });
+      return;
+    }
+    window.open(data.signedUrl, "_blank", "noopener");
+  };
+
+  const deleteDocument = async (d: DocRow) => {
+    if (!confirm("Supprimer ce document ?")) return;
+    await supabase.storage.from("admin-documents").remove([d.file_url]);
+    const { error } = await (supabase as any).from("admin_task_documents").delete().eq("id", d.id);
+    if (error) { toast({ title: "Erreur", description: error.message, variant: "destructive" }); return; }
+    setDocuments((prev) => prev.filter((x) => x.id !== d.id));
+  };
+
+  const docIconFor = (d: DocRow) => {
+    const t = (d.file_type || "").toLowerCase();
+    const n = d.file_name.toLowerCase();
+    if (t.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg|heic)$/.test(n)) return <ImageIcon className="h-5 w-5 text-purple-600" />;
+    if (t === "application/pdf" || n.endsWith(".pdf")) return <FileText className="h-5 w-5 text-red-600" />;
+    if (t.includes("sheet") || /\.(xlsx?|csv|ods)$/.test(n)) return <FileSpreadsheet className="h-5 w-5 text-emerald-600" />;
+    if (t.includes("word") || /\.(docx?|odt|rtf)$/.test(n)) return <FileText className="h-5 w-5 text-blue-600" />;
+    return <FileIcon className="h-5 w-5 text-muted-foreground" />;
+  };
+
+  const formatSize = (n: number | null) => {
+    if (!n) return "";
+    if (n < 1024) return `${n} o`;
+    if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} Ko`;
+    return `${(n / 1024 / 1024).toFixed(1)} Mo`;
+  };
+
+
   const loadAll = async () => {
     setLoading(true);
     const [t, a, links] = await Promise.all([
