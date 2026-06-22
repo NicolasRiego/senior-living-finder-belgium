@@ -47,6 +47,7 @@ import AdminDeployHistory from "./pages/admin/AdminDeployHistory";
 import AdminDemo from "./pages/admin/AdminDemo";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTickets from "./pages/admin/AdminTickets";
+import AdminTasks from "./pages/admin/AdminTasks";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLeads from "./pages/admin/AdminLeads";
@@ -212,6 +213,10 @@ const App = () => (
                   <Route
                     path="/admin/tickets/:id"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminTicketDetail /></AdminLayout></RequireAuth>}
+                  />
+                  <Route
+                    path="/admin/taches"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminTasks /></AdminLayout></RequireAuth>}
                   />
                   <Route path="/admin/crm" element={<RequireAuth requireAdmin><AdminLayout><CrmDashboard /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/contacts" element={<RequireAuth requireAdmin><AdminLayout><CrmContacts /></AdminLayout></RequireAuth>} />

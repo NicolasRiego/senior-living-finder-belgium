@@ -132,6 +132,45 @@ export type Database = {
           },
         ]
       }
+      admin_tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: Database["public"]["Enums"]["admin_task_priority"]
+          status: Database["public"]["Enums"]["admin_task_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["admin_task_priority"]
+          status?: Database["public"]["Enums"]["admin_task_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: Database["public"]["Enums"]["admin_task_priority"]
+          status?: Database["public"]["Enums"]["admin_task_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_ticket_comments: {
         Row: {
           author_id: string
@@ -2433,6 +2472,14 @@ export type Database = {
         Returns: Json
       }
       admin_claim_residence: { Args: { _residence_id: string }; Returns: Json }
+      admin_list_admins: {
+        Args: never
+        Returns: {
+          display_name: string
+          email: string
+          user_id: string
+        }[]
+      }
       admin_list_residences_with_orgs: {
         Args: never
         Returns: {
@@ -2631,6 +2678,8 @@ export type Database = {
       user_org_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
+      admin_task_priority: "basse" | "normale" | "haute" | "urgente"
+      admin_task_status: "a_faire" | "en_cours" | "en_attente" | "terminee"
       app_role: "public" | "caregiver" | "partner_member" | "admin"
       crm_campaign_channel:
         | "email"
@@ -2824,6 +2873,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_task_priority: ["basse", "normale", "haute", "urgente"],
+      admin_task_status: ["a_faire", "en_cours", "en_attente", "terminee"],
       app_role: ["public", "caregiver", "partner_member", "admin"],
       crm_campaign_channel: [
         "email",
