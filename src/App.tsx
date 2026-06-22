@@ -47,6 +47,7 @@ import AdminDeployHistory from "./pages/admin/AdminDeployHistory";
 import AdminDemo from "./pages/admin/AdminDemo";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTickets from "./pages/admin/AdminTickets";
+import AdminTasks from "./pages/admin/AdminTasks";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLeads from "./pages/admin/AdminLeads";
