@@ -12,6 +12,7 @@ import {
   Rocket,
   Database,
   Ticket,
+  CheckSquare,
   FolderKanban,
   Cog,
   Building2,
