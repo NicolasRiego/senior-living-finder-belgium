@@ -236,9 +236,29 @@ export default function AdminTasks() {
           <h1 className="text-3xl font-display font-semibold">Tâches</h1>
           <p className="text-muted-foreground text-sm">Gestion interne des tâches administratives</p>
         </div>
-        <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-          <Plus className="h-4 w-4" /> Nouvelle tâche
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="inline-flex rounded-md border bg-card p-0.5">
+            <button
+              onClick={() => setView("grid")}
+              aria-label="Vue grille"
+              aria-pressed={view === "grid"}
+              className={`inline-flex items-center justify-center h-8 w-8 rounded ${view === "grid" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              onClick={() => setView("list")}
+              aria-label="Vue liste"
+              aria-pressed={view === "list"}
+              className={`inline-flex items-center justify-center h-8 w-8 rounded ${view === "list" ? "bg-muted text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
+          <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Plus className="h-4 w-4" /> Nouvelle tâche
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
