@@ -352,7 +352,7 @@ export default function AdminTasks() {
                   <AlertTriangle className="h-4 w-4" /> Tâches en retard
                 </h2>
                 {overdue.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucune tâche en retard</p>
+                  <p className="text-sm text-muted-foreground">Aucune tâche assignée à vous pour le moment</p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
