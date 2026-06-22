@@ -79,6 +79,11 @@ export default function AdminTasks() {
   const [fPriority, setFPriority] = useState<string>("all");
   const [fAssignee, setFAssignee] = useState<string>("all");
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [view, setView] = useState<"grid" | "list">(() => {
+    if (typeof window === "undefined") return "grid";
+    return (localStorage.getItem("admin_tasks_view") as "grid" | "list") || "grid";
+  });
+  useEffect(() => { localStorage.setItem("admin_tasks_view", view); }, [view]);
 
   const loadAll = async () => {
     setLoading(true);
