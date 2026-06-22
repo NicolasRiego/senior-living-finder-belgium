@@ -756,6 +756,96 @@ export default function AdminTasks() {
             </Card>
           )}
         </TabsContent>
+        <TabsContent value="documents" className="space-y-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="min-w-[240px]">
+              <Label className="text-xs">Filtrer par tâche</Label>
+              <Select value={docFilterTask} onValueChange={setDocFilterTask}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes</SelectItem>
+                  <SelectItem value="none">Sans tâche liée</SelectItem>
+                  {tasks.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {filteredDocs.length === 0 ? (
+            <Card className="p-8 text-center text-muted-foreground">Aucun document</Card>
+          ) : (
+            <Card className="overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+                    <tr>
+                      <th className="text-left font-medium px-4 py-2">Document</th>
+                      <th className="text-left font-medium px-4 py-2">Tâche liée</th>
+                      <th className="text-left font-medium px-4 py-2">Ajouté par</th>
+                      <th className="text-left font-medium px-4 py-2">Date</th>
+                      <th className="px-4 py-2 w-24"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredDocs.map((d) => (
+                      <tr key={d.id} className="border-t hover:bg-muted/30">
+                        <td className="px-4 py-2">
+                          <div className="flex items-start gap-2">
+                            {docIconFor(d)}
+                            <div className="min-w-0">
+                              <div className="font-medium truncate">{d.title}</div>
+                              <div className="text-xs text-muted-foreground truncate">
+                                {d.file_name}{d.file_size ? ` · ${formatSize(d.file_size)}` : ""}
+                              </div>
+                              {d.description && (
+                                <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{d.description}</div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          {d.task_id ? (
+                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                              {taskTitleById.get(d.task_id) || "Tâche supprimée"}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2 text-muted-foreground">
+                          {d.uploaded_by ? (adminMap.get(d.uploaded_by)?.display_name || adminMap.get(d.uploaded_by)?.email || "—") : "—"}
+                        </td>
+                        <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">
+                          {new Date(d.created_at).toLocaleDateString("fr-BE")}
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => downloadDocument(d)}
+                              className="text-muted-foreground hover:text-primary"
+                              aria-label="Télécharger"
+                            >
+                              <Download className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => deleteDocument(d)}
+                              className="text-muted-foreground hover:text-destructive"
+                              aria-label="Supprimer le document"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+        </TabsContent>
       </Tabs>
 
 
