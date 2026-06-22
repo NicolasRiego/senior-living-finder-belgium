@@ -391,15 +391,22 @@ export default function AdminTasks() {
           <h1 className="text-3xl font-display font-semibold">Tâches</h1>
           <p className="text-muted-foreground text-sm">Gestion interne des tâches administratives</p>
         </div>
-        <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-          <Plus className="h-4 w-4" /> Nouvelle tâche
-        </Button>
+        {tab === "documents" ? (
+          <Button onClick={() => { resetDocForm(); setDocOpen(true); }} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Upload className="h-4 w-4" /> Ajouter un document
+          </Button>
+        ) : (
+          <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Plus className="h-4 w-4" /> Nouvelle tâche
+          </Button>
+        )}
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as "dashboard" | "list" | "documents")} className="space-y-4">
         <TabsList>
           <TabsTrigger value="dashboard">Tableau de bord</TabsTrigger>
           <TabsTrigger value="list">Toutes les tâches</TabsTrigger>
+          <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
