@@ -17,7 +17,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, Calendar, User as UserIcon, Trash2, Pencil, ChevronDown, LayoutGrid, List, AlertTriangle, Clock } from "lucide-react";
+import { Plus, Calendar, User as UserIcon, Trash2, Pencil, ChevronDown, LayoutGrid, List, AlertTriangle, Clock, FileText, FileSpreadsheet, Image as ImageIcon, File as FileIcon, Download, Upload } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 type Priority = "basse" | "normale" | "haute" | "urgente";
