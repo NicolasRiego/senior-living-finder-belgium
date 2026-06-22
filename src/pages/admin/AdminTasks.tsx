@@ -16,7 +16,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Plus, Calendar, User as UserIcon, Trash2, Pencil, ChevronDown } from "lucide-react";
+import { Plus, Calendar, User as UserIcon, Trash2, Pencil, ChevronDown, LayoutGrid, List } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 type Priority = "basse" | "normale" | "haute" | "urgente";
