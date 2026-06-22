@@ -307,7 +307,7 @@ export default function AdminTasks() {
         <p className="text-muted-foreground">Chargement…</p>
       ) : filtered.length === 0 ? (
         <Card className="p-8 text-center text-muted-foreground">Aucune tâche</Card>
-      ) : (
+      ) : view === "grid" ? (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((t) => (
             <Card key={t.id} className="p-4 space-y-3 flex flex-col">
@@ -368,6 +368,64 @@ export default function AdminTasks() {
             </Card>
           ))}
         </div>
+      ) : (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="text-left font-medium px-4 py-2">Titre</th>
+                  <th className="text-left font-medium px-4 py-2">Priorité</th>
+                  <th className="text-left font-medium px-4 py-2">Statut</th>
+                  <th className="text-left font-medium px-4 py-2">Assignés</th>
+                  <th className="text-left font-medium px-4 py-2">Échéance</th>
+                  <th className="px-4 py-2 w-20"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((t) => (
+                  <tr key={t.id} className="border-t hover:bg-muted/30">
+                    <td className="px-4 py-2 font-medium">{t.title}</td>
+                    <td className="px-4 py-2">
+                      <Badge variant="outline" className={PRIORITY_CLASS[t.priority]}>
+                        {PRIORITY_LABEL[t.priority]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2">
+                      <Badge variant="outline" className={STATUS_CLASS[t.status]}>
+                        {STATUS_LABEL[t.status]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-2 text-muted-foreground">
+                      {t.assignees.length === 0 ? "—" : t.assignees.map(labelFor).join(", ")}
+                    </td>
+                    <td className="px-4 py-2 text-muted-foreground whitespace-nowrap">
+                      {t.due_date ? new Date(t.due_date).toLocaleDateString("fr-BE") : "—"}
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => openEdit(t)}
+                          className="text-muted-foreground hover:text-primary"
+                          aria-label="Modifier la tâche"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteTask(t.id)}
+                          className="text-muted-foreground hover:text-destructive"
+                          aria-label="Supprimer la tâche"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
 
       <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setEditingId(null); setForm(EMPTY_FORM); } }}>
