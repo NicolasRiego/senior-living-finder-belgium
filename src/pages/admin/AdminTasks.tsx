@@ -941,6 +941,55 @@ export default function AdminTasks() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={docOpen} onOpenChange={(o) => { setDocOpen(o); if (!o) resetDocForm(); }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Ajouter un document</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Titre *</Label>
+              <Input value={docTitle} onChange={(e) => setDocTitle(e.target.value)} />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea value={docDescription} onChange={(e) => setDocDescription(e.target.value)} rows={2} />
+            </div>
+            <div>
+              <Label>Tâche liée</Label>
+              <Select value={docTaskId} onValueChange={setDocTaskId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Aucune</SelectItem>
+                  {tasks.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Fichier *</Label>
+              <Input
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.rtf,.odt,.ods,image/*"
+                onChange={(e) => setDocFile(e.target.files?.[0] ?? null)}
+              />
+              {docFile && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {docFile.name} · {formatSize(docFile.size)}
+                </p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDocOpen(false)} disabled={docUploading}>Annuler</Button>
+            <Button onClick={uploadDocument} disabled={docUploading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              {docUploading ? "Envoi…" : "Ajouter"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
