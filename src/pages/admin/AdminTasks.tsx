@@ -281,7 +281,7 @@ export default function AdminTasks() {
         </Button>
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as "dashboard" | "list")} className="space-y-4">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as "dashboard" | "list" | "documents")} className="space-y-4">
         <TabsList>
           <TabsTrigger value="dashboard">Tableau de bord</TabsTrigger>
           <TabsTrigger value="list">Toutes les tâches</TabsTrigger>
