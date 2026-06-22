@@ -132,6 +132,34 @@ export default function AdminTasks() {
     return true;
   }), [tasks, fStatus, fPriority, fAssignee]);
 
+  const stats = useMemo(() => {
+    const counts: Record<Status, number> = { a_faire: 0, en_cours: 0, en_attente: 0, terminee: 0 };
+    tasks.forEach((t) => { counts[t.status]++; });
+    return { total: tasks.length, ...counts };
+  }, [tasks]);
+
+  const today = useMemo(() => {
+    const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+  }, []);
+
+  const daysDiff = (iso: string) => {
+    const d = new Date(iso); d.setHours(0, 0, 0, 0);
+    return Math.round((d.getTime() - today.getTime()) / 86400000);
+  };
+
+  const upcoming = useMemo(() => {
+    return tasks
+      .filter((t) => t.due_date && t.status !== "terminee")
+      .sort((a, b) => (a.due_date! < b.due_date! ? -1 : 1));
+  }, [tasks]);
+
+  const overdue = useMemo(() => {
+    return tasks
+      .filter((t) => t.due_date && t.status !== "terminee" && daysDiff(t.due_date!) < 0)
+      .sort((a, b) => (a.due_date! < b.due_date! ? -1 : 1));
+  }, [tasks, today]);
+
+
   const openCreate = () => {
     setEditingId(null);
     setForm(EMPTY_FORM);
