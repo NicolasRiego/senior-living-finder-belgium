@@ -85,6 +85,11 @@ export default function AdminTasks() {
     return (localStorage.getItem("admin_tasks_view") as "grid" | "list") || "grid";
   });
   useEffect(() => { localStorage.setItem("admin_tasks_view", view); }, [view]);
+  const [tab, setTab] = useState<"dashboard" | "list">(() => {
+    if (typeof window === "undefined") return "dashboard";
+    return (localStorage.getItem("admin_tasks_tab") as "dashboard" | "list") || "dashboard";
+  });
+  useEffect(() => { localStorage.setItem("admin_tasks_tab", tab); }, [tab]);
 
   const loadAll = async () => {
     setLoading(true);
