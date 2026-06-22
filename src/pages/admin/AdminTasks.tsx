@@ -393,7 +393,7 @@ export default function AdminTasks() {
                   <Clock className="h-4 w-4" /> Échéances à venir
                 </h2>
                 {upcoming.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucune échéance</p>
+                  <p className="text-sm text-muted-foreground">Aucune tâche assignée à vous pour le moment</p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
