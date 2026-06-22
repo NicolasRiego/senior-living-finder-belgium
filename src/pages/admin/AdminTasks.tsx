@@ -90,6 +90,10 @@ export default function AdminTasks() {
     return (localStorage.getItem("admin_tasks_tab") as "dashboard" | "list") || "dashboard";
   });
   useEffect(() => { localStorage.setItem("admin_tasks_tab", tab); }, [tab]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
 
   const loadAll = async () => {
     setLoading(true);
