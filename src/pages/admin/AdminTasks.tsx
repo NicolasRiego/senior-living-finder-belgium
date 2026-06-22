@@ -90,6 +90,10 @@ export default function AdminTasks() {
     return (localStorage.getItem("admin_tasks_tab") as "dashboard" | "list") || "dashboard";
   });
   useEffect(() => { localStorage.setItem("admin_tasks_tab", tab); }, [tab]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
 
   const loadAll = async () => {
     setLoading(true);
@@ -148,16 +152,18 @@ export default function AdminTasks() {
   };
 
   const upcoming = useMemo(() => {
+    if (!currentUserId) return [];
     return tasks
-      .filter((t) => t.due_date && t.status !== "terminee")
+      .filter((t) => t.due_date && t.status !== "terminee" && t.assignees.includes(currentUserId))
       .sort((a, b) => (a.due_date! < b.due_date! ? -1 : 1));
-  }, [tasks]);
+  }, [tasks, currentUserId]);
 
   const overdue = useMemo(() => {
+    if (!currentUserId) return [];
     return tasks
-      .filter((t) => t.due_date && t.status !== "terminee" && daysDiff(t.due_date!) < 0)
+      .filter((t) => t.due_date && t.status !== "terminee" && t.assignees.includes(currentUserId) && daysDiff(t.due_date!) < 0)
       .sort((a, b) => (a.due_date! < b.due_date! ? -1 : 1));
-  }, [tasks, today]);
+  }, [tasks, today, currentUserId]);
 
 
   const openCreate = () => {
@@ -346,7 +352,7 @@ export default function AdminTasks() {
                   <AlertTriangle className="h-4 w-4" /> Tâches en retard
                 </h2>
                 {overdue.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucune tâche en retard</p>
+                  <p className="text-sm text-muted-foreground">Aucune tâche assignée à vous pour le moment</p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -387,7 +393,7 @@ export default function AdminTasks() {
                   <Clock className="h-4 w-4" /> Échéances à venir
                 </h2>
                 {upcoming.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucune échéance</p>
+                  <p className="text-sm text-muted-foreground">Aucune tâche assignée à vous pour le moment</p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
