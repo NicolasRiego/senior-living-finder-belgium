@@ -85,9 +85,9 @@ export default function AdminTasks() {
     return (localStorage.getItem("admin_tasks_view") as "grid" | "list") || "grid";
   });
   useEffect(() => { localStorage.setItem("admin_tasks_view", view); }, [view]);
-  const [tab, setTab] = useState<"dashboard" | "list">(() => {
+  const [tab, setTab] = useState<"dashboard" | "list" | "documents">(() => {
     if (typeof window === "undefined") return "dashboard";
-    return (localStorage.getItem("admin_tasks_tab") as "dashboard" | "list") || "dashboard";
+    return (localStorage.getItem("admin_tasks_tab") as "dashboard" | "list" | "documents") || "dashboard";
   });
   useEffect(() => { localStorage.setItem("admin_tasks_tab", tab); }, [tab]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
