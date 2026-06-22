@@ -214,6 +214,10 @@ const App = () => (
                     path="/admin/tickets/:id"
                     element={<RequireAuth requireAdmin><AdminLayout><AdminTicketDetail /></AdminLayout></RequireAuth>}
                   />
+                  <Route
+                    path="/admin/taches"
+                    element={<RequireAuth requireAdmin><AdminLayout><AdminTasks /></AdminLayout></RequireAuth>}
+                  />
                   <Route path="/admin/crm" element={<RequireAuth requireAdmin><AdminLayout><CrmDashboard /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/contacts" element={<RequireAuth requireAdmin><AdminLayout><CrmContacts /></AdminLayout></RequireAuth>} />
                   <Route path="/admin/crm/contacts/:id" element={<RequireAuth requireAdmin><AdminLayout><CrmContactDetail /></AdminLayout></RequireAuth>} />
