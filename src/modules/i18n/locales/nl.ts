@@ -2,7 +2,7 @@ import type { Dict } from "./fr";
 
 export const nl: Dict = {
   brand: {
-    name: "SilverPlace",
+    name: "MyLivingHome",
     tagline: "Vind de ideale seniorenresidentie in België",
   },
   nav: {

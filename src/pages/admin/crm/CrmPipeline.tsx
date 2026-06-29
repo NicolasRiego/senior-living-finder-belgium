@@ -128,9 +128,9 @@ export default function CrmPipeline() {
 
       <Dialog open={!!pendingPartner} onOpenChange={(o) => !o && setPendingPartner(null)}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Attribuer dans SilverPlace ?</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Attribuer dans MyLivingHome ?</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Souhaitez-vous attribuer les résidences de <strong>{pendingPartner?.name}</strong> dans SilverPlace maintenant ?
+            Souhaitez-vous attribuer les résidences de <strong>{pendingPartner?.name}</strong> dans MyLivingHome maintenant ?
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPendingPartner(null)}>Plus tard</Button>

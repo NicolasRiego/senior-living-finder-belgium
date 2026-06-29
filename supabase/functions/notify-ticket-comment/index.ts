@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
 
     const FIFTEEN_MIN_AGO = new Date(Date.now() - 15 * 60 * 1000).toISOString();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const APP_URL = Deno.env.get("APP_URL") ?? "https://silverplace.be";
+    const APP_URL = Deno.env.get("APP_URL") ?? "https://mylivinghome.be";
 
     const recipients: string[] = [];
     for (const p of parts ?? []) {

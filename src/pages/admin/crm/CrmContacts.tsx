@@ -277,7 +277,7 @@ export default function CrmContacts() {
                       </div>
                       <div className={`flex items-center gap-2 font-medium ${gs.silverplaceCount > 0 ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}`}>
                         <span className="h-2 w-2 rounded-full" style={{ background: gs.silverplaceCount > 0 ? "hsl(142 71% 45%)" : "hsl(var(--muted-foreground))" }} />
-                        {gs.silverplaceCount} sur SilverPlace
+                        {gs.silverplaceCount} sur MyLivingHome
                       </div>
                     </div>
 
@@ -375,7 +375,7 @@ export default function CrmContacts() {
           <Card className="p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4 text-xs flex-wrap">
-                <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-green-500" /> Sur SilverPlace</div>
+                <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-green-500" /> Sur MyLivingHome</div>
                 <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-blue-500" /> Dans le CRM</div>
                 <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-muted-foreground/50" /> Non importé</div>
               </div>

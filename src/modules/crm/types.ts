@@ -91,7 +91,7 @@ export const MESSAGE_TYPE_LABELS: Record<CrmMessageType, string> = {
   premier_contact: "Premier contact",
   relance: "Relance (après 7 jours sans réponse)",
   suite_positif: "Suite à échange positif",
-  invitation_demo: "Invitation démo SilverPlace",
+  invitation_demo: "Invitation démo MyLivingHome",
   bienvenue_partenaire: "Bienvenue nouveau partenaire",
 };
 export const MESSAGE_LANG_LABELS: Record<CrmMessageLanguage, string> = {
