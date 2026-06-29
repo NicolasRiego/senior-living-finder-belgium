@@ -57,7 +57,7 @@ export function Header() {
         <Link
           to="/"
           className={cn(
-            "flex shrink-0 items-center gap-1.5 font-display text-[1.31rem] font-semibold whitespace-nowrap transition-colors",
+            "flex shrink-0 items-center gap-1.5 font-display text-[1.05rem] sm:text-[1.15rem] font-semibold whitespace-nowrap transition-colors",
             isTransparent ? "text-white drop-shadow" : "text-foreground",
           )}
         >

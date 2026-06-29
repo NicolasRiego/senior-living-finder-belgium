@@ -46,7 +46,7 @@ export default function ContactPage() {
 
         <aside className="space-y-4">
           <InfoCard icon={<Phone className="h-5 w-5" />} title="Téléphone" value="+32 2 000 00 00" />
-          <InfoCard icon={<Mail className="h-5 w-5" />} title="E-mail" value="bonjour@silverplace.be" />
+          <InfoCard icon={<Mail className="h-5 w-5" />} title="E-mail" value="bonjour@mylivinghome.be" />
           <InfoCard icon={<MapPin className="h-5 w-5" />} title="Adresse" value="Avenue Louise 200, 1050 Bruxelles" />
         </aside>
       </div>

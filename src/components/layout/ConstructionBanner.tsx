@@ -5,7 +5,7 @@ export function ConstructionBanner() {
       role="banner"
       aria-label="Site en construction"
     >
-      🚧 Site en construction — bientôt disponible sur silverplace.be 🚧
+      🚧 Site en construction — bientôt disponible sur mylivinghome.be 🚧
     </div>
   );
 }

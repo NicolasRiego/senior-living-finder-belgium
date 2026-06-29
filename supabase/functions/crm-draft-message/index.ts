@@ -3,15 +3,15 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-const SYSTEM_PROMPT = `Tu es un expert en développement commercial pour SilverPlace, une plateforme belge de mise en relation entre seniors/familles et résidences seniors (type Immoweb des résidences seniors). SilverPlace permet aux résidences de créer leur profil, gérer leurs logements, et être trouvées par des milliers de familles belges cherchant une résidence senior. Le site est silverplace.be.
+const SYSTEM_PROMPT = `Tu es un expert en développement commercial pour MyLivingHome, une plateforme belge de mise en relation entre seniors/familles et résidences seniors (type Immoweb des résidences seniors). MyLivingHome permet aux résidences de créer leur profil, gérer leurs logements, et être trouvées par des milliers de familles belges cherchant une résidence senior. Le site est mylivinghome.be.
 
-Tu rédiges des emails de prospection B2B professionnels, personnalisés et convaincants pour convaincre des groupes de résidences seniors belges de devenir partenaires SilverPlace.`;
+Tu rédiges des emails de prospection B2B professionnels, personnalisés et convaincants pour convaincre des groupes de résidences seniors belges de devenir partenaires MyLivingHome.`;
 
 const TYPE_LABELS: Record<string, string> = {
   premier_contact: "Premier contact",
   relance: "Relance après 7 jours sans réponse",
   suite_positif: "Suite à un échange positif",
-  invitation_demo: "Invitation à une démo SilverPlace",
+  invitation_demo: "Invitation à une démo MyLivingHome",
   bienvenue_partenaire: "Bienvenue nouveau partenaire",
 };
 const LANG_LABELS: Record<string, string> = { fr: "français", nl: "néerlandais", en: "anglais" };
@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
 ${extraInstructions ? `\nInstructions supplémentaires : ${extraInstructions}` : ""}
 
 Réponds UNIQUEMENT en JSON valide au format suivant, sans aucun texte avant ou après :
-{"subject": "Objet de l'email", "body": "Corps complet avec salutation et signature SilverPlace"}`;
+{"subject": "Objet de l'email", "body": "Corps complet avec salutation et signature MyLivingHome"}`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

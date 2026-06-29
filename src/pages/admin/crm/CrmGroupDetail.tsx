@@ -99,7 +99,7 @@ export default function CrmGroupDetail() {
           <div className="flex gap-2">
             {hasPartner && (
               <Button size="sm" variant="outline" onClick={() => setBatchOpen(true)}>
-                Attribuer toutes dans SilverPlace
+                Attribuer toutes dans MyLivingHome
               </Button>
             )}
             <Button size="sm" onClick={() => setAdding(true)}><Plus className="h-4 w-4" /> Ajouter une résidence</Button>
@@ -143,7 +143,7 @@ export default function CrmGroupDetail() {
                       <StatusBadge status={r.status} />
                       {onSilverplace ? (
                         <Badge variant="outline" className="border-transparent bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 gap-1">
-                          <CheckCircle2 className="h-3 w-3" /> Sur SilverPlace
+                          <CheckCircle2 className="h-3 w-3" /> Sur MyLivingHome
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="border-transparent bg-muted text-muted-foreground gap-1">
@@ -201,7 +201,7 @@ export default function CrmGroupDetail() {
         <DialogContent>
           <DialogHeader><DialogTitle>Attribution en masse</DialogTitle></DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Cette action vous redirigera vers la page de gestion des résidences SilverPlace où vous pourrez attribuer chaque résidence individuellement.
+            Cette action vous redirigera vers la page de gestion des résidences MyLivingHome où vous pourrez attribuer chaque résidence individuellement.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setBatchOpen(false)}>Annuler</Button>

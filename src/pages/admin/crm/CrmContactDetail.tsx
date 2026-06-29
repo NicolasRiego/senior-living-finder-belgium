@@ -230,7 +230,7 @@ export default function CrmContactDetail() {
               </Button>
               {contact.residence_id && (
                 <Link to={`/admin/residences`} className="text-sm text-primary hover:underline flex items-center gap-1">
-                  <Building2 className="h-4 w-4" /> Voir la fiche SilverPlace →
+                  <Building2 className="h-4 w-4" /> Voir la fiche MyLivingHome →
                 </Link>
               )}
 
