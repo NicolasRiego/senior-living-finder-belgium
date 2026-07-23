@@ -825,7 +825,7 @@ function DataRow({
   children: ReactNode;
 }) {
   if (count === 0) return null;
-  const zebra = index % 2 === 1 ? "bg-muted/20" : "bg-transparent";
+  const zebra = index % 2 === 1 ? "bg-[hsl(var(--compare-zebra))]" : "bg-transparent";
   return (
     <div className={`flex gap-4 py-3 border-b border-border/30 rounded-md ${zebra}`}>
       <div className={`${LABEL_COL} text-[1.2075rem] leading-5 text-muted-foreground self-center pl-2 break-words`}>{label}</div>

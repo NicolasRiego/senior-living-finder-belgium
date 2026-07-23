@@ -68,6 +68,8 @@
     --sidebar-accent-foreground: 150 18% 14%;
     --sidebar-border: 38 20% 86%;
     --sidebar-ring: 150 28% 32%;
+
+    --compare-zebra: 60 8% 90%;
   }
 
   .dark {
@@ -103,6 +105,8 @@
     --sidebar-accent-foreground: 38 30% 94%;
     --sidebar-border: 150 12% 20%;
     --sidebar-ring: 150 32% 60%;
+
+    --compare-zebra: 60 6% 22%;
   }
 }
 
