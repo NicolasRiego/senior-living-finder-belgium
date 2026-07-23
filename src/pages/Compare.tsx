@@ -256,19 +256,22 @@ export default function ComparePage() {
             </div>
           )}
 
-          <div className="overflow-x-auto pb-2">
+          <div className="pb-2 max-lg:overflow-x-auto">
             <div className="min-w-fit">
-              {/* En-tête : photos + noms (avec VS si 2 items) */}
-              <ColumnHeaders
-                items={items.map((r) => ({
-                  id: r.id,
-                  cover_url: r.cover_url,
-                  title: r.nom_fr,
-                  subtitle: [r.ville, r.region].filter(Boolean).join(" · "),
-                  href: `/residences/${r.slug}`,
-                  onRemove: () => remove(r.id),
-                }))}
-              />
+              {/* En-tête : photos + noms (avec VS si 2 items) — sticky sous le header */}
+              <div className="sticky top-[84px] z-30 bg-background pt-4 -mt-4 pb-2 shadow-[0_8px_8px_-8px_rgba(0,0,0,0.08)]">
+                <ColumnHeaders
+                  items={items.map((r) => ({
+                    id: r.id,
+                    cover_url: r.cover_url,
+                    title: r.nom_fr,
+                    subtitle: [r.ville, r.region].filter(Boolean).join(" · "),
+                    href: `/residences/${r.slug}`,
+                    onRemove: () => remove(r.id),
+                  }))}
+                />
+              </div>
+
 
               {/* Sections */}
               <SectionTitle label="Général" count={items.length} />
