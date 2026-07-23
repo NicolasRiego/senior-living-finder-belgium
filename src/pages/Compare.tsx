@@ -787,7 +787,7 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
             </div>
           </div>
           {showVs && idx === 0 && (
-            <div className="shrink-0 flex items-center justify-center" style={{ alignSelf: "flex-start", marginTop: "calc(min(220px, 25vw) * 10 / 19 / 2 - 20px)" }}>
+            <div className="shrink-0 self-center flex items-center justify-center">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-md">
                 VS
               </span>
