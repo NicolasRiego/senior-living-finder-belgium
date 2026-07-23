@@ -827,15 +827,17 @@ function DataRow({
   if (count === 0) return null;
   const zebra = index % 2 === 1 ? "bg-[hsl(var(--compare-zebra))]" : "bg-transparent";
   return (
-    <div className={`flex gap-4 py-3 border-b border-border/30 rounded-md ${zebra}`}>
-      <div className={`${LABEL_COL} text-[1.2075rem] leading-5 text-muted-foreground self-center pl-2 break-words`}>{label}</div>
-      {Array.isArray(children)
-        ? children.map((c, i) => (
-            <div key={i} className="flex-1 min-w-[220px] text-sm text-center self-center">
-              {c}
-            </div>
-          ))
-        : <div className="flex-1 min-w-[220px] text-sm text-center self-center">{children}</div>}
+    <div className="flex gap-4 py-3 border-b border-border/30">
+      <div className={`${LABEL_COL} text-[1.2075rem] leading-5 text-muted-foreground self-center pl-2 break-words bg-transparent`}>{label}</div>
+      <div className={`flex-1 flex gap-4 rounded-md ${zebra}`}>
+        {Array.isArray(children)
+          ? children.map((c, i) => (
+              <div key={i} className="flex-1 min-w-[220px] text-sm text-center self-center">
+                {c}
+              </div>
+            ))
+          : <div className="flex-1 min-w-[220px] text-sm text-center self-center">{children}</div>}
+      </div>
     </div>
   );
 }
