@@ -35,7 +35,7 @@ import {
 } from "@/modules/apartments/compareApartmentsApi";
 
 const TYPE_LABEL_KEY = (t: string) => `residenceTypes.${t}`;
-const LABEL_COL = "w-52 shrink-0";
+const LABEL_COL = "w-60 shrink-0";
 
 export default function ComparePage() {
   const { t } = useI18n();
@@ -828,7 +828,7 @@ function DataRow({
   const zebra = index % 2 === 1 ? "bg-muted/20" : "bg-transparent";
   return (
     <div className={`flex gap-4 py-3 border-b border-border/30 rounded-md ${zebra}`}>
-      <div className={`${LABEL_COL} text-[1.05rem] leading-5 text-muted-foreground self-center pl-2 break-words`}>{label}</div>
+      <div className={`${LABEL_COL} text-[1.2075rem] leading-5 text-muted-foreground self-center pl-2 break-words`}>{label}</div>
       {Array.isArray(children)
         ? children.map((c, i) => (
             <div key={i} className="flex-1 min-w-[220px] text-sm text-center self-center">
