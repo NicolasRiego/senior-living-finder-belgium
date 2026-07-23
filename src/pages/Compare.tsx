@@ -753,8 +753,8 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
       <div className={LABEL_COL} />
       {items.map((item, idx) => (
         <Fragment key={item.id}>
-          <div className="flex-1 min-w-[220px]">
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-muted mb-4 shadow-md">
+            <div className="flex-1 min-w-[220px]">
+            <div className="relative rounded-2xl overflow-hidden aspect-[19/10] bg-muted mb-4 shadow-md">
               {item.cover_url ? (
                 <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800"; }} />
 
@@ -787,7 +787,7 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
             </div>
           </div>
           {showVs && idx === 0 && (
-            <div className="shrink-0 flex items-center justify-center" style={{ alignSelf: "flex-start", marginTop: "calc(min(220px, 25vw) * 0.75 / 2 - 20px)" }}>
+            <div className="shrink-0 self-center flex items-center justify-center">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-md">
                 VS
               </span>
