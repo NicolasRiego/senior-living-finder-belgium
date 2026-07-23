@@ -805,7 +805,7 @@ function SectionTitle({ label, count }: { label: string; count: number }) {
     <div className="flex gap-4 mt-6 mb-1">
       <div className={LABEL_COL} />
       <div className="flex-1">
-        <div className="text-center font-bold text-sm uppercase tracking-wider text-foreground bg-muted/60 rounded-lg py-2 px-4">
+        <div className="text-center font-bold text-sm uppercase tracking-wider text-primary-foreground bg-primary rounded-lg py-2 px-4">
           {label}
         </div>
       </div>
