@@ -446,18 +446,21 @@ export default function ComparePage() {
         ) : (
         <section className="mt-8">
 
-          <div className="overflow-x-auto pb-2">
+          <div className="pb-2 max-lg:overflow-x-auto">
             <div className="min-w-fit">
-              <ColumnHeaders
-                items={aptItems.map((a) => ({
-                  id: a.id,
-                  cover_url: a.cover_url,
-                  title: aptTypeLabel(a),
-                  subtitle: [a.residence_nom_fr, a.residence_ville].filter(Boolean).join(" · "),
-                  href: `/residences/${a.residence_slug}`,
-                  onRemove: () => removeApt(a.id),
-                }))}
-              />
+              <div className="sticky top-[84px] z-30 bg-background pt-4 -mt-4 pb-2 shadow-[0_8px_8px_-8px_rgba(0,0,0,0.08)]">
+                <ColumnHeaders
+                  items={aptItems.map((a) => ({
+                    id: a.id,
+                    cover_url: a.cover_url,
+                    title: aptTypeLabel(a),
+                    subtitle: [a.residence_nom_fr, a.residence_ville].filter(Boolean).join(" · "),
+                    href: `/residences/${a.residence_slug}`,
+                    onRemove: () => removeApt(a.id),
+                  }))}
+                />
+              </div>
+
 
               <SectionTitle label="Identification" count={aptItems.length} />
               <DataRow label="Type" count={aptItems.length} index={0}>
