@@ -754,7 +754,7 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
       {items.map((item, idx) => (
         <Fragment key={item.id}>
             <div className="flex-1 min-w-[220px]">
-            <div className="relative rounded-2xl overflow-hidden aspect-[19/10] bg-muted mb-4 shadow-md">
+            <div className="relative rounded-2xl overflow-hidden aspect-[19/8] bg-muted mb-4 shadow-md">
               {item.cover_url ? (
                 <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800"; }} />
 
