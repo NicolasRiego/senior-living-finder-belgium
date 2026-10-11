@@ -53,7 +53,7 @@ export function Header() {
           : "border-b border-border/50 bg-background/85 backdrop-blur-md",
       )}
     >
-      <div className="mx-auto flex min-h-[84px] w-full max-w-[1400px] flex-nowrap items-center justify-between gap-2 px-4">
+      <div className="mx-auto flex min-h-[84px] w-full max-w-[1480px] flex-nowrap items-center justify-between gap-2 px-4">
         <Link
           to="/"
           className={cn(
@@ -67,7 +67,7 @@ export function Header() {
           <span>{t("brand.name")}</span>
         </Link>
 
-        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 min-[1100px]:flex" aria-label="Primary">
+        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 min-[1480px]:flex" aria-label="Primary">
           {links.map((l) => (
             <Fragment key={l.to}>
               <NavLink
@@ -116,7 +116,7 @@ export function Header() {
 
         <div
           className={cn(
-            "hidden shrink-0 flex-nowrap items-center gap-2 min-[1100px]:flex",
+            "hidden shrink-0 flex-nowrap items-center gap-2 min-[1480px]:flex",
             isTransparent &&
               "[&_[role=group]]:!border-white/40 [&_[role=group]]:!bg-white/10 [&_[role=group]]:!backdrop-blur-sm [&_[role=group]_button]:!text-white",
           )}
@@ -189,7 +189,7 @@ export function Header() {
 
         <button
           className={cn(
-            "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-muted min-[1100px]:hidden",
+            "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-muted min-[1480px]:hidden",
             isTransparent ? "text-white hover:bg-white/15" : "text-foreground",
           )}
           onClick={() => setOpen((o) => !o)}
@@ -201,7 +201,7 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="border-t border-border/50 bg-background min-[1100px]:hidden">
+        <div className="border-t border-border/50 bg-background min-[1480px]:hidden">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
               <Fragment key={l.to}>

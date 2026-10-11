@@ -145,8 +145,9 @@
 
   p, h1, h2, h3, h4, h5, h6,
   label, span, li, td, th {
+    /* break long words only when they would overflow; never shrink a column or
+       flex item below its longest word (word-break: break-word did that) */
     overflow-wrap: break-word;
-    word-break: break-word;
   }
 
   input, select, textarea, button {
@@ -155,7 +156,7 @@
 
   h1, h2, h3, h4, h5 {
     @apply font-display font-semibold tracking-tight;
-    word-break: break-word;
+    overflow-wrap: break-word;
     hyphens: auto;
   }
 
@@ -282,7 +283,7 @@
   /* Filter labels wrap naturally */
   main[data-fontsize] aside label {
     white-space: normal;
-    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   /* Range sliders never overflow */

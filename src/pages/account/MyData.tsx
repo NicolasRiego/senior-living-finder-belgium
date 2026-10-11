@@ -102,7 +102,7 @@ export default function MyDataPage() {
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="mt-4" disabled={deleting}>
+                  <Button variant="destructive" className="mt-4 h-auto min-h-12 whitespace-normal py-3 leading-tight" disabled={deleting}>
                     {deleting ? <><Loader2 className="h-4 w-4 animate-spin" /> Suppression…</> : "Supprimer mon compte"}
                   </Button>
                 </AlertDialogTrigger>

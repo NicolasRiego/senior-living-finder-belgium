@@ -118,26 +118,26 @@ export default function ComparePage() {
   if (ids.length === 0 && aptIds.length === 0) {
     return (
       <div className="container py-20">
-        <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-border bg-card p-12 text-center shadow-soft">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-dashed border-border bg-card px-5 py-10 text-center shadow-soft sm:p-12">
           <GitCompare className="mx-auto h-12 w-12 text-primary mb-6" />
           <h1 className="font-display text-3xl font-semibold">Comparateur</h1>
           <p className="mt-3 text-muted-foreground text-lg">
             Ajoutez des résidences ou des logements à comparer côte à côte.
           </p>
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 text-center space-y-3">
+            <div className="rounded-2xl border border-border/60 bg-muted/30 p-5 text-center space-y-3 sm:p-6">
               <Building2 className="mx-auto h-8 w-8 text-primary" />
               <p className="font-semibold">Résidences</p>
               <p className="text-sm text-muted-foreground">Comparez jusqu'à 3 résidences</p>
-              <Button asChild variant="hero" className="w-full">
+              <Button asChild variant="hero" className="h-auto min-h-12 w-full whitespace-normal py-3 leading-tight">
                 <Link to="/residences">Parcourir les résidences</Link>
               </Button>
             </div>
-            <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 text-center space-y-3">
+            <div className="rounded-2xl border border-border/60 bg-muted/30 p-5 text-center space-y-3 sm:p-6">
               <Home className="mx-auto h-8 w-8 text-primary" />
               <p className="font-semibold">Logements</p>
               <p className="text-sm text-muted-foreground">Comparez jusqu'à 3 logements</p>
-              <Button asChild variant="hero" className="w-full">
+              <Button asChild variant="hero" className="h-auto min-h-12 w-full whitespace-normal py-3 leading-tight">
                 <Link to="/appartements">Parcourir les logements</Link>
               </Button>
             </div>

@@ -50,7 +50,7 @@ export default function AdvicePage() {
               {a.title}
             </h2>
             <p className="mt-2 text-base text-muted-foreground">{a.excerpt}</p>
-            <div className="mt-4 text-sm font-medium text-accent">{a.minutes} min de lecture →</div>
+            <div className="mt-4 text-sm font-medium text-orange-800">{a.minutes} min de lecture →</div>
           </article>
         ))}
       </div>

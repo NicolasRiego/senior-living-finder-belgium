@@ -168,14 +168,14 @@ export default function ApartmentsPage() {
             {/* Transaction toggle */}
             <div>
               <label className="mb-2 block text-sm font-medium">Transaction</label>
-              <div className="flex flex-wrap gap-1 rounded-xl border border-border bg-background p-1 tx-toggle">
+              <div className="flex flex-col gap-1 rounded-xl border border-border bg-background p-1 tx-toggle">
                 {TX_OPTIONS.map((o) => (
                   <button
                     key={o.value}
                     type="button"
                     onClick={() => setTx(o.value)}
                     className={
-                      "flex-1 min-w-[80px] whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition " +
+                      "w-full rounded-lg px-3 py-2 text-sm font-medium transition " +
                       (filters.tx === o.value
                         ? "bg-primary text-primary-foreground shadow-soft"
                         : "text-foreground/80 hover:bg-muted")

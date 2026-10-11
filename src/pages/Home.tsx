@@ -46,7 +46,7 @@ export default function HomePage() {
           style={{ background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)" }}
         />
 
-        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6 mt-16">
+        <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6 pt-24 pb-20">
           <p className="text-sm font-medium tracking-widest uppercase text-white/90 mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             {HERO_SLIDES[current].label}
           </p>
@@ -71,16 +71,16 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <div className="mt-14 flex gap-10 items-center justify-center">
+          <div className="mt-14 flex items-center justify-center gap-4 sm:gap-10">
             {[
               { val: "1 200+", label: "Résidences" },
               { val: "10", label: "Provinces" },
               { val: "4.7★", label: "Avis moyen" },
             ].map((s, i) => (
-              <div key={s.label} className="flex items-center gap-10">
+              <div key={s.label} className="flex items-center gap-4 sm:gap-10">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{s.val}</div>
-                  <div className="text-sm mt-1 text-white/80 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">{s.label}</div>
+                  <div className="whitespace-nowrap text-2xl font-bold text-white sm:text-3xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{s.val}</div>
+                  <div className="whitespace-nowrap text-sm mt-1 text-white/80 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">{s.label}</div>
                 </div>
                 {i < 2 && <div className="h-8 w-px bg-white/30" />}
               </div>
@@ -101,14 +101,14 @@ export default function HomePage() {
 
         <button
           onClick={() => setCurrent((p) => (p - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)}
-          className="absolute left-4 top-1/2 z-10 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/35 transition-colors"
+          className="absolute left-4 top-1/2 z-10 -translate-y-1/2 hidden h-11 w-11 items-center md:flex justify-center rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/35 transition-colors"
           aria-label="Slide précédent"
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
         <button
           onClick={() => setCurrent((p) => (p + 1) % HERO_SLIDES.length)}
-          className="absolute right-4 top-1/2 z-10 -translate-y-1/2 h-11 w-11 flex items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/35 transition-colors"
+          className="absolute right-4 top-1/2 z-10 -translate-y-1/2 hidden h-11 w-11 items-center md:flex justify-center rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/35 transition-colors"
           aria-label="Slide suivant"
         >
           <ChevronRight className="h-6 w-6" />
@@ -172,7 +172,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl font-semibold md:text-4xl text-balance">{t("home.valuesTitle")}</h2>
           </div>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
+          <div className="mt-12 grid gap-8 lg:grid-cols-3">
             {[
               { i: <ShieldCheck className="h-6 w-6" />, t: t("home.val1") },
               { i: <Star className="h-6 w-6" />, t: t("home.val2") },

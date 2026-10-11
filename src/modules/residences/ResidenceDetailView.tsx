@@ -9,6 +9,7 @@ import { LeadFormDialog, type LeadIntent } from "@/modules/leads/LeadFormDialog"
 import { UNIT_TYPES } from "@/modules/apartments/unitTypes";
 import CostsSection, { type ResidenceCharge } from "@/modules/residences/CostsSection";
 import type { PublicUnitSummary } from "@/modules/residences/publicApi";
+import { cn } from "@/lib/utils";
 
 const TYPE_LABEL: Record<string, string> = Object.fromEntries(UNIT_TYPES.map((t) => [t.value, t.label]));
 
@@ -113,9 +114,9 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
 
                 {unitSummaries.length > 0 && (
                   <Section id="logements" title="Logements & tarifs">
-                    <div className="grid grid-cols-3 gap-3 mb-6">
+                    <div className="grid grid-cols-1 gap-3 mb-6 min-[520px]:grid-cols-3">
                       <Stat value={unitSummaries.reduce((t, s) => t + s.total, 0)} label="Total logements" color="text-primary" />
-                      <Stat value={unitSummaries.reduce((t, s) => t + s.available, 0)} label="Disponibles" color="text-green-600" />
+                      <Stat value={unitSummaries.reduce((t, s) => t + s.available, 0)} label="Disponibles" color="text-green-700" />
                       <Stat value={unitSummaries.length} label="Types différents" />
                     </div>
                     <div className="mb-5 text-center">
@@ -151,7 +152,7 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
                         const unit = a.frequency_period ? unitMap[a.frequency_period] : null;
                         const freqText = unit && a.frequency_count ? `${a.frequency_count} fois par ${unit}` : a.frequency || "";
                         return (
-                          <span key={a.id} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm text-primary">
+                          <span key={a.id} className="inline-flex flex-wrap items-center gap-x-1.5 rounded-[1.25rem] bg-primary-soft px-3 py-1.5 text-sm text-primary">
                             {tr(a.activities_catalog?.label_fr, a.activities_catalog?.label_nl) || "Activité"}
                             {freqText && <span className="text-xs opacity-70">· {freqText}</span>}
                             {a.responsable && <span className="text-xs opacity-70">· {a.responsable}</span>}
@@ -197,10 +198,10 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
         </div>
 
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur lg:hidden">
-          <div className="container flex gap-2">
-            <CTASlot residenceId={r.id} intent="visit" label="Visite" icon={<CalendarDays />} variant="hero" className="flex-1" />
-            <CTASlot residenceId={r.id} intent="brochure" label="Brochure" icon={<FileText />} variant="outline" className="flex-1" />
-            <CTASlot residenceId={r.id} intent="callback" label="Rappel" icon={<Phone />} variant="outline" className="flex-1" />
+          <div className="mx-auto flex max-w-xl gap-2">
+            <CTASlot residenceId={r.id} intent="visit" label="Visite" icon={<CalendarDays />} variant="hero" className={STICKY_CTA} />
+            <CTASlot residenceId={r.id} intent="brochure" label="Brochure" icon={<FileText />} variant="outline" className={STICKY_CTA} />
+            <CTASlot residenceId={r.id} intent="callback" label="Rappel" icon={<Phone />} variant="outline" className={STICKY_CTA} />
           </div>
         </div>
       </article>
@@ -219,9 +220,9 @@ function Section({ id, title, children }: { id: string; title: string; children:
 
 function Stat({ value, label, color }: { value: number; label: string; color?: string }) {
   return (
-    <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-center">
+    <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/30 px-4 py-3 min-[520px]:block min-[520px]:p-4 min-[520px]:text-center">
       <div className={`text-3xl font-bold ${color ?? ""}`}>{value}</div>
-      <div className="text-xs text-muted-foreground mt-1">{label}</div>
+      <div className="text-xs text-muted-foreground min-[520px]:mt-1">{label}</div>
     </div>
   );
 }
@@ -229,16 +230,16 @@ function Stat({ value, label, color }: { value: number; label: string; color?: s
 function UnitCard({ s }: { s: PublicUnitSummary }) {
   return (
     <div className="rounded-xl border border-border/60 bg-card p-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-semibold text-lg">{TYPE_LABEL[s.type] ?? s.type}</h3>
-        <div className="flex gap-1.5">
+        <div className="flex flex-wrap gap-1.5">
           {s.hasRent && <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium whitespace-nowrap">À louer</span>}
           {s.hasSale && <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs text-orange-700 font-medium whitespace-nowrap">À vendre</span>}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-2 text-sm">
+      <div className="grid grid-cols-1 gap-2 text-sm min-[520px]:grid-cols-2">
         <Cell label="Total" value={`${s.total} logement${s.total > 1 ? "s" : ""}`} />
-        <Cell label="Disponibles" value={`${s.available} / ${s.total}`} valueClass="text-green-600" />
+        <Cell label="Disponibles" value={`${s.available} / ${s.total}`} valueClass="text-green-700" />
         {(s.surfaceMin || s.surfaceMax) && (
           <Cell label="Surface" value={s.surfaceMin === s.surfaceMax ? `${s.surfaceMin} m²` : `${s.surfaceMin ?? "?"}–${s.surfaceMax ?? "?"} m²`} />
         )}
@@ -305,14 +306,14 @@ function ServiceRow({ s, label }: { s: any; label: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-border/60 bg-card px-4 py-3 min-h-[64px] overflow-hidden">
-      <div className="flex flex-1 min-w-0 items-center gap-3">
+      <div className="flex min-w-0 flex-[1_1_11rem] items-center gap-3">
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Check className="h-4 w-4" />
         </span>
         <span className="font-semibold text-sm break-words min-w-0">{label}</span>
       </div>
       {right && (
-        <div className="ml-auto flex items-center gap-2 shrink-0">
+        <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
           {right}
         </div>
       )}
@@ -320,12 +321,15 @@ function ServiceRow({ s, label }: { s: any; label: string }) {
   );
 }
 
+// Bottom bar on phones: three buttons share the width, icons are dropped on narrow screens
+const STICKY_CTA = "flex-1 gap-1.5 px-2 max-[419px]:[&_svg]:hidden";
+
 function CTASlot({ residenceId, intent, label, icon, variant = "default", className }: { residenceId: string; intent: LeadIntent; label: string; icon: ReactNode; variant?: "hero" | "outline" | "default"; className?: string }) {
   return (
     <LeadFormDialog
       residenceId={residenceId}
       intent={intent}
-      trigger={<Button variant={variant} size="lg" className={"w-full " + (className ?? "")}>{icon}{label}</Button>}
+      trigger={<Button variant={variant} size="lg" className={cn("h-auto min-h-14 w-full whitespace-normal px-5 py-3 text-center leading-tight", className)}>{icon}{label}</Button>}
     />
   );
 }

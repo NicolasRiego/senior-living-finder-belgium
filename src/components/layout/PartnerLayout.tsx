@@ -42,14 +42,15 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       <ConstructionBanner />
       <header className="border-b bg-card">
-        <div className="container flex h-16 items-center justify-between">
-          <Link to="/partenaire" className="font-display text-2xl">
-            MyLivingHome <span className="text-base text-muted-foreground">· Espace partenaire</span>
+        <div className="container flex min-h-16 items-center justify-between gap-3 py-2">
+          <Link to="/partenaire" className="min-w-fit font-display text-xl leading-tight sm:text-2xl">
+            MyLivingHome{" "}
+            <span className="block text-sm text-muted-foreground sm:inline sm:text-base">· Espace partenaire</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link to="/" target="_blank" rel="noopener">
-                <Eye className="h-4 w-4 mr-2" /> Voir le site
+          <div className="flex items-center gap-1 sm:gap-3">
+            <Button variant="ghost" asChild className="px-3 sm:px-6">
+              <Link to="/" target="_blank" rel="noopener" aria-label="Voir le site">
+                <Eye className="h-4 w-4 sm:mr-2" /> <span className="hidden sm:inline">Voir le site</span>
               </Link>
             </Button>
             {isAdmin && <SpaceSwitcher />}
