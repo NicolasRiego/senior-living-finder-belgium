@@ -64,7 +64,7 @@ export const nl: Dict = {
     val3: "Adviseurs die naar u luisteren",
   },
   residences: {
-    title: "Seniorenresidenties in België",
+    title: "Senioren\u00ADresidenties in België",
     subtitle: "{count} residenties komen overeen met uw zoekopdracht",
     filters: "Filters",
     region: "Regio",

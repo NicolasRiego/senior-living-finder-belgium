@@ -24,6 +24,24 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
   const rentRows = unitSummaries.filter((s) => s.hasRent && s.rentMin);
   if (rentRows.length === 0) return null;
 
+  const rows = rentRows.map((s) => {
+    const rentMin = s.rentMin ?? 0;
+    const totalMin = rentMin + mandatory;
+    const totalMax = s.rentMax ? s.rentMax + mandatory : null;
+    const hasRange = totalMax && totalMax > totalMin;
+    return {
+      type: s.type,
+      label: TYPE_LABEL[s.type] ?? s.type,
+      rent:
+        s.rentMin === s.rentMax || !s.rentMax
+          ? `${s.rentMin?.toLocaleString("fr-BE")} €`
+          : `${s.rentMin?.toLocaleString("fr-BE")} – ${s.rentMax?.toLocaleString("fr-BE")} €`,
+      charges: mandatory > 0 ? `${mandatory.toLocaleString("fr-BE")} €` : "—",
+      totalMin: `${totalMin.toLocaleString("fr-BE")} €`,
+      totalMax: hasRange ? `${totalMax!.toLocaleString("fr-BE")} €` : "—",
+    };
+  });
+
   return (
     <div>
       {charges.length > 0 && (
@@ -50,7 +68,7 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
             ))}
             <div className="flex justify-between items-center px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 font-semibold">
               <span>Total charges obligatoires</span>
-              <span className="text-primary">{mandatory.toLocaleString("fr-BE")} €/mois</span>
+              <span className="whitespace-nowrap text-primary">{mandatory.toLocaleString("fr-BE")} €/mois</span>
             </div>
           </div>
         </div>
@@ -60,7 +78,33 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
         <h3 className="font-semibold mb-3 text-base">
           Estimation du coût total par type de logement
         </h3>
-        <div className="overflow-x-auto rounded-xl border border-border/60">
+        {/* Mobile: one card per type, the 5-column table does not fit */}
+        <div className="space-y-3 sm:hidden">
+          {rows.map((r) => (
+            <div key={r.type} className="rounded-xl border border-border/60 p-4">
+              <div className="mb-2 font-semibold">{r.label}</div>
+              <dl className="space-y-1.5 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">Loyer</dt>
+                  <dd className="text-right">{r.rent}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">Charges obligatoires</dt>
+                  <dd className="text-right text-muted-foreground">{r.charges}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="font-medium text-primary">Total min / mois</dt>
+                  <dd className="text-right font-bold text-primary">{r.totalMin}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-muted-foreground">Total max / mois</dt>
+                  <dd className="text-right font-semibold text-muted-foreground">{r.totalMax}</dd>
+                </div>
+              </dl>
+            </div>
+          ))}
+        </div>
+        <div className="hidden overflow-x-auto rounded-xl border border-border/60 sm:block">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
@@ -76,31 +120,15 @@ export default function CostsSection({ charges, unitSummaries }: Props) {
               </tr>
             </thead>
             <tbody>
-              {rentRows.map((s, i) => {
-                const rentMin = s.rentMin ?? 0;
-                const totalMin = rentMin + mandatory;
-                const totalMax = s.rentMax ? s.rentMax + mandatory : null;
-                const hasRange = totalMax && totalMax > totalMin;
-                return (
-                  <tr key={s.type} className={i % 2 === 0 ? "" : "bg-muted/20"}>
-                    <td className="px-4 py-3 font-medium">{TYPE_LABEL[s.type] ?? s.type}</td>
-                    <td className="px-4 py-3 text-right">
-                      {s.rentMin === s.rentMax || !s.rentMax
-                        ? `${s.rentMin?.toLocaleString("fr-BE")} €`
-                        : `${s.rentMin?.toLocaleString("fr-BE")} – ${s.rentMax?.toLocaleString("fr-BE")} €`}
-                    </td>
-                    <td className="px-4 py-3 text-right text-muted-foreground">
-                      {mandatory > 0 ? `${mandatory.toLocaleString("fr-BE")} €` : "—"}
-                    </td>
-                    <td className="px-4 py-3 text-right font-bold text-primary">
-                      {totalMin.toLocaleString("fr-BE")} €
-                    </td>
-                    <td className="px-4 py-3 text-right font-semibold text-muted-foreground">
-                      {hasRange ? `${totalMax!.toLocaleString("fr-BE")} €` : "—"}
-                    </td>
-                  </tr>
-                );
-              })}
+              {rows.map((r, i) => (
+                <tr key={r.type} className={i % 2 === 0 ? "" : "bg-muted/20"}>
+                  <td className="px-4 py-3 font-medium">{r.label}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-right">{r.rent}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-right text-muted-foreground">{r.charges}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-right font-bold text-primary">{r.totalMin}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-right font-semibold text-muted-foreground">{r.totalMax}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

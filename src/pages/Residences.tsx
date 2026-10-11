@@ -426,7 +426,7 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
             </span>
           )}
           {row.has_availability && (
-            <span className="badge-fixed inline-flex items-center gap-1 rounded-full bg-accent/15 px-2.5 py-1 font-medium text-accent-foreground">
+            <span className="badge-fixed inline-flex items-center gap-1 rounded-full bg-orange-100 px-2.5 py-1 font-medium text-orange-800">
               <CheckCircle2 className="h-3 w-3" /> Disponible
             </span>
           )}

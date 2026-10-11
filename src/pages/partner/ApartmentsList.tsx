@@ -106,7 +106,7 @@ export default function ApartmentsList() {
 
   return (
     <div className="space-y-6">
-      <nav aria-label="Fil d'ariane" className="flex items-center gap-2 text-sm text-muted-foreground">
+      <nav aria-label="Fil d'ariane" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         <Link to="/partenaire" className="hover:text-foreground">Mon espace</Link>
         <ChevronRight className="h-4 w-4" />
         <Link to={`/partenaire/residences/${residenceId}/edition`} className="hover:text-foreground">

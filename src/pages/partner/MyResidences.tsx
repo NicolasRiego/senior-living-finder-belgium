@@ -205,8 +205,8 @@ export default function MyResidences() {
             "ring-2 ring-primary ring-offset-2 transition-all",
         )}
       >
-        <CardHeader className="flex flex-row items-start justify-between space-y-0 gap-3">
-          <div className="min-w-0">
+        <CardHeader className="flex flex-row flex-wrap-reverse items-start justify-between space-y-0 gap-3">
+          <div className="min-w-0 flex-[1_1_12rem]">
             <CardTitle className="text-xl">
               <Link
                 to={`/partenaire/residences/${r.id}/edition`}
