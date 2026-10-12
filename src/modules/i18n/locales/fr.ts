@@ -100,7 +100,7 @@ export const fr = {
     subtitle: "Tout ce qu'il faut savoir pour bien choisir.",
   },
   contact: {
-    title: "Contactez nos conseillers",
+    title: "Contactez-nous",
     subtitle: "Une question ? Un accompagnement personnalisé ? Nous sommes là.",
     name: "Nom",
     email: "E-mail",
