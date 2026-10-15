@@ -100,7 +100,7 @@ export const nl: Dict = {
     subtitle: "Alles wat u moet weten om goed te kiezen.",
   },
   contact: {
-    title: "Contacteer onze adviseurs",
+    title: "Neem contact met ons op",
     subtitle: "Een vraag? Persoonlijke begeleiding nodig? Wij zijn er.",
     name: "Naam",
     email: "E-mail",

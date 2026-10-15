@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,9 +45,7 @@ export default function ContactPage() {
         </form>
 
         <aside className="space-y-4">
-          <InfoCard icon={<Phone className="h-5 w-5" />} title="Téléphone" value="+32 2 000 00 00" />
           <InfoCard icon={<Mail className="h-5 w-5" />} title="E-mail" value="bonjour@mylivinghome.be" />
-          <InfoCard icon={<MapPin className="h-5 w-5" />} title="Adresse" value="Avenue Louise 200, 1050 Bruxelles" />
         </aside>
       </div>
     </div>
