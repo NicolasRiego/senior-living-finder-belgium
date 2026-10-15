@@ -24,6 +24,7 @@ import {
   Megaphone,
   FileText,
   Inbox,
+  HardDrive,
 
 } from "lucide-react";
 import { APP_VERSION } from "@/lib/version";
@@ -115,6 +116,12 @@ export function AdminLayout({ children }: { children: ReactNode }) {
                 className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
               >
                 <CheckSquare className="h-4 w-4" /> Tâches
+              </Link>
+              <Link
+                to="/admin/drive"
+                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+              >
+                <HardDrive className="h-4 w-4" /> Drive
               </Link>
               <Link
                 to="/"
