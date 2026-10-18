@@ -30,6 +30,7 @@ import {
   TICKET_PRIORITY_COLORS,
   TICKET_PRIORITY_LABELS,
   TICKET_STATUS_LABELS,
+  ticketRef,
   type TicketParticipant,
   type TicketPriority,
   type TicketStatus,
@@ -37,6 +38,7 @@ import {
 
 interface FullTicket {
   id: string;
+  number?: number | null;
   title: string;
   description: string | null;
   status: TicketStatus;
@@ -154,7 +156,12 @@ export default function AdminTicketDetail() {
       <div className="space-y-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-display">{ticket.title}</h1>
+            <h1 className="text-2xl font-display">
+              {ticketRef(ticket.number) && (
+                <span className="mr-2 text-muted-foreground">{ticketRef(ticket.number)}</span>
+              )}
+              {ticket.title}
+            </h1>
             <div className="flex gap-2 mt-2 flex-wrap">
               <Badge className={TICKET_PRIORITY_COLORS[ticket.priority]}>
                 {TICKET_PRIORITY_LABELS[ticket.priority]}
