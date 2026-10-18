@@ -104,7 +104,7 @@ export default function ResidencesPage() {
       <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
         {/* Filters */}
         <aside className="rounded-2xl border border-border/60 bg-card p-6 shadow-soft lg:sticky lg:top-28 lg:h-fit lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
-          <h2 className="mb-5 font-display text-xl font-semibold">{t("residences.filters")}</h2>
+          <h2 className="mb-5 font-sans text-xl font-semibold tracking-normal">{t("residences.filters")}</h2>
 
           <div className="space-y-5">
             <label className="flex items-center gap-2 text-sm">
