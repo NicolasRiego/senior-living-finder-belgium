@@ -108,6 +108,7 @@ export const nl: Dict = {
     message: "Uw bericht",
     send: "Bericht versturen",
     sent: "Bedankt! We nemen snel contact op.",
+    error: "Uw bericht kon niet worden verzonden. Schrijf ons op info@mylivinghome.be.",
   },
   footer: {
     tagline: "De onafhankelijke vergelijker van seniorenresidenties in België.",

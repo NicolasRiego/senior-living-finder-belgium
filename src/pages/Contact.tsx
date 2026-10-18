@@ -5,13 +5,37 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ContactPage() {
   const { t } = useI18n();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [sending, setSending] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+    // Generated here because visitors may insert a message but not read it back.
+    const id = crypto.randomUUID();
+    const { error } = await supabase.from("contact_messages").insert({
+      id,
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
+      message: form.message.trim(),
+    });
+    if (error) {
+      setSending(false);
+      toast.error(t("contact.error"));
+      return;
+    }
+    // The message is saved; the email to the team is best effort.
+    try {
+      await supabase.functions.invoke("notify-contact-message", { body: { message_id: id } });
+    } catch {
+      /* the message stays readable in the database */
+    }
+    setSending(false);
     toast.success(t("contact.sent"));
     setForm({ name: "", email: "", phone: "", message: "" });
   };
@@ -39,7 +63,7 @@ export default function ContactPage() {
               <Textarea required rows={6} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="rounded-xl text-base" />
             </Field>
           </div>
-          <Button type="submit" variant="hero" size="lg" className="mt-6">
+          <Button type="submit" variant="hero" size="lg" className="mt-6" disabled={sending}>
             <Send /> {t("contact.send")}
           </Button>
         </form>
