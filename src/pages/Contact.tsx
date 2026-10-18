@@ -45,7 +45,7 @@ export default function ContactPage() {
         </form>
 
         <aside className="space-y-4">
-          <InfoCard icon={<Mail className="h-5 w-5" />} title="E-mail" value="bonjour@mylivinghome.be" />
+          <InfoCard icon={<Mail className="h-5 w-5" />} title="E-mail" value="info@mylivinghome.be" />
         </aside>
       </div>
     </div>
