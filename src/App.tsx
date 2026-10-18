@@ -23,6 +23,7 @@ import ResidenceDetailPage from "./pages/ResidenceDetail";
 import ComparePage from "./pages/Compare";
 import AdvicePage from "./pages/Advice";
 import ContactPage from "./pages/Contact";
+import PrivacyPage from "./pages/Privacy";
 import LoginPage from "./pages/auth/Login";
 import SignupPage from "./pages/auth/Signup";
 import MyAccountPage from "./pages/account/MyAccount";
@@ -95,6 +96,7 @@ const App = () => (
                     <Route path="/comparateur" element={<ComparePage />} />
                     <Route path="/conseils" element={<AdvicePage />} />
                     <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/vie-privee" element={<PrivacyPage />} />
                     <Route path="/connexion" element={<LoginPage />} />
                     <Route path="/inscription" element={<SignupPage />} />
                     <Route path="/mon-espace" element={<RequireAuth><MyAccountPage /></RequireAuth>} />

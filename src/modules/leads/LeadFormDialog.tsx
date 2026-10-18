@@ -201,7 +201,10 @@ function LeadFormBody({ residenceId, intent, defaultRegion, onDone }: { residenc
 
       <label className="flex items-start gap-2 text-sm text-muted-foreground">
         <input type="checkbox" checked={form.consent_rgpd} onChange={(e) => setF("consent_rgpd", e.target.checked)} className="mt-1" />
-        <span>J'accepte que mes données soient transmises à la résidence pour traiter ma demande, conformément au RGPD.</span>
+        <span>
+          J'accepte que mes données, y compris le niveau d'autonomie si je l'indique, soient transmises à cette résidence pour traiter ma demande.{" "}
+          <a href="/vie-privee" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">Politique de confidentialité</a>
+        </span>
       </label>
       {errors.consent_rgpd && <p className="text-xs text-destructive">{errors.consent_rgpd}</p>}
 
