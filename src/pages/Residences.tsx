@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, MapPin, BadgeCheck, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check, Heart } from "lucide-react";
+import { Search, MapPin, Accessibility, CheckCircle2, ChevronLeft, ChevronRight, GitCompare, Check, Heart } from "lucide-react";
 import { useCompare, COMPARE_FULL_TIP_RES_L1, COMPARE_FULL_TIP_RES_L2 } from "@/modules/compare/CompareProvider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useFavorites } from "@/modules/favorites/useFavorites";
@@ -50,7 +50,6 @@ export default function ResidencesPage() {
     budget_max: budgetRange[1] < BUDGET_MAX ? budgetRange[1] : undefined,
     services: sp.get("services") ? sp.get("services")!.split(",").filter(Boolean) : [],
     pmr: sp.get("pmr") === "1",
-    complete: sp.get("complete") === "1",
     available: sp.get("avail") === "1",
     sort: (paramOr<"relevance" | "price_asc" | "price_desc">(sp, "sort", "relevance")) ?? "relevance",
     page: sp.get("page") ? Number(sp.get("page")) : 1,
@@ -214,17 +213,10 @@ export default function ResidencesPage() {
               </label>
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox
-                  checked={!!filters.complete}
-                  onCheckedChange={(v) => updateParam({ complete: !!v })}
-                />
-                <BadgeCheck className="h-4 w-4" /> Profil complet
-              </label>
-              <label className="flex items-center gap-2 text-sm">
-                <Checkbox
                   checked={!!filters.available}
                   onCheckedChange={(v) => updateParam({ avail: !!v })}
                 />
-                <CheckCircle2 className="h-4 w-4" /> Disponibilité
+                <CheckCircle2 className="h-4 w-4" /> Logements disponibles
               </label>
             </div>
 
@@ -396,11 +388,6 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
           <span className="badge-fixed absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-background/80 backdrop-blur-sm px-3 py-1.5 font-medium text-foreground shadow-soft">
             {t(`residenceTypes.${row.type_etablissement}`)}
           </span>
-          {row.is_complete && (
-            <span className="badge-fixed absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-primary/80 backdrop-blur-sm px-3 py-1.5 font-medium text-primary-foreground shadow-soft">
-              <BadgeCheck className="h-3.5 w-3.5" /> Profil complet
-            </span>
-          )}
         </Link>
       </div>
 
