@@ -822,36 +822,6 @@ export type Database = {
         }
         Relationships: []
       }
-      contact_messages: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          message: string
-          name: string
-          notified_at: string | null
-          phone: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          message: string
-          name: string
-          notified_at?: string | null
-          phone?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          message?: string
-          name?: string
-          notified_at?: string | null
-          phone?: string | null
-        }
-        Relationships: []
-      }
       crm_campaign_contacts: {
         Row: {
           campaign_id: string
