@@ -5,6 +5,7 @@
 // Anti-spam: per (ticket_id, user_id), skip if an email was sent in the last 15 min.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -75,35 +76,19 @@ Deno.serve(async (req) => {
       const email = u?.user?.email;
       if (!email) continue;
 
-      // Try to send via Lovable Email Gateway if available
-      if (LOVABLE_API_KEY) {
-        try {
-          const subject = `💬 Nouvelle réponse sur le ticket: ${ticket.title}`;
-          const excerpt = (content || "").slice(0, 300);
-          const ticketUrl = `${APP_URL}/admin/tickets/${ticket_id}`;
-          const html = `
-            <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:16px">
-              <h2 style="margin:0 0 8px">${ticket.title}</h2>
-              <p style="color:#555"><strong>${authorEmail}</strong> a répondu :</p>
-              <blockquote style="border-left:3px solid #ddd;padding:8px 12px;color:#333;white-space:pre-wrap">${excerpt}</blockquote>
-              <p><a href="${ticketUrl}" style="background:#0f172a;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none">Voir le ticket</a></p>
-              <p style="font-size:12px;color:#777;margin-top:24px">
-                <a href="${APP_URL}/admin/tickets/${ticket_id}">Ne plus suivre ce ticket</a>
-              </p>
-            </div>
-          `;
-          await fetch("https://connector-gateway.lovable.dev/lovable-email/send", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            },
-            body: JSON.stringify({ to: email, subject, html }),
-          });
-          recipients.push(email);
-        } catch (e) {
-          console.error("email send failed", e);
-        }
+      try {
+        const result = await sendTemplateEmail("ticket-comment-notification", email, {
+          templateData: {
+            ticketTitle: ticket.title,
+            authorEmail,
+            excerpt: (content || "").slice(0, 300),
+            ticketUrl: `${APP_URL}/admin/tickets/${ticket_id}`,
+          },
+          idempotencyKey: `ticket-comment-${ticket_id}-${p.user_id}-${Math.floor(Date.now() / 60000)}`,
+        });
+        if (result.sent) recipients.push(email);
+      } catch (e) {
+        console.error("email send failed", e);
       }
 
       // Upsert batch

@@ -6,6 +6,7 @@
 // email never loses it.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,9 +18,6 @@ const json = (body: unknown, status = 200) =>
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
-
-const escapeHtml = (s: string) =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -39,34 +37,14 @@ Deno.serve(async (req) => {
     // One email per message, so the endpoint cannot be used to spam the inbox.
     if (msg.notified_at) return json({ skipped: "already_notified" });
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) return json({ skipped: "email_not_configured" });
-
-    const to = Deno.env.get("CONTACT_INBOX") ?? "info@mylivinghome.be";
-    const name = escapeHtml(msg.name);
-    const email = escapeHtml(msg.email);
-    const phone = msg.phone ? escapeHtml(msg.phone) : "—";
-    const body = escapeHtml(msg.message);
-    const replyHref = `mailto:${encodeURIComponent(msg.email)}?subject=${encodeURIComponent("Votre message à MyLivingHome")}`;
-    const html = `
-      <div style="font-family:system-ui,sans-serif;max-width:560px;margin:0 auto;padding:16px">
-        <h2 style="margin:0 0 12px">Nouveau message depuis la page Contact</h2>
-        <p style="margin:4px 0"><strong>Nom :</strong> ${name}</p>
-        <p style="margin:4px 0"><strong>E-mail :</strong> ${email}</p>
-        <p style="margin:4px 0"><strong>Téléphone :</strong> ${phone}</p>
-        <blockquote style="border-left:3px solid #ddd;margin:16px 0;padding:8px 12px;color:#333;white-space:pre-wrap">${body}</blockquote>
-        <p><a href="${replyHref}" style="background:#2f5d4a;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none">Répondre à ${name}</a></p>
-      </div>
-    `;
-
-    const res = await fetch("https://connector-gateway.lovable.dev/lovable-email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
-      body: JSON.stringify({ to, subject: `Nouveau message de contact : ${msg.name}`, html }),
+    const result = await sendTemplateEmail("contact-message-notification", "info@mylivinghome.be", {
+      templateData: { name: msg.name, email: msg.email, phone: msg.phone ?? undefined, message: msg.message },
+      idempotencyKey: `contact-message-${msg.id}`,
+      replyTo: msg.email,
     });
-    if (!res.ok) {
-      console.error("contact email failed", res.status, await res.text());
-      return json({ sent: false }, 502);
+    if (!result.sent) {
+      console.error("contact email not sent", result);
+      return json({ sent: false, reason: result.reason }, 200);
     }
 
     await admin.from("contact_messages").update({ notified_at: new Date().toISOString() }).eq("id", msg.id);
