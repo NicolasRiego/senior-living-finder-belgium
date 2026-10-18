@@ -108,6 +108,7 @@ export const fr = {
     message: "Votre message",
     send: "Envoyer le message",
     sent: "Merci ! Nous vous recontactons rapidement.",
+    error: "Votre message n'a pas pu être envoyé. Écrivez-nous à info@mylivinghome.be.",
   },
   footer: {
     tagline: "Le comparateur indépendant des résidences seniors en Belgique.",
