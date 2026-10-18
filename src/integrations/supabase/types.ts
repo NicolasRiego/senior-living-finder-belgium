@@ -338,6 +338,7 @@ export type Database = {
           deadline: string | null
           description: string | null
           id: string
+          number: number
           priority: Database["public"]["Enums"]["ticket_priority"]
           screenshots: string[]
           status: Database["public"]["Enums"]["ticket_status"]
@@ -350,6 +351,7 @@ export type Database = {
           deadline?: string | null
           description?: string | null
           id?: string
+          number?: number
           priority?: Database["public"]["Enums"]["ticket_priority"]
           screenshots?: string[]
           status?: Database["public"]["Enums"]["ticket_status"]
@@ -362,6 +364,7 @@ export type Database = {
           deadline?: string | null
           description?: string | null
           id?: string
+          number?: number
           priority?: Database["public"]["Enums"]["ticket_priority"]
           screenshots?: string[]
           status?: Database["public"]["Enums"]["ticket_status"]
@@ -2593,6 +2596,7 @@ export type Database = {
           description: string
           id: string
           last_comment_at: string
+          number: number
           participant_count: number
           priority: Database["public"]["Enums"]["ticket_priority"]
           screenshots: string[]
