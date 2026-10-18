@@ -59,8 +59,9 @@ export default function AdminTickets() {
     return tickets.filter((t) => {
       if (priorityFilter !== "all" && t.priority !== priorityFilter) return false;
       if (search) {
-        const q = search.toLowerCase();
-        if (!t.title.toLowerCase().includes(q) && !(t.creator_email || "").toLowerCase().includes(q)) {
+        const q = search.toLowerCase().trim();
+        const matchesNumber = t.number != null && String(t.number) === q.replace(/^#/, "");
+        if (!matchesNumber && !t.title.toLowerCase().includes(q) && !(t.creator_email || "").toLowerCase().includes(q)) {
           return false;
         }
       }
@@ -113,7 +114,7 @@ export default function AdminTickets() {
       <div className="flex flex-wrap items-center gap-3 p-3 border rounded-md bg-card">
         <Filter className="h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Rechercher…"
+          placeholder="Rechercher (titre ou n°)…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-xs"

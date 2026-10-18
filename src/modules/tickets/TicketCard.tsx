@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   TICKET_PRIORITY_COLORS,
   TICKET_PRIORITY_LABELS,
+  ticketRef,
   type TicketRow,
 } from "./types";
 import { TicketScreenshot } from "./TicketScreenshot";
@@ -20,6 +21,7 @@ function formatDate(d: string | null) {
 
 function TicketCardComponent({ ticket, unread }: Props) {
   const deadline = formatDate(ticket.deadline);
+  const ref = ticketRef(ticket.number);
   return (
     <Link to={`/admin/tickets/${ticket.id}`} className="block">
       <Card
@@ -35,6 +37,7 @@ function TicketCardComponent({ ticket, unread }: Props) {
           />
         )}
         <h3 className={cn("text-sm leading-snug", unread ? "font-bold" : "font-semibold")}>
+          {ref && <span className="mr-1 text-muted-foreground">{ref}</span>}
           {ticket.title}
         </h3>
         <div className="flex items-center gap-1.5 flex-wrap">

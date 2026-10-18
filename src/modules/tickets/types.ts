@@ -24,6 +24,7 @@ export const TICKET_PRIORITY_COLORS: Record<TicketPriority, string> = {
 
 export interface TicketRow {
   id: string;
+  number?: number | null;
   title: string;
   description: string | null;
   status: TicketStatus;
@@ -38,6 +39,11 @@ export interface TicketRow {
   comment_count: number;
   participant_count: number;
   last_comment_at: string | null;
+}
+
+/** Numéro lisible du ticket, ex. « #12 » (null tant que la base ne le fournit pas). */
+export function ticketRef(number?: number | null): string | null {
+  return number ? `#${number}` : null;
 }
 
 export interface TicketComment {
