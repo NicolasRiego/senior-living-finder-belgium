@@ -8,6 +8,13 @@
       "when": 1792310382445,
       "tag": "0000_admin_tickets_number",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792324064184,
+      "tag": "0001_contact_messages",
+      "breakpoints": true
     }
   ]
 }
