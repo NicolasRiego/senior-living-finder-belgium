@@ -30,7 +30,8 @@ export function PasswordGate({ children }: { children: ReactNode }) {
     <main className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="font-display text-4xl text-primary">MyLivingHome</CardTitle>
+          <img src="/logo-mlh-rond-complet.png" alt="" className="mx-auto mb-2 h-44 w-44 rounded-full bg-white shadow-soft" />
+          <CardTitle className="sr-only">MyLivingHome</CardTitle>
           <p className="mt-2 text-sm text-muted-foreground">
             Site en construction — accès réservé
           </p>

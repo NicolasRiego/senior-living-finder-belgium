@@ -47,6 +47,7 @@ export default function HomePage() {
         />
 
         <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-6 pt-24 pb-20">
+          <img src="/logo-mlh-rond-complet.png" alt="MyLivingHome" className="mb-6 hidden h-48 w-48 rounded-full bg-white shadow-xl shadow-black/30 md:block" />
           <p className="text-sm font-medium tracking-widest uppercase text-white/90 mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
             {HERO_SLIDES[current].label}
           </p>

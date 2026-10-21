@@ -61,9 +61,7 @@ export function Header() {
             isTransparent ? "text-white drop-shadow" : "text-foreground",
           )}
         >
-          <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-soft">
-            <Heart className="h-[21px] w-[21px]" fill="currentColor" />
-          </span>
+          <img src="/logo-mlh-rond.png" alt="" className="h-[42px] w-[42px] rounded-full bg-white shadow-soft" />
           <span>{t("brand.name")}</span>
         </Link>
 
