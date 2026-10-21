@@ -13,7 +13,10 @@ export function Footer() {
     <footer className="mt-24 border-t border-border/60 bg-muted/40">
       <div className="container grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
-          <img src="/logo-mlh-rond-complet.png" alt={t("brand.name")} className="h-40 w-40 rounded-full bg-white shadow-soft" />
+          <div className="flex items-center gap-2.5 font-display text-xl font-semibold">
+            <img src="/logo-mlh-rond-feuille.png" alt="" className="h-12 w-12 rounded-full bg-white" />
+            {t("brand.name")}
+          </div>
           <p className="mt-4 max-w-md text-base text-muted-foreground">{t("footer.tagline")}</p>
           <div className="mt-6 space-y-2 text-base text-muted-foreground">
             <div className="flex items-center gap-2">
