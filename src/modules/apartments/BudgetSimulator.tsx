@@ -557,7 +557,7 @@ export function BudgetSimulator({
                       </Label>
                     </div>
                     {incluse ? (
-                      <span className="text-sm rounded-full bg-green-100 text-green-700 px-2.5 py-1 font-medium whitespace-nowrap">
+                      <span className="text-sm rounded-full bg-navy-100 text-navy-700 px-2.5 py-1 font-medium whitespace-nowrap">
                         {s.from_charges ? "Inclus dans les charges" : "Inclus"}
                       </span>
                     ) : restaurant ? (
@@ -643,7 +643,7 @@ export function BudgetSimulator({
                   <div className="min-w-0">
                     <div className="font-medium break-words">{l.label}</div>
                     {l.detail && <div className="text-xs text-muted-foreground">{l.detail}</div>}
-                    {l.isFree && <div className="text-xs text-green-700">Inclus</div>}
+                    {l.isFree && <div className="text-xs text-navy-700">Inclus</div>}
                   </div>
                   <div className="whitespace-nowrap font-semibold">
                     {l.total.toLocaleString("fr-BE")} €
@@ -674,7 +674,7 @@ export function BudgetSimulator({
                 <>Modifications non sauvegardées…</>
               )}
               {autoSaveState === "saved" && lastSavedAt && (
-                <><Check className="h-3 w-3 text-green-600" /> Sauvegardé automatiquement à {lastSavedAt.toLocaleTimeString("fr-BE", { hour: "2-digit", minute: "2-digit" })}</>
+                <><Check className="h-3 w-3 text-navy-600" /> Sauvegardé automatiquement à {lastSavedAt.toLocaleTimeString("fr-BE", { hour: "2-digit", minute: "2-digit" })}</>
               )}
               {autoSaveState === "idle" && (
                 <span className="opacity-0">·</span>

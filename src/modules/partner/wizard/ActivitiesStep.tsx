@@ -270,7 +270,7 @@ export default function ActivitiesStep({ residence }: StepProps) {
             <div
               key={a.id}
               className={`rounded-lg border border-l-4 bg-background p-3 ${
-                checked ? "border-l-green-600" : "border-l-muted-foreground/30"
+                checked ? "border-l-navy-600" : "border-l-muted-foreground/30"
               }`}
             >
               {/* LINE 1: checkbox + name + delete */}

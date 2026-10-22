@@ -426,7 +426,7 @@ function AutocompleteField({
           autoComplete="off"
           className={cn(
             "h-12 pl-9",
-            autoFilled && "bg-green-50 dark:bg-green-950/30",
+            autoFilled && "bg-navy-50 dark:bg-navy-950/30",
           )}
         />
         {open && filtered.length > 0 && (
@@ -528,7 +528,7 @@ function PostalCodeField({
           autoComplete="off"
           className={cn(
             "h-12 pl-9",
-            autoFilled && "bg-green-50 dark:bg-green-950/30",
+            autoFilled && "bg-navy-50 dark:bg-navy-950/30",
           )}
         />
         {open && filtered.length > 0 && (

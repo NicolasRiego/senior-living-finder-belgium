@@ -347,7 +347,7 @@ export default function AdminResidences() {
           <DialogFooter>
             <Button variant="outline" onClick={closeAssign}>Annuler</Button>
             <Button
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-navy-600 hover:bg-navy-700 text-white"
               disabled={!selectedUser || assigning}
               onClick={() =>
                 selectedUser &&

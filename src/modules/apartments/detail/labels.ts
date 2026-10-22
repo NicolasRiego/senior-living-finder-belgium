@@ -48,10 +48,10 @@ export const INTERNET_LABELS: Record<string, string> = {
 
 export function energyClassClasses(cls: string | null | undefined): string {
   switch (cls) {
-    case "A++": return "bg-green-800 text-white";
-    case "A+":  return "bg-green-700 text-white";
-    case "A":   return "bg-green-600 text-white";
-    case "B":   return "bg-green-400 text-foreground";
+    case "A++": return "bg-navy-800 text-white";
+    case "A+":  return "bg-navy-700 text-white";
+    case "A":   return "bg-navy-600 text-white";
+    case "B":   return "bg-navy-400 text-foreground";
     case "C":   return "bg-yellow-400 text-foreground";
     case "D":   return "bg-orange-400 text-foreground";
     case "E":   return "bg-orange-500 text-white";

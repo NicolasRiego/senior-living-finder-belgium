@@ -220,7 +220,7 @@ export default function PebCertificate() {
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border px-4 py-3">
               <div className="flex items-center gap-2">
                 {state.visible ? (
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-green-700">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-navy-700">
                     <Eye className="h-4 w-4" /> ✓ Visible sur la fiche publique
                   </span>
                 ) : (

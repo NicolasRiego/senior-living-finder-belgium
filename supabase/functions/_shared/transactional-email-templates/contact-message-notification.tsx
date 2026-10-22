@@ -40,8 +40,8 @@ export const template = {
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
 const container = { padding: '24px 28px', maxWidth: '560px' }
-const h1 = { fontSize: '20px', color: '#1a3d2b', margin: '0 0 16px' }
+const h1 = { fontSize: '20px', color: '#172031', margin: '0 0 16px' }
 const text = { fontSize: '15px', color: '#333', margin: '4px 0' }
 const quote = { borderLeft: '3px solid #ddd', margin: '16px 0', padding: '4px 12px' }
 const quoteText = { fontSize: '15px', color: '#333', whiteSpace: 'pre-wrap' as const }
-const button = { backgroundColor: '#2f5d4a', color: '#ffffff', padding: '10px 16px', borderRadius: '6px', textDecoration: 'none', fontSize: '15px' }
+const button = { backgroundColor: '#233252', color: '#ffffff', padding: '10px 16px', borderRadius: '6px', textDecoration: 'none', fontSize: '15px' }

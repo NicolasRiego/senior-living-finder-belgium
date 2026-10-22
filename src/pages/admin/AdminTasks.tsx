@@ -53,7 +53,7 @@ const STATUS_CLASS: Record<Status, string> = {
   a_faire: "bg-slate-100 text-slate-700 border-slate-200",
   en_cours: "bg-amber-100 text-amber-700 border-amber-200",
   en_attente: "bg-purple-100 text-purple-700 border-purple-200",
-  terminee: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  terminee: "bg-navy-100 text-navy-700 border-navy-200",
 };
 
 type FormState = {
@@ -279,7 +279,7 @@ export default function AdminTasks() {
           <h1 className="text-3xl font-display font-semibold">Tâches</h1>
           <p className="text-muted-foreground text-sm">Gestion interne des tâches administratives</p>
         </div>
-        <Button onClick={openCreate} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button onClick={openCreate} className="bg-navy-600 hover:bg-navy-700 text-white">
           <Plus className="h-4 w-4" /> Nouvelle tâche
         </Button>
       </div>
@@ -308,9 +308,9 @@ export default function AdminTasks() {
                   <div className="text-xs text-blue-700 uppercase">En cours</div>
                   <div className="text-3xl font-semibold mt-1 text-blue-700">{stats.en_cours}</div>
                 </Card>
-                <Card className="p-4 border-emerald-200">
-                  <div className="text-xs text-emerald-700 uppercase">Terminées</div>
-                  <div className="text-3xl font-semibold mt-1 text-emerald-700">{stats.terminee}</div>
+                <Card className="p-4 border-navy-200">
+                  <div className="text-xs text-navy-700 uppercase">Terminées</div>
+                  <div className="text-3xl font-semibold mt-1 text-navy-700">{stats.terminee}</div>
                 </Card>
               </div>
 
@@ -327,7 +327,7 @@ export default function AdminTasks() {
                         const color = s === "a_faire" ? "bg-slate-400"
                           : s === "en_cours" ? "bg-amber-400"
                           : s === "en_attente" ? "bg-purple-400"
-                          : "bg-emerald-500";
+                          : "bg-navy-500";
                         return <div key={s} className={color} style={{ width: `${pct}%` }} />;
                       })}
                     </div>
@@ -336,7 +336,7 @@ export default function AdminTasks() {
                         const color = s === "a_faire" ? "bg-slate-400"
                           : s === "en_cours" ? "bg-amber-400"
                           : s === "en_attente" ? "bg-purple-400"
-                          : "bg-emerald-500";
+                          : "bg-navy-500";
                         const pct = stats.total === 0 ? 0 : Math.round((stats[s] / stats.total) * 100);
                         return (
                           <div key={s} className="flex items-center gap-1.5">
@@ -726,7 +726,7 @@ export default function AdminTasks() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Annuler</Button>
-            <Button onClick={saveTask} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button onClick={saveTask} className="bg-navy-600 hover:bg-navy-700 text-white">
               {editingId ? "Enregistrer" : "Créer"}
             </Button>
           </DialogFooter>

@@ -116,7 +116,7 @@ export default function ResidenceDetailView({ data, topBanner, backLink, disable
                   <Section id="logements" title="Logements & tarifs">
                     <div className="grid grid-cols-1 gap-3 mb-6 min-[520px]:grid-cols-3">
                       <Stat value={unitSummaries.reduce((t, s) => t + s.total, 0)} label="Total logements" color="text-primary" />
-                      <Stat value={unitSummaries.reduce((t, s) => t + s.available, 0)} label="Disponibles" color="text-green-700" />
+                      <Stat value={unitSummaries.reduce((t, s) => t + s.available, 0)} label="Disponibles" color="text-navy-700" />
                       <Stat value={unitSummaries.length} label="Types différents" />
                     </div>
                     <div className="mb-5 text-center">
@@ -234,12 +234,12 @@ function UnitCard({ s }: { s: PublicUnitSummary }) {
         <h3 className="font-semibold text-lg">{TYPE_LABEL[s.type] ?? s.type}</h3>
         <div className="flex flex-wrap gap-1.5">
           {s.hasRent && <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs text-primary font-medium whitespace-nowrap">À louer</span>}
-          {s.hasSale && <span className="rounded-full bg-orange-100 px-2.5 py-1 text-xs text-orange-700 font-medium whitespace-nowrap">À vendre</span>}
+          {s.hasSale && <span className="rounded-full bg-gold-100 px-2.5 py-1 text-xs text-gold-800 font-medium whitespace-nowrap">À vendre</span>}
         </div>
       </div>
       <div className="grid grid-cols-1 gap-2 text-sm min-[520px]:grid-cols-2">
         <Cell label="Total" value={`${s.total} logement${s.total > 1 ? "s" : ""}`} />
-        <Cell label="Disponibles" value={`${s.available} / ${s.total}`} valueClass="text-green-700" />
+        <Cell label="Disponibles" value={`${s.available} / ${s.total}`} valueClass="text-navy-700" />
         {(s.surfaceMin || s.surfaceMax) && (
           <Cell label="Surface" value={s.surfaceMin === s.surfaceMax ? `${s.surfaceMin} m²` : `${s.surfaceMin ?? "?"}–${s.surfaceMax ?? "?"} m²`} />
         )}
@@ -269,7 +269,7 @@ function ServiceRow({ s, label }: { s: any; label: string }) {
   const price = s.price ?? null;
 
   const includedPill = (text: string) => (
-    <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 whitespace-nowrap">{text}</span>
+    <span className="rounded-full bg-navy-100 px-2.5 py-0.5 text-xs font-medium text-navy-700 whitespace-nowrap">{text}</span>
   );
   const optionalPill = (
     <span className="rounded-full border border-border bg-transparent px-2.5 py-0.5 text-xs font-medium text-muted-foreground whitespace-nowrap">Optionnel</span>

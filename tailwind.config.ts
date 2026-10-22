@@ -28,6 +28,15 @@ export default {
         '5xl': ['3.75rem', { lineHeight: '1.05' }],
       },
       colors: {
+        // Couleurs du logo MyLivingHome : bleu marine (#172031) et doré (#ac8c65)
+        navy: {
+          50: "#f2f5fa", 100: "#e3e9f3", 200: "#c6d2e6", 300: "#9db0d0", 400: "#6f88b4",
+          500: "#4c6699", 600: "#3a5180", 700: "#2e4168", 800: "#233252", 900: "#1a2540", 950: "#111a2e",
+        },
+        gold: {
+          50: "#faf6ef", 100: "#f3eadb", 200: "#e6d3b4", 300: "#d6b88a", 400: "#c4a173",
+          500: "#ac8c65", 600: "#8f7150", 700: "#735a40", 800: "#5a4633", 900: "#45362a", 950: "#2a2019",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

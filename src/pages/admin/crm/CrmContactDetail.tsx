@@ -185,7 +185,7 @@ export default function CrmContactDetail() {
                         <span className="text-xs text-muted-foreground">{formatDate(i.date)}</span>
                         {i.result && (
                           <Badge variant="outline" className={
-                            i.result === "positif" ? "bg-green-100 text-green-800" :
+                            i.result === "positif" ? "bg-navy-100 text-navy-800" :
                             i.result === "negatif" ? "bg-red-100 text-red-800" : "bg-muted"
                           }>{i.result}</Badge>
                         )}

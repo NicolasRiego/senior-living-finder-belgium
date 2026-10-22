@@ -149,7 +149,7 @@ function Shell({ residenceName, apartmentTitle }: { residenceName: string; apart
               size="lg"
               onClick={saveCurrent}
               disabled={!currentIsDirty || isSaving}
-              className={currentIsDirty ? "bg-green-600 hover:bg-green-700 text-white" : ""}
+              className={currentIsDirty ? "bg-navy-600 hover:bg-navy-700 text-white" : ""}
             >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? "Enregistrement…" : "Enregistrer les modifications"}

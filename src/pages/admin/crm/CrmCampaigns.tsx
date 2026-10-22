@@ -33,7 +33,7 @@ const CHANNEL_ICON = { email: Mail, linkedin: Linkedin, telephone: Phone, evenem
 const STATUS_COLORS_CAMPAIGN: Record<string, string> = {
   planifiee: "bg-muted text-muted-foreground",
   en_cours: "bg-orange-100 text-orange-800",
-  terminee: "bg-green-100 text-green-800",
+  terminee: "bg-navy-100 text-navy-800",
 };
 
 export default function CrmCampaigns() {

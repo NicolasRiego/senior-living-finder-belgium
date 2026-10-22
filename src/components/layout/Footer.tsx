@@ -14,9 +14,7 @@ export function Footer() {
       <div className="container grid gap-10 py-14 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-2.5 font-display text-xl font-semibold">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground">
-              <Heart className="h-5 w-5" fill="currentColor" />
-            </span>
+            <img src="/logo-mlh-rond-feuille.png" alt="" className="h-12 w-12 rounded-full bg-white" />
             {t("brand.name")}
           </div>
           <p className="mt-4 max-w-md text-base text-muted-foreground">{t("footer.tagline")}</p>
