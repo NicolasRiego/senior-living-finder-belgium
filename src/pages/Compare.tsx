@@ -857,7 +857,7 @@ function Dash() {
 function BoolCell({ value }: { value: boolean }) {
   return value ? (
     <span
-      className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-green-100 text-green-700"
+      className="inline-flex items-center justify-center h-7 w-7 rounded-full bg-navy-100 text-navy-700"
       aria-label="Oui"
     >
       <Check className="h-4 w-4" />

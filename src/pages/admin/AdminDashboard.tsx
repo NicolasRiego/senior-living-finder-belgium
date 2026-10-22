@@ -36,7 +36,7 @@ const STATUS_BAR_COLORS: Record<CrmContactStatus, string> = {
   contacte: "bg-blue-500",
   en_discussion: "bg-orange-500",
   demo_envoyee: "bg-purple-500",
-  partenaire: "bg-green-600",
+  partenaire: "bg-navy-600",
   refus: "bg-red-500",
 };
 
@@ -353,10 +353,10 @@ export default function AdminDashboard() {
         {loading ? (
           <p className="text-sm text-muted-foreground">Chargement…</p>
         ) : noAlerts ? (
-          <Card className="border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-900">
+          <Card className="border-navy-200 bg-navy-50 dark:bg-navy-900/20 dark:border-navy-900">
             <CardContent className="p-4 flex items-center gap-3">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <span className="text-sm font-medium text-green-800 dark:text-green-200">
+              <CheckCircle2 className="h-5 w-5 text-navy-600" />
+              <span className="text-sm font-medium text-navy-800 dark:text-navy-200">
                 Tout est à jour — aucune alerte
               </span>
             </CardContent>

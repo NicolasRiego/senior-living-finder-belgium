@@ -55,7 +55,7 @@ function PhotoCard({
   return (
     <div ref={setNodeRef} style={style}>
       <Card
-        className={`${isCover ? "ring-2 ring-primary" : ""} ${isOver ? "outline outline-2 outline-dashed outline-green-500" : ""} ${isOverlay ? "scale-105 shadow-2xl opacity-90" : ""}`}
+        className={`${isCover ? "ring-2 ring-primary" : ""} ${isOver ? "outline outline-2 outline-dashed outline-navy-500" : ""} ${isOverlay ? "scale-105 shadow-2xl opacity-90" : ""}`}
       >
         <div className="relative aspect-video bg-muted overflow-hidden rounded-t-lg">
           {signedUrl && <img src={signedUrl} alt={p.alt_text ?? ""} className="h-full w-full object-cover" />}

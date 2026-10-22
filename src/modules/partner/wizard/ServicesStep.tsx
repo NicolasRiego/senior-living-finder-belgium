@@ -287,7 +287,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                       : isDisabled
                         ? "border-l-orange-400 bg-muted/40 opacity-60"
                         : isActive
-                          ? "border-l-green-500"
+                          ? "border-l-navy-500"
                           : "border-l-muted"
                   }`}
                 >
@@ -320,7 +320,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                     </Label>
 
                     {isIncluded && !isFromCharges && (
-                      <div className="inline-flex rounded-full border border-green-600/40 p-0.5 bg-background">
+                      <div className="inline-flex rounded-full border border-navy-600/40 p-0.5 bg-background">
                         <button
                           type="button"
                           onClick={() =>
@@ -335,8 +335,8 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                           }
                           className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
                             mode === "inclus"
-                              ? "bg-green-600 text-white"
-                              : "text-green-700 hover:bg-green-50"
+                              ? "bg-navy-600 text-white"
+                              : "text-navy-700 hover:bg-navy-50"
                           }`}
                           aria-pressed={mode === "inclus"}
                         >
@@ -349,8 +349,8 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                           }
                           className={`px-3 py-1 text-xs font-medium rounded-full transition-colors ${
                             mode === "optionnel"
-                              ? "bg-green-600 text-white"
-                              : "text-green-700 hover:bg-green-50"
+                              ? "bg-navy-600 text-white"
+                              : "text-navy-700 hover:bg-navy-50"
                           }`}
                           aria-pressed={mode === "optionnel"}
                         >
@@ -368,7 +368,7 @@ export default function ServicesStep({ residence, setExternalSaving }: StepProps
                                 checked={isAvailable}
                                 onCheckedChange={(v) => setAvailability(s.id, v)}
                                 aria-label={isAvailable ? "Marquer indisponible" : "Réactiver"}
-                                className="data-[state=checked]:bg-green-600"
+                                className="data-[state=checked]:bg-navy-600"
                               />
                               <span className={isAvailable ? "text-foreground" : "text-orange-700"}>
                                 {isAvailable ? "Disponible" : "Indisponible"}

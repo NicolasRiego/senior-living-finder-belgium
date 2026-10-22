@@ -29,7 +29,7 @@ const txLabel: Record<string, string> = {
 };
 
 const statusMeta: Record<string, { label: string; className: string }> = {
-  available: { label: "Dispo", className: "bg-[#16a34a] text-white" },
+  available: { label: "Dispo", className: "bg-navy-600 text-white" },
   reserved: { label: "Réservé", className: "bg-amber-500 text-white" },
   unavailable: { label: "Indisponible", className: "bg-gray-700 text-white" },
 };
@@ -57,7 +57,7 @@ export default function ApartmentListCard({ apartment: a, residenceId, onToggleP
   return (
     <div
       className={`rounded-lg border bg-card p-3 hover:bg-muted/30 transition-colors ${
-        a.is_pinned ? "border-l-4 border-l-[#16a34a]" : ""
+        a.is_pinned ? "border-l-4 border-l-navy-600" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -86,7 +86,7 @@ export default function ApartmentListCard({ apartment: a, residenceId, onToggleP
             size="sm"
             onClick={() => onTogglePin(a)}
             aria-label={a.is_pinned ? "Désépingler" : "Épingler"}
-            className={a.is_pinned ? "bg-[#16a34a] hover:bg-[#15803d] text-white" : ""}
+            className={a.is_pinned ? "bg-navy-600 hover:bg-navy-700 text-white" : ""}
           >
             <Pin className={`h-4 w-4 ${a.is_pinned ? "fill-current" : ""}`} />
             <span className="ml-1 hidden sm:inline whitespace-nowrap">

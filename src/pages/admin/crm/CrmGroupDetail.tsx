@@ -142,7 +142,7 @@ export default function CrmGroupDetail() {
                     <div className="flex flex-col items-end gap-2">
                       <StatusBadge status={r.status} />
                       {onSilverplace ? (
-                        <Badge variant="outline" className="border-transparent bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 gap-1">
+                        <Badge variant="outline" className="border-transparent bg-navy-100 text-navy-800 dark:bg-navy-900/40 dark:text-navy-200 gap-1">
                           <CheckCircle2 className="h-3 w-3" /> Sur MyLivingHome
                         </Badge>
                       ) : (

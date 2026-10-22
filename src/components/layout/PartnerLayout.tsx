@@ -43,9 +43,12 @@ export function PartnerLayout({ children }: { children: ReactNode }) {
       <ConstructionBanner />
       <header className="border-b bg-card">
         <div className="container flex min-h-16 items-center justify-between gap-3 py-2">
-          <Link to="/partenaire" className="min-w-fit font-display text-xl leading-tight sm:text-2xl">
-            MyLivingHome{" "}
-            <span className="block text-sm text-muted-foreground sm:inline sm:text-base">· Espace partenaire</span>
+          <Link to="/partenaire" className="flex min-w-fit items-center gap-2.5 font-display text-xl leading-tight sm:text-2xl">
+            <img src="/logo-mlh-rond-feuille.png" alt="" className="h-11 w-11 shrink-0 rounded-full bg-white shadow-soft" />
+            <span>
+              MyLivingHome{" "}
+              <span className="block text-sm text-muted-foreground sm:inline sm:text-base">· Espace partenaire</span>
+            </span>
           </Link>
           <div className="flex items-center gap-1 sm:gap-3">
             <Button variant="ghost" asChild className="px-3 sm:px-6">

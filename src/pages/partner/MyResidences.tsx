@@ -200,7 +200,7 @@ export default function MyResidences() {
         id={`residence-${r.id}`}
         className={cn(
           "scroll-mt-24",
-          r.is_pinned && "border-l-4 border-l-green-600 bg-green-50/40",
+          r.is_pinned && "border-l-4 border-l-navy-600 bg-navy-50/40",
           highlightedId === r.id &&
             "ring-2 ring-primary ring-offset-2 transition-all",
         )}
@@ -228,7 +228,7 @@ export default function MyResidences() {
               onClick={() => togglePin(r)}
               className={cn(
                 r.is_pinned &&
-                  "bg-green-600 hover:bg-green-700 text-white border-green-600",
+                  "bg-navy-600 hover:bg-navy-700 text-white border-navy-600",
               )}
               aria-pressed={r.is_pinned}
               aria-label={r.is_pinned ? "Désépingler" : "Épingler"}
@@ -314,7 +314,7 @@ export default function MyResidences() {
           {pinned.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
-                <Pin className="h-4 w-4 fill-current text-green-600" />
+                <Pin className="h-4 w-4 fill-current text-navy-600" />
                 Résidences épinglées
               </h2>
               <div className="grid gap-4">{pinned.map(renderCard)}</div>

@@ -48,7 +48,7 @@ const docIconFor = (d: DocRow) => {
   const n = d.file_name.toLowerCase();
   if (t.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg|heic)$/.test(n)) return <ImageIcon className="h-5 w-5 text-purple-600" />;
   if (t === "application/pdf" || n.endsWith(".pdf")) return <FileText className="h-5 w-5 text-red-600" />;
-  if (t.includes("sheet") || /\.(xlsx?|csv|ods)$/.test(n)) return <FileSpreadsheet className="h-5 w-5 text-emerald-600" />;
+  if (t.includes("sheet") || /\.(xlsx?|csv|ods)$/.test(n)) return <FileSpreadsheet className="h-5 w-5 text-navy-600" />;
   if (t.includes("word") || /\.(docx?|odt|rtf)$/.test(n)) return <FileText className="h-5 w-5 text-blue-600" />;
   return <FileIcon className="h-5 w-5 text-muted-foreground" />;
 };
@@ -222,7 +222,7 @@ export default function AdminDrive() {
           <h1 className="text-3xl font-display font-semibold">Drive</h1>
           <p className="text-muted-foreground text-sm">Documents internes partagés entre administrateurs</p>
         </div>
-        <Button onClick={() => { resetDocForm(); setDocOpen(true); }} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button onClick={() => { resetDocForm(); setDocOpen(true); }} className="bg-navy-600 hover:bg-navy-700 text-white">
           <Upload className="h-4 w-4" /> Ajouter un document
         </Button>
       </div>
@@ -380,7 +380,7 @@ export default function AdminDrive() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDocOpen(false)} disabled={docUploading}>Annuler</Button>
-            <Button onClick={uploadDocument} disabled={docUploading} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button onClick={uploadDocument} disabled={docUploading} className="bg-navy-600 hover:bg-navy-700 text-white">
               {docUploading ? "Envoi…" : "Ajouter"}
             </Button>
           </DialogFooter>

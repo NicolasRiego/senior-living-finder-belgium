@@ -66,7 +66,7 @@ export const LeadCard = memo(function LeadCard({ lead, showResidence = true, onA
         <div className="mt-3 flex flex-wrap gap-2">
           <Button size="sm" variant="outline" disabled={busy} onClick={() => onAction("pris_en_charge")}>✓ Prendre en charge</Button>
           <Button size="sm" variant="outline" disabled={busy} onClick={() => onAction("visite_planifiee")}>🗓 Planifier visite</Button>
-          <Button size="sm" variant="outline" disabled={busy} onClick={() => onAction("converti")} className="border-green-600/40 text-green-700 hover:bg-green-50">✓ Converti</Button>
+          <Button size="sm" variant="outline" disabled={busy} onClick={() => onAction("converti")} className="border-navy-600/40 text-navy-700 hover:bg-navy-50">✓ Converti</Button>
           <Button size="sm" variant="ghost" disabled={busy} onClick={() => onAction("perdu")}>Marquer perdu</Button>
         </div>
       )}

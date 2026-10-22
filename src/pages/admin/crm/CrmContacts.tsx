@@ -45,7 +45,7 @@ const STATUS_BORDER: Record<CrmContactStatus, string> = {
   contacte: "border-l-blue-500",
   en_discussion: "border-l-orange-500",
   demo_envoyee: "border-l-purple-500",
-  partenaire: "border-l-green-500",
+  partenaire: "border-l-navy-500",
   refus: "border-l-red-500",
 };
 
@@ -275,8 +275,8 @@ export default function CrmContacts() {
                         <span className="font-medium">{gs.residencesCount}</span>
                         <span className="text-muted-foreground">résidences</span>
                       </div>
-                      <div className={`flex items-center gap-2 font-medium ${gs.silverplaceCount > 0 ? "text-green-700 dark:text-green-400" : "text-muted-foreground"}`}>
-                        <span className="h-2 w-2 rounded-full" style={{ background: gs.silverplaceCount > 0 ? "hsl(142 71% 45%)" : "hsl(var(--muted-foreground))" }} />
+                      <div className={`flex items-center gap-2 font-medium ${gs.silverplaceCount > 0 ? "text-navy-700 dark:text-navy-400" : "text-muted-foreground"}`}>
+                        <span className="h-2 w-2 rounded-full" style={{ background: gs.silverplaceCount > 0 ? "hsl(var(--success))" : "hsl(var(--muted-foreground))" }} />
                         {gs.silverplaceCount} sur MyLivingHome
                       </div>
                     </div>
@@ -375,7 +375,7 @@ export default function CrmContacts() {
           <Card className="p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-4 text-xs flex-wrap">
-                <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-green-500" /> Sur MyLivingHome</div>
+                <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-navy-500" /> Sur MyLivingHome</div>
                 <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-blue-500" /> Dans le CRM</div>
                 <div className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-full bg-muted-foreground/50" /> Non importé</div>
               </div>
@@ -530,7 +530,7 @@ function OrgChart({
         const residences = contacts.filter((c) => c.group_id === gs.group.id && c.type === "residence_independante");
         const groupColor =
           gs.silverplaceCount > 0
-            ? "bg-green-100 border-green-500 text-green-900 dark:bg-green-900/30 dark:text-green-100"
+            ? "bg-navy-100 border-navy-500 text-navy-900 dark:bg-navy-900/30 dark:text-navy-100"
             : gs.residencesCount > 0
               ? "bg-blue-100 border-blue-500 text-blue-900 dark:bg-blue-900/30 dark:text-blue-100"
               : "bg-muted border-muted-foreground/30 text-muted-foreground";
@@ -550,7 +550,7 @@ function OrgChart({
                 <div className="flex flex-col gap-1.5 items-stretch w-full">
                   {residences.map((r) => {
                     const color = r.residence_id
-                      ? "bg-green-50 border-green-400 text-green-900 dark:bg-green-900/20 dark:text-green-100"
+                      ? "bg-navy-50 border-navy-400 text-navy-900 dark:bg-navy-900/20 dark:text-navy-100"
                       : "bg-blue-50 border-blue-400 text-blue-900 dark:bg-blue-900/20 dark:text-blue-100";
                     return (
                       <button
