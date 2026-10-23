@@ -2,7 +2,7 @@ import { useI18n, type Locale } from "@/modules/i18n/I18nProvider";
 
 type Section = { title: string; blocks: (string | string[] | { sub: string })[] };
 
-const LAST_UPDATE: Record<Locale, string> = { fr: "18 octobre 2026", nl: "18 oktober 2026" };
+const LAST_UPDATE: Record<Locale, string> = { fr: "23 octobre 2026", nl: "23 oktober 2026" };
 
 const CONTENT: Record<Locale, { title: string; intro: string; updated: string; sections: Section[] }> = {
   fr: {
@@ -38,6 +38,8 @@ const CONTENT: Record<Locale, { title: string; intro: string; updated: string; s
           "Nous comptons les consultations de chaque fiche et les clics sur le téléphone, l'e-mail ou le site d'une résidence. Nous utilisons pour cela un identifiant de visite aléatoire, effacé quand vous fermez votre navigateur, et votre identifiant de compte si vous êtes connecté. Aucun outil de mesure d'audience tiers n'est utilisé. Ces chiffres permettent aux résidences de savoir combien de personnes s'intéressent à elles. Base légale : notre intérêt légitime à mesurer l'utilisation du site.",
           { sub: "Si vous gérez une résidence" },
           "Nous enregistrons les informations de votre compte (nom, e-mail), celles de votre résidence et celles des membres de votre équipe que vous invitez. Base légale : l'exécution de notre accord de partenariat.",
+          { sub: "Si vous êtes un professionnel que nous contactons" },
+          "Pour présenter MyLivingHome aux résidences et aux groupes de résidences, nous enregistrons les coordonnées professionnelles de leurs représentants : nom, fonction, e-mail et téléphone professionnels, ainsi que l'historique de nos échanges. Ces informations proviennent de sources publiques (sites des résidences, LinkedIn), d'une recommandation ou d'un contact direct avec vous. Elles ne sont utilisées que par l'équipe MyLivingHome pour vous contacter au sujet de notre service. Base légale : notre intérêt légitime à faire connaître MyLivingHome aux professionnels du secteur. Vous pouvez vous y opposer à tout moment en écrivant à info@mylivinghome.be : nous cesserons alors de vous contacter.",
         ],
       },
       {
@@ -71,6 +73,7 @@ const CONTENT: Record<Locale, { title: string; intro: string; updated: string; s
             "Vos demandes aux résidences : 24 mois maximum.",
             "Vos messages via la page Contact : 24 mois maximum.",
             "Les statistiques de consultation : 24 mois maximum.",
+            "Les coordonnées des professionnels contactés : 3 ans maximum après notre dernier échange, ou jusqu'à votre opposition.",
           ],
         ],
       },
@@ -136,6 +139,8 @@ const CONTENT: Record<Locale, { title: string; intro: string; updated: string; s
           "We tellen hoe vaak elke fiche bekeken wordt en de klikken op het telefoonnummer, het e-mailadres of de website van een residentie. Daarvoor gebruiken we een willekeurige bezoekcode, die gewist wordt wanneer u uw browser sluit, en uw accountcode als u aangemeld bent. Er wordt geen meetinstrument van derden gebruikt. Met deze cijfers weten residenties hoeveel mensen interesse in hen hebben. Rechtsgrond: ons gerechtvaardigd belang om het gebruik van de website te meten.",
           { sub: "Als u een residentie beheert" },
           "We bewaren de gegevens van uw account (naam, e-mailadres), die van uw residentie en die van de teamleden die u uitnodigt. Rechtsgrond: de uitvoering van onze partnerovereenkomst.",
+          { sub: "Als u een professional bent die wij contacteren" },
+          "Om MyLivingHome voor te stellen aan residenties en groepen van residenties, bewaren we de professionele contactgegevens van hun vertegenwoordigers: naam, functie, professioneel e-mailadres en telefoonnummer, en de geschiedenis van onze contacten. Deze gegevens komen uit openbare bronnen (websites van residenties, LinkedIn), uit een aanbeveling of uit een rechtstreeks contact met u. Ze worden alleen door het MyLivingHome-team gebruikt om u te contacteren over onze dienst. Rechtsgrond: ons gerechtvaardigd belang om MyLivingHome bekend te maken bij professionals uit de sector. U kunt zich daar op elk moment tegen verzetten door te schrijven naar info@mylivinghome.be: we contacteren u dan niet meer.",
         ],
       },
       {
@@ -169,6 +174,7 @@ const CONTENT: Record<Locale, { title: string; intro: string; updated: string; s
             "Uw aanvragen aan residenties: maximaal 24 maanden.",
             "Uw berichten via de contactpagina: maximaal 24 maanden.",
             "De bezoekstatistieken: maximaal 24 maanden.",
+            "De contactgegevens van gecontacteerde professionals: maximaal 3 jaar na ons laatste contact, of tot u bezwaar maakt.",
           ],
         ],
       },
