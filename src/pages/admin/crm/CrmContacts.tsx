@@ -38,7 +38,7 @@ import {
 } from "@/modules/crm/api";
 import { StatusBadge, daysSince, formatDate } from "@/modules/crm/ui";
 import { toast } from "sonner";
-import { Eye, Pencil, Trash2, Search, Plus, Building2, Home, Network, Globe, ExternalLink, ZoomIn, ZoomOut } from "lucide-react";
+import { Eye, Pencil, Trash2, Search, Plus, Building2, Home, Network, Globe, ExternalLink, ZoomIn, ZoomOut, User, Mail, Phone } from "lucide-react";
 
 const STATUS_BORDER: Record<CrmContactStatus, string> = {
   a_contacter: "border-l-muted-foreground/40",
@@ -267,6 +267,23 @@ export default function CrmContacts() {
                       {gs.group.sector && (
                         <div className="mt-1 text-xs text-muted-foreground">{gs.group.sector}</div>
                       )}
+                      {(gs.group.contact_name || gs.group.contact_email || gs.group.contact_phone) && (
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm" onClick={(e) => e.stopPropagation()}>
+                          {gs.group.contact_name && (
+                            <span className="inline-flex items-center gap-1"><User className="h-3 w-3 text-muted-foreground" />{gs.group.contact_name}</span>
+                          )}
+                          {gs.group.contact_email && (
+                            <a href={`mailto:${gs.group.contact_email}`} className="inline-flex items-center gap-1 text-primary hover:underline break-all">
+                              <Mail className="h-3 w-3" />{gs.group.contact_email}
+                            </a>
+                          )}
+                          {gs.group.contact_phone && (
+                            <a href={`tel:${gs.group.contact_phone.replace(/\s+/g, "")}`} className="inline-flex items-center gap-1 text-primary hover:underline">
+                              <Phone className="h-3 w-3" />{gs.group.contact_phone}
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-1 text-sm min-w-[160px]">
@@ -483,6 +500,10 @@ export default function CrmContacts() {
               <Field label="Logo URL" full><Input value={editingGroup.logo_url ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, logo_url: e.target.value })} /></Field>
               <Field label="Site web" full><Input value={editingGroup.website ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, website: e.target.value })} /></Field>
               <Field label="Secteur" full><Input value={editingGroup.sector ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, sector: e.target.value })} /></Field>
+              <div className="pt-2 text-sm font-semibold">Personne de contact</div>
+              <Field label="Nom" full><Input value={editingGroup.contact_name ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, contact_name: e.target.value })} /></Field>
+              <Field label="E-mail" full><Input type="email" value={editingGroup.contact_email ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, contact_email: e.target.value })} /></Field>
+              <Field label="Téléphone" full><Input type="tel" value={editingGroup.contact_phone ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, contact_phone: e.target.value })} /></Field>
               <Field label="Notes" full><Textarea value={editingGroup.notes ?? ""} onChange={(e) => setEditingGroup({ ...editingGroup, notes: e.target.value })} /></Field>
             </div>
           )}

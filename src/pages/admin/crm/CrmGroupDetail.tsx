@@ -89,6 +89,22 @@ export default function CrmGroupDetail() {
               <a href={group.website} target="_blank" rel="noreferrer" className="text-primary hover:underline">{group.website}</a>
             </div>
           )}
+          {(group.contact_name || group.contact_email || group.contact_phone) && (
+            <div className="space-y-1">
+              <div className="text-muted-foreground">Personne de contact :</div>
+              {group.contact_name && <div>{group.contact_name}</div>}
+              {group.contact_email && (
+                <a href={`mailto:${group.contact_email}`} className="flex items-center gap-1 text-primary hover:underline break-all">
+                  <Mail className="h-3 w-3" />{group.contact_email}
+                </a>
+              )}
+              {group.contact_phone && (
+                <a href={`tel:${group.contact_phone.replace(/\s+/g, "")}`} className="flex items-center gap-1 text-primary hover:underline">
+                  <Phone className="h-3 w-3" />{group.contact_phone}
+                </a>
+              )}
+            </div>
+          )}
           {group.notes && <p className="text-muted-foreground whitespace-pre-line">{group.notes}</p>}
         </CardContent>
       </Card>
