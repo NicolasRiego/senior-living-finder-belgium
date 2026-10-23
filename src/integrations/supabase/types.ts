@@ -1061,9 +1061,6 @@ export type Database = {
       }
       crm_groups: {
         Row: {
-          contact_email: string | null
-          contact_name: string | null
-          contact_phone: string | null
           created_at: string
           created_by: string | null
           id: string
@@ -1075,9 +1072,6 @@ export type Database = {
           website: string | null
         }
         Insert: {
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -1089,9 +1083,6 @@ export type Database = {
           website?: string | null
         }
         Update: {
-          contact_email?: string | null
-          contact_name?: string | null
-          contact_phone?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
