@@ -492,7 +492,7 @@ export default function CrmContacts() {
 
       {/* Group editor dialog */}
       <Dialog open={!!editingGroup} onOpenChange={(o) => !o && setEditingGroup(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editingGroup?.id ? "Modifier le groupe" : "Nouveau groupe"}</DialogTitle></DialogHeader>
           {editingGroup && (
             <div className="space-y-3">
