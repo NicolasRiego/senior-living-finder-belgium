@@ -816,7 +816,6 @@ function SectionTitle({ label, count }: { label: string; count: number }) {
 function DataRow({
   label,
   count,
-  index,
   children,
 }: {
   label: string;
@@ -825,11 +824,10 @@ function DataRow({
   children: ReactNode;
 }) {
   if (count === 0) return null;
-  const zebra = index % 2 === 1 ? "bg-[hsl(var(--compare-zebra))]" : "bg-transparent";
   return (
-    <div className="flex gap-4 py-3 border-b border-border/30">
+    <div className="flex gap-4 py-3 border-b-2 border-gold-500">
       <div className={`${LABEL_COL} text-[1.2075rem] leading-5 text-muted-foreground self-center pl-2 break-words bg-transparent`}>{label}</div>
-      <div className={`flex-1 flex gap-4 rounded-md ${zebra}`}>
+      <div className="flex-1 flex gap-4">
         {Array.isArray(children)
           ? children.map((c, i) => (
               <div key={i} className="flex-1 min-w-[220px] text-sm text-center self-center">
