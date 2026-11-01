@@ -1,6 +1,6 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, X, Heart, User, LogOut, ChevronDown } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/modules/i18n/I18nProvider";
 import { LocaleSwitcher } from "./LocaleSwitcher";
@@ -15,10 +15,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SpaceSwitcher } from "./SpaceSwitcher";
 
+// Desktop bar keeps fixed sizes and spacing; when space runs out, items move
+// into the ☰ menu in this order (first one goes first).
+const HIDE_ORDER = ["font", "locale", "/contact", "/conseils", "/comparateur", "logements", "/residences", "/"];
+const NAV_GAP = 2;
+const GROUP_GAP = 8;
+const DESKTOP_QUERY = "(min-width: 768px)";
+
 export function Header() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { user, isPartner, isAdmin, signOut } = useAuth();
   const [open, setOpen] = useState(false);
+  const [desktop, setDesktop] = useState(() => typeof window !== "undefined" && window.matchMedia(DESKTOP_QUERY).matches);
+  const [measuring, setMeasuring] = useState(true);
+  const [hidden, setHidden] = useState<Set<string>>(() => new Set());
+  const barRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const burgerWidth = useRef(0);
+  const itemRefs = useRef<Record<string, HTMLElement | null>>({});
+  const widths = useRef<Record<string, number>>({});
+  const setItemRef = (key: string) => (el: HTMLElement | null) => { itemRefs.current[key] = el; };
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -30,6 +48,72 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_QUERY);
+    const onChange = () => setDesktop(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  const fit = useCallback(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const cs = getComputedStyle(bar);
+    const avail = bar.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const fixed = (logoRef.current?.offsetWidth ?? 0) + (accountRef.current?.offsetWidth ?? 0) + 2 * GROUP_GAP;
+    const w = widths.current;
+    const gap = (k: string) => (k === "font" || k === "locale" ? GROUP_GAP : NAV_GAP);
+    const visible = HIDE_ORDER.filter((k) => w[k] != null);
+    const need = () => visible.reduce((sum, k) => sum + w[k] + gap(k), 0);
+    const next = new Set<string>();
+    if (fixed + need() > avail) {
+      for (const k of HIDE_ORDER) {
+        if (fixed + burgerWidth.current + GROUP_GAP + need() <= avail) break;
+        const i = visible.indexOf(k);
+        if (i >= 0) visible.splice(i, 1);
+        next.add(k);
+      }
+    }
+    setHidden((prev) => (prev.size === next.size && [...next].every((k) => prev.has(k)) ? prev : next));
+  }, []);
+
+  // Re-measure natural widths when the labels or the account buttons change.
+  useEffect(() => { setMeasuring(true); }, [locale, user?.id, isAdmin, isPartner, desktop]);
+
+  // Web fonts load after the first paint and change every width.
+  useEffect(() => {
+    const fonts = document.fonts;
+    if (!fonts) return;
+    const remeasure = () => setMeasuring(true);
+    fonts.ready.then(remeasure);
+    fonts.addEventListener("loadingdone", remeasure);
+    return () => fonts.removeEventListener("loadingdone", remeasure);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!measuring) return;
+    for (const [k, el] of Object.entries(itemRefs.current)) {
+      if (el && el.offsetWidth) widths.current[k] = el.offsetWidth;
+    }
+    if (burgerRef.current?.offsetWidth) burgerWidth.current = burgerRef.current.offsetWidth;
+    setMeasuring(false);
+    fit();
+  }, [measuring, fit]);
+
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const ro = new ResizeObserver(() => fit());
+    ro.observe(bar);
+    return () => ro.disconnect();
+  }, [fit]);
+
+  const isHidden = (k: string) => !measuring && hidden.has(k);
+  const showBurger = !desktop || measuring || hidden.size > 0;
+  const inMenu = (k: string) => !desktop || hidden.has(k);
+
+  useEffect(() => { if (!showBurger) setOpen(false); }, [showBurger]);
 
   const isTransparent = isHome && !scrolled && !open && !dropdownOpen;
   const myLink = isPartner ? "/partenaire" : "/mon-espace";
@@ -53,8 +137,9 @@ export function Header() {
           : "border-b border-border/50 bg-background/85 backdrop-blur-md",
       )}
     >
-      <div className="mx-auto flex min-h-[84px] w-full max-w-[1480px] flex-nowrap items-center justify-between gap-2 px-4">
+      <div ref={barRef} className="mx-auto flex min-h-[84px] w-full max-w-[1480px] flex-nowrap items-center justify-between gap-2 px-4">
         <Link
+          ref={logoRef}
           to="/"
           className={cn(
             "flex shrink-0 items-center gap-1.5 font-display text-[1.05rem] sm:text-[1.15rem] font-semibold whitespace-nowrap transition-colors",
@@ -65,15 +150,17 @@ export function Header() {
           <span>{t("brand.name")}</span>
         </Link>
 
-        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 lg:flex" aria-label="Primary">
+        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 md:flex" aria-label="Primary">
           {links.map((l) => (
             <Fragment key={l.to}>
               <NavLink
+                ref={setItemRef(l.to)}
                 to={l.to}
                 end={l.end}
                 className={({ isActive }) =>
                   cn(
-                    "whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
+                    isHidden(l.to) && "hidden",
+                    "shrink-0 whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
                     isActive
                       ? "bg-primary-soft text-primary"
                       : isTransparent
@@ -87,13 +174,15 @@ export function Header() {
               {l.to === "/residences" && (
                 <DropdownMenu modal={false} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger
+                    ref={setItemRef("logements")}
                     className={cn(
-                      "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
+                      "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-[11px] py-[9px] text-[1.091rem] font-medium leading-none transition-colors",
                       location.pathname.startsWith("/appartements")
                         ? "bg-primary-soft text-primary"
                         : isTransparent
                           ? "text-white/90 hover:bg-white/10 hover:text-white drop-shadow"
                           : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                      isHidden("logements") && "hidden",
                     )}
                   >
                     Logements <ChevronDown className="h-[15px] w-[15px]" />
@@ -114,13 +203,18 @@ export function Header() {
 
         <div
           className={cn(
-            "hidden shrink-0 flex-nowrap items-center gap-2 min-[1480px]:flex",
+            "hidden shrink-0 flex-nowrap items-center gap-2 md:flex",
             isTransparent &&
               "[&_[role=group]]:!border-white/40 [&_[role=group]]:!bg-white/10 [&_[role=group]]:!backdrop-blur-sm [&_[role=group]_button]:!text-white",
           )}
         >
-          <LocaleSwitcher />
-          <FontSizeControls />
+          <div ref={setItemRef("locale")} className={cn("shrink-0", isHidden("locale") && "hidden")}>
+            <LocaleSwitcher />
+          </div>
+          <div ref={setItemRef("font")} className={cn("shrink-0", isHidden("font") && "hidden")}>
+            <FontSizeControls />
+          </div>
+          <div ref={accountRef} className="flex shrink-0 flex-nowrap items-center gap-2">
           {user ? (
             <>
               {isAdmin ? (
@@ -183,11 +277,14 @@ export function Header() {
               </Button>
             </>
           )}
+          </div>
         </div>
 
         <button
+          ref={burgerRef}
           className={cn(
-            "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-muted min-[1480px]:hidden",
+            "h-12 w-12 shrink-0 items-center justify-center rounded-full hover:bg-muted",
+            showBurger ? "inline-flex" : "hidden",
             isTransparent ? "text-white hover:bg-white/15" : "text-foreground",
           )}
           onClick={() => setOpen((o) => !o)}
@@ -198,11 +295,12 @@ export function Header() {
         </button>
       </div>
 
-      {open && (
-        <div className="border-t border-border/50 bg-background min-[1480px]:hidden">
+      {open && showBurger && (
+        <div className="border-t border-border/50 bg-background">
           <nav className="container flex flex-col gap-1 py-4" aria-label="Mobile">
             {links.map((l) => (
               <Fragment key={l.to}>
+                {inMenu(l.to) && (
                 <NavLink
                   to={l.to}
                   end={l.end}
@@ -216,7 +314,8 @@ export function Header() {
                 >
                   {l.label}
                 </NavLink>
-                {l.to === "/residences" && (
+                )}
+                {l.to === "/residences" && inMenu("logements") && (
                   <>
                     <div className="px-4 pt-3 pb-1 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                       Logements
@@ -240,11 +339,13 @@ export function Header() {
               </Fragment>
             ))}
             <div className="mt-2 flex flex-col gap-2 px-2">
-              <div className="flex items-center justify-between gap-2">
-                <LocaleSwitcher />
-                <FontSizeControls />
-              </div>
-              {user ? (
+              {(inMenu("locale") || inMenu("font")) && (
+                <div className="flex items-center justify-between gap-2">
+                  {inMenu("locale") && <LocaleSwitcher />}
+                  {inMenu("font") && <FontSizeControls />}
+                </div>
+              )}
+              {desktop ? null : user ? (
                 <>
                   <Button asChild variant="outline" className="flex-1">
                     <Link to={myLink} onClick={() => setOpen(false)}>{myLabel}</Link>
