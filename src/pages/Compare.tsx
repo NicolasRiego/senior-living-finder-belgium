@@ -450,6 +450,7 @@ export default function ComparePage() {
             <div className="min-w-fit">
               <div className="sticky top-[84px] z-30 bg-background pt-4 -mt-4 pb-2 shadow-[0_8px_8px_-8px_rgba(0,0,0,0.08)]">
                 <ColumnHeaders
+                  compact
                   items={aptItems.map((a) => ({
                     id: a.id,
                     cover_url: a.cover_url,
@@ -461,23 +462,6 @@ export default function ComparePage() {
                 />
               </div>
 
-
-              <SectionTitle label="Identification" count={aptItems.length} />
-              <DataRow label="Type" count={aptItems.length} index={0}>
-                {aptItems.map((a) => <CellText key={a.id} className="capitalize">{a.type}</CellText>)}
-              </DataRow>
-              <DataRow label="Résidence" count={aptItems.length} index={1}>
-                {aptItems.map((a) => (
-                  <div key={a.id} className="text-center">
-                    <Link to={`/residences/${a.residence_slug}`} className="text-sm font-medium text-primary hover:underline">
-                      {a.residence_nom_fr}
-                    </Link>
-                  </div>
-                ))}
-              </DataRow>
-              <DataRow label="Ville" count={aptItems.length} index={2}>
-                {aptItems.map((a) => <CellText key={a.id}>{a.residence_ville || <Dash />}</CellText>)}
-              </DataRow>
 
               <SectionTitle label="Surface & disposition" count={aptItems.length} />
               <DataRow label="Surface" count={aptItems.length} index={0}>
@@ -746,7 +730,7 @@ type HeaderItem = {
   onRemove: () => void;
 };
 
-function ColumnHeaders({ items }: { items: HeaderItem[] }) {
+function ColumnHeaders({ items, compact = false }: { items: HeaderItem[]; compact?: boolean }) {
   const showVs = items.length === 2;
   return (
     <div className="flex gap-4 items-start">
@@ -754,7 +738,7 @@ function ColumnHeaders({ items }: { items: HeaderItem[] }) {
       {items.map((item, idx) => (
         <Fragment key={item.id}>
             <div className="flex-1 min-w-[220px]">
-            <div className="relative rounded-2xl overflow-hidden aspect-[19/8] bg-muted mb-4 shadow-md">
+            <div className={"relative rounded-2xl overflow-hidden bg-muted mb-4 shadow-md " + (compact ? "aspect-[95/28]" : "aspect-[19/8]")}>
               {item.cover_url ? (
                 <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=800"; }} />
 
