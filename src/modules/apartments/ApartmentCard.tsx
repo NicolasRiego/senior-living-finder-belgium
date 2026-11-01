@@ -15,7 +15,7 @@ const TYPE_LABEL: Record<string, string> = Object.fromEntries(
 );
 
 export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
-  const { tr } = useI18n();
+  const { t, tr } = useI18n();
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const { has: hasSaved, add: addSaved, remove: removeSaved } = useSavedApartments();
   const { hasApt, toggleApt, isAptFull } = useCompare();
@@ -199,16 +199,16 @@ export function ApartmentCard({ row }: { row: ApartmentSearchRow }) {
                 }}
                 disabled={disabled}
                 aria-pressed={inCompare}
-                aria-label={inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+                aria-label={inCompare ? t("common.removeFromCompareAria") : t("common.addToCompareAria")}
                 className="w-full whitespace-nowrap"
               >
                 {inCompare ? (
                   <>
-                    <Check className="h-4 w-4" /> Dans le comparateur
+                    <Check className="h-4 w-4" /> {t("common.inCompare")}
                   </>
                 ) : (
                   <>
-                    <GitCompare className="h-4 w-4" /> Comparateur
+                    <GitCompare className="h-4 w-4" /> {t("common.compare")}
                   </>
                 )}
               </Button>

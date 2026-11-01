@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SpaceSwitcher } from "./SpaceSwitcher";
+import { useCompare } from "@/modules/compare/CompareProvider";
 
 // Desktop bar keeps fixed sizes and spacing; when space runs out, items move
 // into the ☰ menu in this order (first one goes first).
@@ -24,6 +25,8 @@ const DESKTOP_QUERY = "(min-width: 768px)";
 
 export function Header() {
   const { t, locale } = useI18n();
+  const { ids: compareIds, aptIds: compareAptIds } = useCompare();
+  const compareCount = compareIds.length + compareAptIds.length;
   const { user, isPartner, isAdmin, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const [desktop, setDesktop] = useState(() => typeof window !== "undefined" && window.matchMedia(DESKTOP_QUERY).matches);
@@ -79,7 +82,7 @@ export function Header() {
   }, []);
 
   // Re-measure natural widths when the labels or the account buttons change.
-  useEffect(() => { setMeasuring(true); }, [locale, user?.id, isAdmin, isPartner, desktop]);
+  useEffect(() => { setMeasuring(true); }, [locale, user?.id, isAdmin, isPartner, desktop, compareCount]);
 
   // Web fonts load after the first paint and change every width.
   useEffect(() => {
@@ -122,7 +125,7 @@ export function Header() {
   const links = [
     { to: "/", label: t("nav.home"), end: true },
     { to: "/residences", label: t("nav.residences") },
-    { to: "/comparateur", label: t("nav.compare") },
+    { to: "/comparateur", label: compareCount ? `${t("nav.compare")} (${compareCount})` : t("nav.compare") },
     { to: "/conseils", label: t("nav.advice") },
     { to: "/contact", label: t("nav.contact") },
   ];

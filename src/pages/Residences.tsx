@@ -461,15 +461,16 @@ function PublicResidenceCard({ row }: { row: SearchRow }) {
                   disabled={disabled}
                   onClick={() => toggle(row.id)}
                   aria-pressed={inCompare}
+                  aria-label={inCompare ? t("common.removeFromCompareAria") : t("common.addToCompareAria")}
                   className="w-full px-4"
                 >
                   {inCompare ? (
                     <>
-                      <Check className="h-4 w-4" /> Dans le comparateur
+                      <Check className="h-4 w-4" /> {t("common.inCompare")}
                     </>
                   ) : (
                     <>
-                      <GitCompare className="h-4 w-4" /> Comparateur
+                      <GitCompare className="h-4 w-4" /> {t("common.compare")}
                     </>
                   )}
                 </Button>

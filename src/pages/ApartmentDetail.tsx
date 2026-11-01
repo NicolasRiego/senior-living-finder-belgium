@@ -21,7 +21,7 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 export default function ApartmentDetailPage() {
-  const { tr } = useI18n();
+  const { t, tr } = useI18n();
   const { id = "" } = useParams();
   const [activePhoto, setActivePhoto] = useState(0);
   const { has: hasSaved, add: addSaved, remove: removeSaved } = useSavedApartments();
@@ -260,12 +260,12 @@ export default function ApartmentDetailPage() {
                 type="button"
                 variant={inCompare ? "soft" : "outline"}
                 onClick={() => toggleApt(a.id)}
-
                 aria-pressed={inCompare}
+                aria-label={inCompare ? t("common.removeFromCompareAria") : t("common.addToCompareAria")}
                 className="w-full whitespace-normal py-3 px-4 h-auto leading-tight"
               >
                 {inCompare ? <Check className="h-5 w-5 shrink-0" /> : <GitCompare className="h-5 w-5 shrink-0" />}
-                <span className="text-left">{inCompare ? "Dans le comparateur" : "Ajouter au comparateur"}</span>
+                <span className="text-left">{inCompare ? t("common.inCompare") : t("common.compare")}</span>
               </Button>
             );
           })()}

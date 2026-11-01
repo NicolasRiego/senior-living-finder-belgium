@@ -97,10 +97,11 @@ export function ResidenceCard({ residence }: { residence: Residence }) {
                 disabled={disabled}
                 onClick={() => toggle(residence.id)}
                 aria-pressed={inCompare}
+                aria-label={inCompare ? t("common.removeFromCompareAria") : t("common.addToCompareAria")}
                 className="w-full"
               >
                 {inCompare ? <Check className="h-4 w-4" /> : null}
-                <span>{inCompare ? t("common.removeFromCompare") : t("common.compare")}</span>
+                <span>{inCompare ? t("common.inCompare") : t("common.compare")}</span>
               </Button>
             );
             if (!disabled) return btn;

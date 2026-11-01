@@ -336,11 +336,12 @@ function CTASlot({ residenceId, intent, label, icon, variant = "default", classN
 
 function CompareToggle({ id }: { id: string }) {
   const { has, toggle, isFull } = useCompare();
+  const { t } = useI18n();
   const inCompare = has(id);
   return (
-    <Button type="button" variant={inCompare ? "soft" : "outline"} size="sm" onClick={() => toggle(id)} aria-pressed={inCompare}>
+    <Button type="button" variant={inCompare ? "soft" : "outline"} size="sm" onClick={() => toggle(id)} aria-pressed={inCompare} aria-label={inCompare ? t("common.removeFromCompareAria") : t("common.addToCompareAria")}>
       {inCompare ? <Check className="h-4 w-4" /> : <GitCompare className="h-4 w-4" />}
-      {inCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+      {inCompare ? t("common.inCompare") : t("common.compare")}
     </Button>
   );
 }

@@ -8,7 +8,7 @@ export const nl: Dict = {
   nav: {
     home: "Home",
     residences: "Residenties",
-    compare: "Vergelijker",
+    compare: "Mijn vergelijkingen",
     advice: "Advies",
     contact: "Contact",
     login: "Inloggen",
@@ -28,6 +28,9 @@ export const nl: Dict = {
     contact: "Contact",
     addToCompare: "Toevoegen aan vergelijker",
     removeFromCompare: "Verwijderen",
+    inCompare: "Te vergelijken",
+    addToCompareAria: "Toevoegen aan mijn vergelijkingen",
+    removeFromCompareAria: "Verwijderen uit mijn vergelijkingen",
     backHome: "Terug naar home",
   },
   residenceTypes: {

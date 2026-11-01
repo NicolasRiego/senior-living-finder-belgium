@@ -8,7 +8,7 @@ export const fr = {
   nav: {
     home: "Accueil",
     residences: "Résidences",
-    compare: "Comparateur",
+    compare: "Mes comparaisons",
     advice: "Conseils",
     contact: "Contact",
     login: "Se connecter",
@@ -28,6 +28,9 @@ export const fr = {
     contact: "Contacter",
     addToCompare: "Ajouter au comparateur",
     removeFromCompare: "Retirer",
+    inCompare: "À comparer",
+    addToCompareAria: "Ajouter à mes comparaisons",
+    removeFromCompareAria: "Retirer de mes comparaisons",
     backHome: "Retour à l'accueil",
   },
   residenceTypes: {
