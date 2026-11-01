@@ -58,7 +58,7 @@ export const fr = {
     step4Title: "Visitez",
     step4Body: "Contactez directement la résidence, demandez une brochure ou planifiez une visite gratuite en quelques clics.",
 
-    valuesTitle: "Pensé pour les familles",
+    valuesTitle: "Des informations claires pour mieux choisir",
     val1: "Informations vérifiées et à jour",
     val2: "Indépendant et transparent",
     val3: "Conseillers à votre écoute",

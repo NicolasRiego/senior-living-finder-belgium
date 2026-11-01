@@ -58,7 +58,7 @@ export const nl: Dict = {
     step4Title: "Bezoek",
     step4Body: "Neem rechtstreeks contact op met de residentie, vraag een brochure aan of plan een gratis bezoek in enkele klikken.",
 
-    valuesTitle: "Gemaakt voor families",
+    valuesTitle: "Duidelijke informatie om beter te kiezen",
     val1: "Gecontroleerde, actuele informatie",
     val2: "Onafhankelijk en transparant",
     val3: "Adviseurs die naar u luisteren",
