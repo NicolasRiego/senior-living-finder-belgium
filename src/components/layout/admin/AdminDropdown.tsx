@@ -47,7 +47,7 @@ export function AdminDropdown({ label, icon, children, align = "left", triggerCl
         aria-haspopup="menu"
         aria-expanded={open}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted transition-colors",
+          "inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium hover:bg-muted transition-colors xl:px-3 [&>svg]:shrink-0 max-xl:[&>svg:first-child]:hidden",
           open && "bg-muted text-primary",
           triggerClassName,
         )}
