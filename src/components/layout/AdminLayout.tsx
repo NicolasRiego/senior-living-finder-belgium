@@ -49,7 +49,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               <img src="/logo-mlh-rond-feuille.png" alt="MyLivingHome" className="h-8 w-8 shrink-0 rounded-full bg-white shadow-soft" />
               <span>Admin</span>
             </Link>
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1">
               <AdminDropdown label="Contenu" icon={<FolderKanban className="h-4 w-4" />}>
                 {(close) => (
                   <>
@@ -107,25 +107,25 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               </AdminDropdown>
               <Link
                 to="/admin/tickets"
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium hover:bg-muted xl:px-3 [&>svg]:shrink-0 max-xl:[&>svg:first-child]:hidden"
               >
                 <Ticket className="h-4 w-4" /> Tickets
               </Link>
               <Link
                 to="/admin/taches"
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium hover:bg-muted xl:px-3 [&>svg]:shrink-0 max-xl:[&>svg:first-child]:hidden"
               >
                 <CheckSquare className="h-4 w-4" /> Tâches
               </Link>
               <Link
                 to="/admin/drive"
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium hover:bg-muted xl:px-3 [&>svg]:shrink-0 max-xl:[&>svg:first-child]:hidden"
               >
                 <HardDrive className="h-4 w-4" /> Drive
               </Link>
               <Link
                 to="/"
-                className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium hover:bg-muted"
+                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium hover:bg-muted xl:px-3 [&>svg]:shrink-0 max-xl:[&>svg:first-child]:hidden"
               >
                 <Home className="h-4 w-4" /> Site public
               </Link>
@@ -155,12 +155,14 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             </Button>
           </div>
         </div>
-        <nav className="md:hidden border-t flex overflow-x-auto">
+        <nav className="lg:hidden border-t flex overflow-x-auto">
           {[
             { to: "/admin/validation", label: "Validation", icon: ListChecks },
             { to: "/admin/residences", label: "Résidences", icon: ShieldCheck },
             { to: "/admin/utilisateurs", label: "Users", icon: Users },
             { to: "/admin/tickets", label: "Tickets", icon: Ticket },
+            { to: "/admin/taches", label: "Tâches", icon: CheckSquare },
+            { to: "/admin/drive", label: "Drive", icon: HardDrive },
             { to: "/admin/audit", label: "Journal", icon: ScrollText },
           ].map((it) => (
             <Link

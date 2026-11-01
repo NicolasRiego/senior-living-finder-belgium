@@ -65,7 +65,7 @@ export function Header() {
           <span>{t("brand.name")}</span>
         </Link>
 
-        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 min-[1480px]:flex" aria-label="Primary">
+        <nav className="hidden shrink-0 flex-nowrap items-center gap-0.5 lg:flex" aria-label="Primary">
           {links.map((l) => (
             <Fragment key={l.to}>
               <NavLink
