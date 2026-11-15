@@ -12,7 +12,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Trash2, FileText, FileSpreadsheet, Image as ImageIcon, File as FileIcon, Download, Upload, Eye } from "lucide-react";
+import { Trash2, FileText, FileSpreadsheet, Image as ImageIcon, File as FileIcon, Download, Upload, Eye, Film } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 // Bucket privé : on lit les fichiers via le client Supabase (session admin),
@@ -38,15 +38,18 @@ const isImage = (d: DocRow) =>
   (d.file_type || "").toLowerCase().startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)$/i.test(d.file_name);
 const isPdf = (d: DocRow) =>
   (d.file_type || "").toLowerCase() === "application/pdf" || /\.pdf$/i.test(d.file_name);
+const isVideo = (d: DocRow) =>
+  (d.file_type || "").toLowerCase().startsWith("video/") || /\.(mp4|m4v)$/i.test(d.file_name);
 const isText = (d: DocRow) =>
   (d.file_type || "").toLowerCase().startsWith("text/") || /\.(txt|csv)$/i.test(d.file_name);
 // Seuls ces formats s'affichent dans le navigateur ; Word, Excel, PowerPoint… se téléchargent.
-const canPreview = (d: DocRow) => isImage(d) || isPdf(d) || isText(d);
+const canPreview = (d: DocRow) => isImage(d) || isPdf(d) || isText(d) || isVideo(d);
 
 const docIconFor = (d: DocRow) => {
   const t = (d.file_type || "").toLowerCase();
   const n = d.file_name.toLowerCase();
   if (t.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg|heic)$/.test(n)) return <ImageIcon className="h-5 w-5 text-purple-600" />;
+  if (t.startsWith("video/") || /\.(mp4|m4v)$/.test(n)) return <Film className="h-5 w-5 text-amber-600" />;
   if (t === "application/pdf" || n.endsWith(".pdf")) return <FileText className="h-5 w-5 text-red-600" />;
   if (t.includes("sheet") || /\.(xlsx?|csv|ods)$/.test(n)) return <FileSpreadsheet className="h-5 w-5 text-navy-600" />;
   if (t.includes("word") || /\.(docx?|odt|rtf)$/.test(n)) return <FileText className="h-5 w-5 text-blue-600" />;
@@ -125,17 +128,27 @@ export default function AdminDrive() {
       if (!uid) throw new Error("Non connecté");
       const ext = docFile.name.includes(".") ? docFile.name.split(".").pop() : "";
       const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext ? "." + ext : ""}`;
+      // Certains navigateurs ne donnent pas de type pour les .mp4 : sans lui, la vidéo ne se lirait pas en ligne.
+      const contentType = docFile.type || (/\.(mp4|m4v)$/i.test(docFile.name) ? "video/mp4" : undefined);
       const up = await supabase.storage.from(BUCKET).upload(path, docFile, {
-        contentType: docFile.type || undefined,
+        contentType,
         upsert: false,
       });
-      if (up.error) throw up.error;
+      if (up.error) {
+        if (/maximum allowed size|too large|413/i.test(up.error.message)) {
+          throw new Error(`Fichier trop lourd pour le stockage (${formatSize(docFile.size)}). Réduisez la vidéo ou augmentez la limite d'upload dans Lovable Cloud.`);
+        }
+        if (/mime type/i.test(up.error.message)) {
+          throw new Error("Ce type de fichier n'est pas autorisé par le stockage. Il faut l'ajouter aux types acceptés du bucket admin-documents.");
+        }
+        throw up.error;
+      }
       const ins = await (supabase as any).from("admin_task_documents").insert({
         title: docTitle.trim(),
         description: docDescription.trim() || null,
         file_url: path,
         file_name: docFile.name,
-        file_type: docFile.type || null,
+        file_type: contentType || null,
         file_size: docFile.size,
         task_id: docTaskId === "none" ? null : docTaskId,
         uploaded_by: uid,
@@ -192,13 +205,18 @@ export default function AdminDrive() {
     const win = window.open("", "_blank");
     setBusyId(d.id);
     try {
-      const url = URL.createObjectURL(await fetchBlob(d));
+      // Une vidéo est lue en continu depuis un lien temporaire (1 h) au lieu d'être téléchargée en entier d'abord.
+      const signed = isVideo(d)
+        ? await supabase.storage.from(BUCKET).createSignedUrl(d.file_url, 3600)
+        : null;
+      if (signed?.error) throw signed.error;
+      const url = signed?.data?.signedUrl ?? URL.createObjectURL(await fetchBlob(d));
       if (win) {
         win.location.href = url;
       } else {
         window.location.assign(url);
       }
-      setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
+      if (!signed) setTimeout(() => URL.revokeObjectURL(url), 5 * 60_000);
     } catch (e: any) {
       win?.close();
       toast({ title: "Ouverture impossible", description: e.message, variant: "destructive" });
@@ -368,7 +386,7 @@ export default function AdminDrive() {
               <Label>Fichier *</Label>
               <Input
                 type="file"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.rtf,.odt,.ods,image/*"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,.txt,.rtf,.odt,.ods,image/*,.mp4,video/mp4"
                 onChange={(e) => setDocFile(e.target.files?.[0] ?? null)}
               />
               {docFile && (
